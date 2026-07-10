@@ -1,0 +1,29 @@
+discourse_mechbox:
+  mechbox_enabled:
+    default: false
+    client: true
+  mechbox_allowed_groups:
+    default: "0"
+    type: group_list
+    allow_any: false
+    refresh: true
+    client: false
+  mechbox_template_manager_groups:
+    default: "3"
+    type: group_list
+    allow_any: false
+    refresh: true
+    client: false
+  mechbox_save_calculation_records:
+    default: true
+    client: true
+  mechbox_max_records_per_user:
+    default: 500
+    min: 0
+  mechbox_default_unit_system:
+    default: "metric"
+    type: enum
+    choices:
+      - metric
+      - imperial
+    client: true
