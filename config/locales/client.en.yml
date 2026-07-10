@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+en:
+  js:
+    mechbox:
+      title: "MechBox"
+      nav_title: "MechBox"
+      disclaimer: "Results are engineering estimates only and do not replace formal design sign-off."

@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+zh_CN:
+  js:
+    mechbox:
+      title: "MechBox"
+      nav_title: "机械工具箱"
+      disclaimer: "计算结果仅供工程估算与学习参考，不能替代正式设计签核。"

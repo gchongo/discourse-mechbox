@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+en:
+  site_settings:
+    descriptions:
+      discourse_mechbox: "MechBox mechanical engineering calculator toolbox settings."
+      mechbox_enabled: "Enable the MechBox calculator toolbox plugin."
+      mechbox_allowed_groups: "Groups allowed to use MechBox."
+      mechbox_template_manager_groups: "Groups allowed to manage MechBox formula templates."
+      mechbox_save_calculation_records: "Allow users to save calculation records to the database."
+      mechbox_max_records_per_user: "Maximum calculation records per user. Set to 0 for unlimited."
+      mechbox_default_unit_system: "Default unit system for MechBox calculations."
+
+  mechbox:
+    errors:
+      unknown_tool: "Unknown calculator tool."
+      unknown_unit: "Unknown unit."
+      incompatible_units: "Units are not compatible for conversion."
+      empty_values: "At least one value is required."
+      positive_values_required: "Values must be greater than zero."
+      invalid_input: "Invalid value for %{field}."
+      invalid_template_formula: "The formula template is invalid."
+      blank_expression: "Formula expression cannot be blank."
+      expression_too_long: "Formula expression is too long."
+      unexpected_token: "Unexpected token: %{token}."
+      invalid_expression: "Invalid formula expression."
+      missing_closing_parenthesis: "Missing closing parenthesis."
+      division_by_zero: "Division by zero."
+      unknown_variable: "Unknown variable: %{variable}."
+      invalid_variable: "Invalid value for variable: %{variable}."
+      record_limit_reached: "You have reached the maximum of %{limit} saved calculation records."
+      feature_not_available: "The MechBox API feature '%{feature}' is not available yet."
+      client_tool_not_implemented: "The client tool '%{tool_id}' is not integrated yet."
+      exports_not_implemented: "Export generation is not implemented yet."
+      topic_drafts_not_implemented: "Topic draft creation is not implemented yet."
+      projects_not_implemented: "Design projects are not implemented yet."
+
+    categories:
+      general: "General"
+      tolerance: "Tolerance and GD&T"
+      transmission: "Transmission"
+      fastening: "Fastening"
+      structural: "Structural"
+      materials: "Materials"
+      design: "Design chains"
+
+    tools:
+      unit_converter:
+        name: "Unit converter"
+        description: "Convert values between supported engineering units."
+      rss_calculation:
+        name: "RSS stack"
+        description: "Root sum square tolerance stack."
+      gear_ratio:
+        name: "Gear ratio"
+        description: "Calculate speed ratio from tooth counts."
+      bolt_clamp_load:
+        name: "Bolt preload"
+        description: "Estimate bolt preload from torque."
+      gdt_position:
+        name: "GD&T position"
+        description: "Calculate position tolerance diameter."

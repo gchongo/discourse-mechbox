@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+zh_CN:
+  site_settings:
+    descriptions:
+      discourse_mechbox: "MechBox 机械工程计算器工具箱设置。"
+      mechbox_enabled: "启用 MechBox 计算器工具箱插件。"
+      mechbox_allowed_groups: "允许使用 MechBox 的用户组。"
+      mechbox_template_manager_groups: "允许管理 MechBox 公式模板的用户组。"
+      mechbox_save_calculation_records: "允许用户将计算记录保存到数据库。"
+      mechbox_max_records_per_user: "每位用户最多保存的计算记录数。设为 0 表示不限制。"
+      mechbox_default_unit_system: "MechBox 计算的默认单位制。"
+
+  mechbox:
+    errors:
+      unknown_tool: "未知的计算工具。"
+      unknown_unit: "未知的单位。"
+      incompatible_units: "单位维度不兼容，无法换算。"
+      empty_values: "至少需要一个数值。"
+      positive_values_required: "数值必须大于零。"
+      invalid_input: "字段 %{field} 的值无效。"
+      invalid_template_formula: "公式模板无效。"
+      blank_expression: "公式表达式不能为空。"
+      expression_too_long: "公式表达式过长。"
+      unexpected_token: "意外的符号：%{token}。"
+      invalid_expression: "公式表达式无效。"
+      missing_closing_parenthesis: "缺少右括号。"
+      division_by_zero: "除数不能为零。"
+      unknown_variable: "未知变量：%{variable}。"
+      invalid_variable: "变量 %{variable} 的值无效。"
+      record_limit_reached: "已达到 %{limit} 条计算记录上限。"
+      feature_not_available: "MechBox 接口功能「%{feature}」尚未开放。"
+      client_tool_not_implemented: "客户端工具「%{tool_id}」尚未集成。"
+      exports_not_implemented: "导出功能尚未实现。"
+      topic_drafts_not_implemented: "话题草稿功能尚未实现。"
+      projects_not_implemented: "设计项目功能尚未实现。"
+
+    categories:
+      general: "通用"
+      tolerance: "公差与 GD&T"
+      transmission: "传动"
+      fastening: "紧固件"
+      structural: "结构"
+      materials: "材料"
+      design: "设计链"
+
+    tools:
+      unit_converter:
+        name: "单位换算"
+        description: "在支持的工程单位之间换算。"
+      rss_calculation:
+        name: "RSS 叠加"
+        description: "公差 RSS 平方和开方叠加。"
+      gear_ratio:
+        name: "齿轮比"
+        description: "根据齿数计算转速比。"
+      bolt_clamp_load:
+        name: "螺栓预紧力"
+        description: "根据扭矩估算螺栓预紧力。"
+      gdt_position:
+        name: "GD&T 位置度"
+        description: "计算位置度直径。"

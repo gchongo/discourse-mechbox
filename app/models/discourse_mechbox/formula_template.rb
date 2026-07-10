@@ -21,6 +21,21 @@ module DiscourseMechbox
     scope :active, -> { where(active: true) }
     scope :recent, -> { order(updated_at: :desc, id: :desc) }
 
+    def self.list_for(guardian)
+      relation = active.recent
+      return relation if guardian.is_admin?
+
+      group_ids = guardian.user&.group_ids || []
+      if group_ids.empty?
+        relation.where("cardinality(visible_group_ids) = 0")
+      else
+        relation.where(
+          "cardinality(visible_group_ids) = 0 OR visible_group_ids && ARRAY[?]::integer[]",
+          group_ids,
+        )
+      end
+    end
+
     def visible_to?(guardian)
       return false if !active?
       return true if guardian.is_admin?
