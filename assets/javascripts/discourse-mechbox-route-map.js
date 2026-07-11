@@ -1,8 +1,3 @@
-export default {
-  resource: "application",
-  path: "/",
-
-  map() {
-    this.route("mechbox", { path: "/mechbox" });
-  },
-};
+export default function () {
+  this.route("mechbox", { path: "/mechbox" });
+}

@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_mechbox: "MechBox"
   js:
     mechbox:
       title: "MechBox"

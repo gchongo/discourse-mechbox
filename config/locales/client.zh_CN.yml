@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 zh_CN:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_mechbox: "MechBox 机械工具箱"
   js:
     mechbox:
       title: "MechBox"
