@@ -82,6 +82,22 @@
     overflow: auto;
   }
 
+  &__tool-link,
+  &__back-link {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover .mechbox__tool-name {
+      color: var(--tertiary);
+      text-decoration: underline;
+    }
+  }
+
+  &__back-link:hover {
+    color: var(--tertiary);
+    text-decoration: underline;
+  }
+
   &__input-label {
     display: block;
     font-weight: 600;

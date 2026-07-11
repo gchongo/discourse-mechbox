@@ -1,5 +1,4 @@
 import { i18n } from "discourse-i18n";
-import { LinkTo } from "@ember/routing";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 
@@ -7,7 +6,7 @@ export default <template>
   <section class="mechbox__page">
     <header class="mechbox__header">
       <p>
-        <LinkTo @route="mechbox">{{i18n "mechbox.back_to_home"}}</LinkTo>
+        <a href="/mechbox" class="mechbox__back-link">{{i18n "mechbox.back_to_home"}}</a>
       </p>
       <h1>{{@controller.model.name}}</h1>
       <p class="mechbox__disclaimer">{{@controller.model.description}}</p>
