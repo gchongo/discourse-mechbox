@@ -8,7 +8,7 @@ module DiscourseMechbox
 
     before_action :ensure_logged_in
     before_action :ensure_can_use_mechbox
-    skip_before_action :check_xhr
+    skip_before_action :check_xhr, raise: false
 
     rescue_from DiscourseMechbox::CalculatorRegistry::Error, with: :render_calculation_error
     rescue_from DiscourseMechbox::FormulaEvaluator::Error, with: :render_calculation_error
