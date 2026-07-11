@@ -17,14 +17,6 @@ export default class MechboxToolRoute extends Route {
     return ajax(`/mechbox/api/tools/${params.tool_id}`);
   }
 
-  setupController(controller, model) {
-    super.setupController(controller, model);
-    controller.inputValues = {};
-    controller.result = null;
-    controller.isCalculating = false;
-    controller.errorMessage = null;
-  }
-
   titleToken(model) {
     return model?.name || i18n("mechbox.title");
   }

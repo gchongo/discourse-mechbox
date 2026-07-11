@@ -40,6 +40,20 @@ acceptance("MechBox | safe page", function (needs) {
         ],
       });
     });
+
+    server.get("/mechbox/api/tools/gear_ratio", () => {
+      return helper.response(200, {
+        tool_id: "gear_ratio",
+        name: "Gear ratio",
+        description: "Calculate speed ratio from tooth counts.",
+        available: true,
+        inputs: [
+          { key: "driver_teeth", type: "integer" },
+          { key: "driven_teeth", type: "integer" },
+          { key: "input_speed_rpm", type: "number" },
+        ],
+      });
+    });
   });
 
   test("sidebar shows the MechBox community link", async function (assert) {
@@ -59,5 +73,13 @@ acceptance("MechBox | safe page", function (needs) {
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__catalog-grid"), "catalog is rendered");
     assert.true(exists(".mechbox__tool-list li"), "tools are rendered");
+  });
+
+  test("renders the gear ratio tool page", async function (assert) {
+    await visit("/mechbox/tools/gear_ratio");
+
+    assert.true(exists(".mechbox__page"), "page is rendered");
+    assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
+    assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
   });
 });
