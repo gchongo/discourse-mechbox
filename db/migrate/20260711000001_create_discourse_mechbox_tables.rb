@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateDiscourseMechboxTables < ActiveRecord::Migration[7.0]
+class CreateDiscourseMechboxTables < ActiveRecord::Migration[8.0]
   def change
     create_table :mechbox_formula_templates, if_not_exists: true do |t|
       t.string :name, null: false
