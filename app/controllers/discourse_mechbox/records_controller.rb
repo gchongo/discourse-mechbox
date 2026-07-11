@@ -3,6 +3,8 @@
 module DiscourseMechbox
   class RecordsController < BaseController
     def index
+      return unless require_api_feature!(:records_index)
+
       records, meta = paginated_records
       render json: {
         records: serialize_records(records),
@@ -21,11 +23,15 @@ module DiscourseMechbox
     end
 
     def show
+      return unless require_api_feature!(:records_show)
+
       record = fetch_user_record!(params[:id])
       render json: CalculationRecordSerializer.new(record, root: false)
     end
 
     def destroy
+      return unless require_api_feature!(:records_destroy)
+
       record = fetch_user_record!(params[:id])
       record.destroy!
       head :no_content

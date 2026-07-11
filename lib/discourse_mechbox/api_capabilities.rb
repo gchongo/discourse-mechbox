@@ -7,6 +7,14 @@ module DiscourseMechbox
     API_VERSION = 1
 
     FEATURES = {
+      metadata: {
+        enabled: true,
+        description: "Bootstrap payload for the MechBox client",
+      },
+      tools: {
+        enabled: true,
+        description: "Tool catalog and per-tool schema metadata",
+      },
       calculate: {
         enabled: true,
         description: "Run builtin or template-backed calculations",
@@ -17,18 +25,31 @@ module DiscourseMechbox
       },
       records_index: {
         enabled: true,
+        description: "List and filter saved calculation records",
       },
       records_search: {
         enabled: true,
+        description: "Alias endpoint for server-side record search",
+      },
+      records_show: {
+        enabled: true,
+        description: "Fetch one saved record by id",
+      },
+      records_destroy: {
+        enabled: true,
+        description: "Delete one saved record by id",
       },
       records_bulk_destroy: {
         enabled: true,
+        description: "Delete multiple saved records in a single request",
       },
       favorites: {
         enabled: true,
+        description: "Create, list, and remove favorite tools",
       },
       templates: {
         enabled: true,
+        description: "List and manage formula templates",
       },
       template_versions: {
         enabled: true,

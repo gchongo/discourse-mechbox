@@ -3,6 +3,8 @@
 module DiscourseMechbox
   class ToolsController < BaseController
     def index
+      return unless require_api_feature!(:tools)
+
       render json: {
         categories: ToolCatalog.categories_json,
         builtin_tools: ToolCatalog.builtin_tools_json,
@@ -11,6 +13,8 @@ module DiscourseMechbox
     end
 
     def show
+      return unless require_api_feature!(:tools)
+
       tool = ToolCatalog.tool_summary(params[:tool_id])
       raise Discourse::NotFound if tool.blank?
 

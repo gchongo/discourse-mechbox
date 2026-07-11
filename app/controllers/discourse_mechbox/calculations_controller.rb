@@ -3,6 +3,8 @@
 module DiscourseMechbox
   class CalculationsController < BaseController
     def create
+      return unless require_api_feature!(:calculate)
+
       result = CalculationRunner.run(guardian:, params: calculation_params, persist: true)
       render json: result
     end

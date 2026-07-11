@@ -3,11 +3,15 @@
 module DiscourseMechbox
   class FavoritesController < BaseController
     def index
+      return unless require_api_feature!(:favorites)
+
       favorites = FavoriteTool.where(user_id: current_user.id).order(created_at: :desc)
       render json: serialize_data(favorites, FavoriteToolSerializer)
     end
 
     def create
+      return unless require_api_feature!(:favorites)
+
       tool_id = params.require(:tool_id).to_s
       raise Discourse::InvalidParameters.new(:tool_id) if !favorite_tool_allowed?(tool_id)
 
@@ -16,6 +20,8 @@ module DiscourseMechbox
     end
 
     def destroy
+      return unless require_api_feature!(:favorites)
+
       favorite = FavoriteTool.find_by(user_id: current_user.id, tool_id: params[:tool_id])
       raise Discourse::NotFound if favorite.blank?
 

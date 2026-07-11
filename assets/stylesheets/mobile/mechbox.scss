@@ -2,4 +2,8 @@
   &__page {
     padding: 0.75em;
   }
+
+  &__grid {
+    grid-template-columns: 1fr;
+  }
 }

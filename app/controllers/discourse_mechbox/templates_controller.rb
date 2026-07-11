@@ -6,25 +6,35 @@ module DiscourseMechbox
     before_action :fetch_template, only: %i[show update destroy]
 
     def index
+      return unless require_api_feature!(:templates)
+
       templates = FormulaTemplate.list_for(guardian)
       render json: serialize_data(templates, FormulaTemplateSerializer)
     end
 
     def show
+      return unless require_api_feature!(:templates)
+
       render json: FormulaTemplateSerializer.new(@template, root: false)
     end
 
     def create
+      return unless require_api_feature!(:templates)
+
       template = TemplateManager.create!(guardian:, params:)
       render json: FormulaTemplateSerializer.new(template, root: false), status: :created
     end
 
     def update
+      return unless require_api_feature!(:templates)
+
       template = TemplateManager.update!(guardian:, template: @template, params:)
       render json: FormulaTemplateSerializer.new(template, root: false)
     end
 
     def destroy
+      return unless require_api_feature!(:templates)
+
       TemplateManager.destroy!(template: @template)
       head :no_content
     end
