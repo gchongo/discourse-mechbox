@@ -29,5 +29,10 @@ after_initialize do
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
 
-  Discourse::Application.routes.append { mount ::DiscourseMechbox::Engine, at: "/mechbox/api" }
+  Discourse::Application.routes.append do
+    mount ::DiscourseMechbox::Engine, at: "/mechbox/api"
+
+    # Allow hard refresh on /mechbox by booting the main Ember app shell.
+    get "/mechbox(/*rest)" => "list#latest", constraints: ->(request) { request.format.nil? || request.format.html? }
+  end
 end
