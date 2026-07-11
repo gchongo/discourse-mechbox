@@ -2,10 +2,12 @@
 
 module DiscourseMechbox
   class MetadataBuilder
-    def self.build
+    def self.build(guardian:)
+      user = guardian.user
+
       {
         plugin: DiscourseMechbox::PLUGIN_NAME,
-        mode: "phase0_5_7",
+        mode: "phase0_5_8",
         api_version: ApiCapabilities::API_VERSION,
         home_route: "/mechbox",
         api_prefix: "/mechbox/api",
@@ -17,11 +19,12 @@ module DiscourseMechbox
         design_chains: ToolCatalog.design_chains_json,
         formula_templates: [],
         favorite_tool_ids: [],
-        preferences: {},
+        preferences: UserPreferences.fetch(user),
         settings: {
           save_calculation_records: SiteSetting.mechbox_save_calculation_records,
           max_records_per_user: SiteSetting.mechbox_max_records_per_user,
           default_unit_system: SiteSetting.mechbox_default_unit_system,
+          effective_unit_system: UserPreferences.effective_unit_system(user),
           can_manage_templates: false,
         },
       }

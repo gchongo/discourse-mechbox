@@ -5,7 +5,7 @@ module DiscourseMechbox
     def show
       return unless require_api_feature!(:metadata)
 
-      render json: MetadataBuilder.build
+      render json: MetadataBuilder.build(guardian:)
     end
   end
 end

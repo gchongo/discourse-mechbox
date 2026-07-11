@@ -8,7 +8,12 @@ acceptance("MechBox | safe page", function (needs) {
   needs.pretender((server, helper) => {
     server.get("/mechbox/api/metadata", () => {
       return helper.response(200, {
-        mode: "phase0_5_7",
+        mode: "phase0_5_8",
+        preferences: {
+          unit_system: null,
+          favorite_layout: "grid",
+          recent_tool_ids: [],
+        },
         builtin_tools: [
           {
             tool_id: "gear_ratio",
