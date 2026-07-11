@@ -1,5 +1,6 @@
 import { i18n } from "discourse-i18n";
 import { LinkTo } from "@ember/routing";
+import { and } from "discourse/truth-helpers";
 
 export default <template>
   <section class="mechbox__page">
