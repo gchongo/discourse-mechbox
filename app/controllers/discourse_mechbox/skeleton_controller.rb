@@ -5,21 +5,20 @@ module DiscourseMechbox
     def status
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "safe_skeleton",
+               mode: "phase0_5_1",
                status: "ok",
+               api_version: ApiCapabilities::API_VERSION,
              }
     end
 
     def metadata
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "safe_skeleton",
+               mode: "phase0_5_1",
+               api_version: ApiCapabilities::API_VERSION,
                home_route: "/mechbox",
                api_prefix: "/mechbox/api",
-               capabilities: {
-                 status: true,
-                 metadata: true,
-               },
+               capabilities: ApiCapabilities.as_json,
              }
     end
 
