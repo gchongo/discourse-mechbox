@@ -2,7 +2,7 @@
 
 module DiscourseMechbox
   class BaseController < ::ApplicationController
-    include DiscourseMechbox::Concerns::FeatureGate
+    include DiscourseMechbox::FeatureGate
 
     requires_plugin PLUGIN_NAME
 

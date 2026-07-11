@@ -23,7 +23,7 @@ module ::DiscourseMechbox
   PLUGIN_NAME = "discourse-mechbox"
 
   PHASE1_LOAD_PATHS = %w[
-    lib/discourse_mechbox/concerns/feature_gate
+    lib/discourse_mechbox/feature_gate
     lib/discourse_mechbox/api_capabilities
     lib/discourse_mechbox/database_features
     lib/discourse_mechbox/tool_catalog
