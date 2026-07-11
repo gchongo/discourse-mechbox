@@ -1,4 +1,6 @@
-<template>
+import { i18n } from "discourse-i18n";
+
+export default <template>
   <section class="mechbox__page">
     <header class="mechbox__header">
       <h1>{{i18n "mechbox.title"}}</h1>
