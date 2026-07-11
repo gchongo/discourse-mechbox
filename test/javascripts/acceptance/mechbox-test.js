@@ -17,11 +17,10 @@ acceptance("MechBox | safe page", function (needs) {
     );
   });
 
-  test("renders the MechBox home page with builtin tools", async function (assert) {
+  test("renders the MechBox placeholder page", async function (assert) {
     await visit("/mechbox");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
-    assert.true(exists(".mechbox__tools-panel"), "tools panel is rendered");
-    assert.true(exists(".mechbox__tool-list li"), "builtin tools are listed");
+    assert.true(exists(".mechbox__workbench-panel"), "workbench panel is rendered");
   });
 });

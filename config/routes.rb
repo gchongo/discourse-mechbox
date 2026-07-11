@@ -2,10 +2,10 @@
 
 DiscourseMechbox::Engine.routes.draw do
   get "/status" => "skeleton#status"
-  get "/metadata" => "metadata#show"
+  get "/metadata" => "skeleton#metadata"
 
-  get "/tools" => "tools#index"
-  get "/tools/:tool_id" => "tools#show"
+  get "/tools" => "skeleton#not_implemented", defaults: { feature: "tools_index" }
+  get "/tools/:tool_id" => "skeleton#not_implemented", defaults: { feature: "tools_show" }
   post "/calculate" => "skeleton#not_implemented", defaults: { feature: "calculate" }
   post "/calculate/validate" => "skeleton#not_implemented", defaults: { feature: "calculate_validate" }
   get "/records/search" => "skeleton#not_implemented", defaults: { feature: "records_search" }
@@ -49,5 +49,3 @@ DiscourseMechbox::Engine.routes.draw do
   delete "/projects/:id" => "skeleton#not_implemented", defaults: { feature: "projects_destroy" }
   get "/admin/stats" => "skeleton#not_implemented", defaults: { feature: "admin_stats" }
 end
-
-Discourse::Application.routes.append { mount ::DiscourseMechbox::Engine, at: "/mechbox/api" }
