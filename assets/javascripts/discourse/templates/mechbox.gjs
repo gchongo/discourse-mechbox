@@ -11,7 +11,7 @@ export default <template>
     <div class="mechbox__workbench-panel">
       <h2>{{i18n "mechbox.catalog.analysis_type_title"}}</h2>
       <div class="mechbox__analysis-grid">
-        {{#each this.analysisCategories as |category|}}
+        {{#each @controller.analysisCategories as |category|}}
           <section class="mechbox__analysis-card">
             <h3>{{i18n (concat "mechbox.catalog.analysis_categories." category.id)}}</h3>
             <ul class="mechbox__analysis-tool-list">
@@ -33,7 +33,7 @@ export default <template>
       </p>
 
       <div class="mechbox__catalog-grid">
-        {{#each this.singleToolDirectory as |tool|}}
+        {{#each @controller.singleToolDirectory as |tool|}}
           <article class="mechbox__catalog-card">
             <h3>{{i18n (concat "mechbox.catalog.tools." tool.id ".name")}}</h3>
             <p>{{i18n (concat "mechbox.catalog.tools." tool.id ".description")}}</p>
@@ -46,11 +46,11 @@ export default <template>
 
       <p>
         <strong>{{i18n "mechbox.api_prefix_label"}}:</strong>
-        <code>{{this.apiPrefix}}</code>
+        <code>{{@controller.apiPrefix}}</code>
       </p>
       <h3>{{i18n "mechbox.future_interfaces_title"}}</h3>
       <ul class="mechbox__record-list">
-        {{#each this.futureInterfaces as |feature|}}
+        {{#each @controller.futureInterfaces as |feature|}}
           <li><code>{{feature}}</code></li>
         {{/each}}
       </ul>
