@@ -26,3 +26,16 @@ en:
       skeleton_message: "The plugin now runs in a minimal skeleton and business features will be added incrementally."
       api_prefix_label: "API prefix"
       future_interfaces_title: "Future interfaces"
+      catalog:
+        single_tool_directory_title: "Mechanical tool directory"
+        single_tool_directory_hint: "Integrate independent tools first, then enable each calculator page incrementally."
+        multi_chain_archive_note: "Multi-chain archive / scheme management: excluded from this phase."
+        status:
+          planned: "Planned (directory ready)"
+        tools:
+          shaft_system_chain:
+            name: "Shaft system chain"
+            description: "Shaft -> bearing -> key linkage with chain-level report."
+          bolt_connection_chain:
+            name: "Bolted connection chain"
+            description: "Preload -> bolt group -> weld linkage."

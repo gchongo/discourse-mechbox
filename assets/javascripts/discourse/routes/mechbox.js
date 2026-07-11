@@ -4,6 +4,16 @@ export default class MechboxRoute extends Route {
   model() {
     return {
       apiPrefix: "/mechbox/api",
+      singleToolDirectory: [
+        {
+          id: "shaft_system_chain",
+          status: "planned",
+        },
+        {
+          id: "bolt_connection_chain",
+          status: "planned",
+        },
+      ],
       futureInterfaces: [
         "metadata",
         "tools_index",
@@ -12,7 +22,6 @@ export default class MechboxRoute extends Route {
         "favorites_index",
         "templates_index",
         "preferences_show",
-        "projects_index",
       ],
     };
   }

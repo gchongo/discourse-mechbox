@@ -26,3 +26,16 @@ zh_CN:
       skeleton_message: "插件已简化为可启动骨架，业务功能将逐步接入。"
       api_prefix_label: "API 前缀"
       future_interfaces_title: "预留接口"
+      catalog:
+        single_tool_directory_title: "机械计算工具目录"
+        single_tool_directory_hint: "先接入互不影响的单个/单链工具，后续逐个补全计算与结果页。"
+        multi_chain_archive_note: "多链归档 · 方案管理：暂不纳入当前阶段。"
+        status:
+          planned: "规划中（目录已就绪）"
+        tools:
+          shaft_system_chain:
+            name: "轴系设计链"
+            description: "轴 → 轴承 → 键 联动，提供链级报告。"
+          bolt_connection_chain:
+            name: "螺栓连接设计链"
+            description: "预紧 → 螺栓组 → 焊缝 联动。"
