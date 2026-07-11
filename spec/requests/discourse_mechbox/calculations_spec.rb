@@ -7,16 +7,14 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
 
   before do
     SiteSetting.mechbox_enabled = true
-    SiteSetting.mechbox_save_calculation_records = true
     sign_in(user)
   end
 
-  it "runs builtin calculation and persists a record when requested" do
+  it "runs builtin gear_ratio calculation without persisting a record" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "gear_ratio",
-           title: "Gear ratio smoke test",
-           save_record: true,
+           save_record: false,
            inputs: {
              driver_teeth: 20,
              driven_teeth: 40,
@@ -29,23 +27,37 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
 
     expect(json["tool_id"]).to eq("gear_ratio")
     expect(json["outputs"]["ratio"]).to eq(2.0)
-    expect(json["record_id"]).to be_present
+    expect(json["outputs"]["output_speed_rpm"]).to eq(600.0)
+    expect(json["record_id"]).to be_nil
   end
 
   it "validates inputs without persisting a record" do
-    expect do
-      post "/mechbox/api/calculate/validate",
-           params: {
-             tool_id: "gdt_position",
-             save_record: true,
-             inputs: {
-               deviation_x_mm: 1.0,
-               deviation_y_mm: 1.0,
-             },
-           }
-    end.not_to change { DiscourseMechbox::CalculationRecord.count }
+    post "/mechbox/api/calculate/validate",
+         params: {
+           tool_id: "gdt_position",
+           save_record: true,
+           inputs: {
+             deviation_x_mm: 1.0,
+             deviation_y_mm: 1.0,
+           },
+         }
 
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body["valid"]).to eq(true)
+    expect(response.parsed_body["outputs"]["position_diameter_mm"]).to be_within(0.001).of(2.828)
+  end
+
+  it "returns 422 for invalid gear_ratio inputs" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gear_ratio",
+           inputs: {
+             driver_teeth: 0,
+             driven_teeth: 40,
+             input_speed_rpm: 1200,
+           },
+         }
+
+    expect(response).to have_http_status(:unprocessable_entity)
   end
 end

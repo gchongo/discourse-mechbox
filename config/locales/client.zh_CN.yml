@@ -60,6 +60,7 @@ zh_CN:
         multi_chain_archive_note: "多链归档 · 方案管理：暂不纳入当前阶段。"
         status:
           planned: "规划中（目录已就绪）"
+          available: "已可用"
           deferred: "已推迟（等待 projects 模块）"
         tools:
           shaft_system_chain:

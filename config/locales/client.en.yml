@@ -60,6 +60,7 @@ en:
         multi_chain_archive_note: "Multi-chain archive / scheme management: excluded from this phase."
         status:
           planned: "Planned (directory ready)"
+          available: "Available"
           deferred: "Deferred (waiting for projects module)"
         tools:
           shaft_system_chain:

@@ -2,10 +2,10 @@
 
 与 [TOOL_ID_CONVENTIONS.md](./TOOL_ID_CONVENTIONS.md)、[BOOT_FAILURES.md](./BOOT_FAILURES.md) 配合。
 
-> **当前运行模式：Phase 0.5.9（待生产验证）** — Phase 0 平台 API 收尾  
+> **当前运行模式：Phase 1.3（待生产验证）** — 首个单工具 `gear_ratio` 端到端  
 > 业务实现位于 `archived/`，按下面步骤**一次只恢复一小块**，每步 rebuild 验证。
 
-## Phase 0 — 骨架稳定 ✅ 当前
+## Phase 0 — 骨架稳定 ✅
 
 - 插件可加载，论坛不因插件 502
 - `/mechbox` 单路由 + 侧边栏「机械工具箱」链接
@@ -17,7 +17,7 @@
 
 ---
 
-## Phase 0.5 — 平台 API（catalog only）⏳ 下一步
+## Phase 0.5 — 平台 API（catalog only）✅
 
 **目标**：恢复工具目录 API，**不**引入 DB 模型、Guardian 补丁、计算端点。
 
@@ -34,7 +34,7 @@
 | 0.5.6 | 恢复 `tools_controller`；路由 `tools#index` / `tools#show` | ✅ 生产验证通过 |
 | 0.5.7 | 前端 `/mechbox` 从 metadata 渲染工具列表（无子路由） | ✅ 生产验证通过 |
 | 0.5.8 | 恢复 `user_preferences.rb`（metadata 依赖） | ✅ 生产验证通过 |
-| 0.5.9 | 恢复 `guardian_extension.rb` + `Guardian.prepend` | ✅ 代码已合入，待生产 rebuild 验证 |
+| 0.5.9 | 恢复 `guardian_extension.rb` + `Guardian.prepend` | ✅ 生产验证通过 |
 
 **Phase 0 完成标志**：论坛稳定、侧边栏与 `/mechbox` 可用、metadata/tools API 可用、权限生效。
 
@@ -42,20 +42,21 @@
 
 ---
 
-## Phase 1 — 首个单工具端到端（`gear_ratio`）
+## Phase 1 — 首个单工具端到端（`gear_ratio`）⏳ 当前
 
-**状态：待做**（`archived/` 中已有实现）
+**状态：代码已合入，待生产验证**（`archived/` 中已有实现）
 
 - `POST /mechbox/api/calculate` / `calculate/validate`
 - 前端子路由 `/mechbox/tools/gear_ratio`（扁平路由，无嵌套）
 - 计算默认 `save_record: false`
+- 仅 `ENABLED_BUILTIN_TOOL_IDS` 中的工具可点击
 
-| 步骤 | 动作 |
-|------|------|
-| 1.1 | 恢复 `calculator_registry.rb`，启用 `calculate` capability |
-| 1.2 | 恢复 `calculations_controller` |
-| 1.3 | 前端 `mechbox-tool` 单页（避免 `concat`/动态 helper） |
-| 1.4 | 验收：齿轮比可算、论坛仍稳定 |
+| 步骤 | 动作 | 验证 |
+|------|------|------|
+| 1.1 | 恢复 `calculator_registry.rb` + `formula_evaluator.rb`，启用 `calculate` capability | 待验证 |
+| 1.2 | 恢复 `calculations_controller` + `calculation_runner` | 待验证 |
+| 1.3 | 前端 `mechbox-tool` 单页（避免 `concat`/嵌套路由） | 待验证 |
+| 1.4 | 验收：齿轮比可算、论坛仍稳定 | 待验证 |
 
 其余 4 个内置工具按 [TOOL_ID_CONVENTIONS.md](./TOOL_ID_CONVENTIONS.md) 逐个「点亮」。
 

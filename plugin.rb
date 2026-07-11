@@ -31,11 +31,15 @@ after_initialize do
   require_relative "lib/discourse_mechbox/tool_catalog"
   require_relative "lib/discourse_mechbox/user_preferences"
   require_relative "lib/discourse_mechbox/guardian_extension"
+  require_relative "lib/discourse_mechbox/formula_evaluator"
+  require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
+  require_relative "app/services/discourse_mechbox/calculation_runner"
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
   require_relative "app/controllers/discourse_mechbox/metadata_controller"
   require_relative "app/controllers/discourse_mechbox/tools_controller"
+  require_relative "app/controllers/discourse_mechbox/calculations_controller"
   require_relative "app/controllers/discourse_mechbox/mechbox_page_controller"
 
   Discourse::Application.routes.append do

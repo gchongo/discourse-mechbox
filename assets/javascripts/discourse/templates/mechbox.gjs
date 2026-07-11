@@ -1,4 +1,5 @@
 import { i18n } from "discourse-i18n";
+import { LinkTo } from "@ember/routing";
 
 export default <template>
   <section class="mechbox__page">
@@ -17,13 +18,23 @@ export default <template>
             {{#each @controller.model.builtin_tools as |tool|}}
               <li>
                 <div>
-                  <div class="mechbox__tool-name">{{tool.name}}</div>
+                  {{#if (and tool.available @controller.model.capabilities.calculate.enabled)}}
+                    <LinkTo @route="mechbox-tool" @model={{tool.tool_id}}>
+                      <div class="mechbox__tool-name">{{tool.name}}</div>
+                    </LinkTo>
+                  {{else}}
+                    <div class="mechbox__tool-name">{{tool.name}}</div>
+                  {{/if}}
                   <div class="mechbox__tool-description">
                     {{tool.description}}
                   </div>
                 </div>
                 <span class="mechbox__tool-badge">
-                  {{i18n "mechbox.catalog.status.planned"}}
+                  {{#if (and tool.available @controller.model.capabilities.calculate.enabled)}}
+                    {{i18n "mechbox.catalog.status.available"}}
+                  {{else}}
+                    {{i18n "mechbox.catalog.status.planned"}}
+                  {{/if}}
                 </span>
               </li>
             {{/each}}

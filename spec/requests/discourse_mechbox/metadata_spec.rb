@@ -18,11 +18,12 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    expect(json["mode"]).to eq("phase0_5_9")
+    expect(json["mode"]).to eq("phase1_3")
     expect(json["api_version"]).to eq(1)
     expect(json["capabilities"]["metadata"]["enabled"]).to eq(true)
     expect(json["capabilities"]["tools"]["enabled"]).to eq(true)
-    expect(json["capabilities"]["calculate"]["enabled"]).to eq(false)
+    expect(json["capabilities"]["calculate"]["enabled"]).to eq(true)
+    expect(json["capabilities"]["calculate_validate"]["enabled"]).to eq(true)
     expect(json["capabilities"]["records_index"]["enabled"]).to eq(false)
     expect(json["capabilities"]["favorites"]["enabled"]).to eq(false)
     expect(json["settings"]["default_unit_system"]).to be_present

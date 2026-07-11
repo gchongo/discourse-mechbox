@@ -16,11 +16,11 @@ module DiscourseMechbox
         description: "Tool catalog and per-tool schema metadata",
       },
       calculate: {
-        enabled: false,
+        enabled: true,
         description: "Run builtin or template-backed calculations",
       },
       calculate_validate: {
-        enabled: false,
+        enabled: true,
         description: "Validate calculation inputs without persisting",
       },
       records_index: {

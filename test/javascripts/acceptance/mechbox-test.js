@@ -8,7 +8,10 @@ acceptance("MechBox | safe page", function (needs) {
   needs.pretender((server, helper) => {
     server.get("/mechbox/api/metadata", () => {
       return helper.response(200, {
-        mode: "phase0_5_9",
+        mode: "phase1_3",
+        capabilities: {
+          calculate: { enabled: true },
+        },
         preferences: {
           unit_system: null,
           favorite_layout: "grid",
@@ -19,6 +22,13 @@ acceptance("MechBox | safe page", function (needs) {
             tool_id: "gear_ratio",
             name: "Gear ratio",
             description: "Calculate speed ratio from tooth counts.",
+            available: true,
+          },
+          {
+            tool_id: "unit_converter",
+            name: "Unit converter",
+            description: "Convert engineering units.",
+            available: false,
           },
         ],
         design_chains: [

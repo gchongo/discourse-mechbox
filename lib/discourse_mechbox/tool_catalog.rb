@@ -7,6 +7,9 @@ module DiscourseMechbox
     IMPLEMENTATION_CLIENT = "client"
     IMPLEMENTATION_DESIGN_CHAIN = "design_chain"
 
+    # Builtin calculators enabled one at a time for incremental rollout.
+    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio].freeze
+
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
     ENABLED_CLIENT_TOOL_IDS = [].freeze
 
@@ -132,6 +135,10 @@ module DiscourseMechbox
         CLIENT_TOOLS.keys
       end
 
+      def builtin_tool_available?(tool_id)
+        ENABLED_BUILTIN_TOOL_IDS.include?(tool_id.to_s)
+      end
+
       def client_tool_available?(tool_id)
         ENABLED_CLIENT_TOOL_IDS.include?(tool_id.to_s)
       end
@@ -234,7 +241,7 @@ module DiscourseMechbox
         available =
           case implementation
           when IMPLEMENTATION_SERVER_BUILTIN
-            true
+            builtin_tool_available?(tool_id)
           when IMPLEMENTATION_CLIENT
             client_tool_available?(tool_id)
           else

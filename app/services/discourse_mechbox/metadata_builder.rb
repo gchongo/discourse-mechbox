@@ -7,7 +7,7 @@ module DiscourseMechbox
 
       {
         plugin: DiscourseMechbox::PLUGIN_NAME,
-        mode: "phase0_5_9",
+        mode: "phase1_3",
         api_version: ApiCapabilities::API_VERSION,
         home_route: "/mechbox",
         api_prefix: "/mechbox/api",

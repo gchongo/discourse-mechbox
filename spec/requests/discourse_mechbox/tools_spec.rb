@@ -16,7 +16,11 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    expect(json["builtin_tools"].map { |tool| tool["tool_id"] }).to include("gear_ratio")
+    gear_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "gear_ratio" }
+    planned_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "unit_converter" }
+
+    expect(gear_tool["available"]).to eq(true)
+    expect(planned_tool["available"]).to eq(false)
     expect(json["client_tools"]).to be_an(Array)
     expect(json["design_chains"].map { |chain| chain["tool_id"] }).to include(
       "shaft_system_chain",

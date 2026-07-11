@@ -82,6 +82,17 @@
     overflow: auto;
   }
 
+  &__input-label {
+    display: block;
+    font-weight: 600;
+    margin-top: 0.75rem;
+  }
+
+  &__error {
+    color: var(--danger);
+    margin-top: 0.75rem;
+  }
+
   &__disclaimer {
     color: var(--primary-medium);
     font-size: var(--font-down-1);
