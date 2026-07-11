@@ -19,7 +19,11 @@ export default <template>
               <li>
                 <div>
                   {{#if (and tool.available @controller.model.capabilities.calculate.enabled)}}
-                    <a href="/mechbox/tools/{{tool.tool_id}}" class="mechbox__tool-link">
+                    <a
+                      href="/mechbox/tools/{{tool.tool_id}}"
+                      data-auto-route="true"
+                      class="mechbox__tool-link"
+                    >
                       <div class="mechbox__tool-name">{{tool.name}}</div>
                     </a>
                   {{else}}
