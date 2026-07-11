@@ -2,7 +2,7 @@
 
 DiscourseMechbox::Engine.routes.draw do
   get "/status" => "skeleton#status"
-  get "/metadata" => "skeleton#metadata"
+  get "/metadata" => "metadata#show"
 
   get "/tools" => "skeleton#not_implemented", defaults: { feature: "tools_index" }
   get "/tools/:tool_id" => "skeleton#not_implemented", defaults: { feature: "tools_show" }

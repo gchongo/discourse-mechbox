@@ -29,8 +29,10 @@ after_initialize do
   require_relative "lib/discourse_mechbox/api_capabilities"
   require_relative "lib/discourse_mechbox/database_features"
   require_relative "lib/discourse_mechbox/tool_catalog"
+  require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
+  require_relative "app/controllers/discourse_mechbox/metadata_controller"
   require_relative "app/controllers/discourse_mechbox/mechbox_page_controller"
 
   Discourse::Application.routes.append do
