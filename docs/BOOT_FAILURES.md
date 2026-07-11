@@ -69,13 +69,24 @@ Phase 1 恢复时曾加回例如：
 
 生产 eager load 可能抛出 `Zeitwerk::NameError`。
 
-**修复方式**：勿在 `lib/` 下使用 `concerns/` 子目录；若需 mixin，放在 `lib/discourse_mechbox/feature_gate.rb` 并定义为 `DiscourseMechbox::FeatureGate`。
+**最初修复尝试**：移出 `concerns/`，改为 `lib/discourse_mechbox/feature_gate.rb`。该方案在 Phase 0.5.4 仍触发生产 502，因此已进一步改为直接在 `BaseController` 定义门禁方法，不再使用独立 mixin。
 
 修除此项后仍出现 502，说明还有其他文件/依赖问题。
 
 ### 3. `Guardian.prepend` 扩大风险面
 
 `reloadable_patch { Guardian.prepend(GuardianExtension) }` 在全局权限系统中注入逻辑。插件未稳定前，任何 Guardian 相关常量或 SiteSetting 问题都可能升级为启动级故障。
+
+### 3.1 Phase 0.5.4 独立 FeatureGate 复发（2026-07-11）
+
+对照结果：
+
+- Phase 0.5.3（含 `ToolCatalog` 和 HTML 回退控制器）生产正常
+- 唯一新增 `lib/discourse_mechbox/feature_gate.rb` 并在 `BaseController` 中 `include` 后，生产再次 502
+
+因此故障范围已隔离到该模块的生产加载/include 链。没有服务器异常堆栈时，尚不能断言是 Zeitwerk 常量检查、`ActiveSupport::Concern` 初始化，还是加载时序；不要把推测写成确定根因。
+
+处置：删除独立模块，把 `require_api_feature!` 作为 `BaseController` 私有方法直接实现（Phase 0.5.4b），减少一个 autoload 常量和 mixin 初始化环节。
 
 ### 4. `PLUGIN_NAME` 加载顺序（rebuild 阶段）
 
