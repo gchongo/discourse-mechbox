@@ -35,6 +35,27 @@
     align-items: center;
   }
 
+  &__tool-name {
+    font-weight: 600;
+  }
+
+  &__tool-description {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+    margin-top: 0.15rem;
+  }
+
+  &__tool-badge {
+    color: var(--primary-medium);
+    font-size: var(--font-down-2);
+    white-space: nowrap;
+  }
+
+  &__phase-note {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+  }
+
   &__tool-btn {
     justify-content: flex-start;
     width: 100%;
