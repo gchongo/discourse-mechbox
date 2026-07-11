@@ -33,6 +33,7 @@ after_initialize do
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
   require_relative "app/controllers/discourse_mechbox/metadata_controller"
+  require_relative "app/controllers/discourse_mechbox/tools_controller"
   require_relative "app/controllers/discourse_mechbox/mechbox_page_controller"
 
   Discourse::Application.routes.append do

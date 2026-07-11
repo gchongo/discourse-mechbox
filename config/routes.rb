@@ -4,8 +4,8 @@ DiscourseMechbox::Engine.routes.draw do
   get "/status" => "skeleton#status"
   get "/metadata" => "metadata#show"
 
-  get "/tools" => "skeleton#not_implemented", defaults: { feature: "tools_index" }
-  get "/tools/:tool_id" => "skeleton#not_implemented", defaults: { feature: "tools_show" }
+  get "/tools" => "tools#index"
+  get "/tools/:tool_id" => "tools#show"
   post "/calculate" => "skeleton#not_implemented", defaults: { feature: "calculate" }
   post "/calculate/validate" => "skeleton#not_implemented", defaults: { feature: "calculate_validate" }
   get "/records/search" => "skeleton#not_implemented", defaults: { feature: "records_search" }

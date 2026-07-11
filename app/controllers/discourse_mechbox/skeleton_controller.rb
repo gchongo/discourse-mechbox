@@ -5,7 +5,7 @@ module DiscourseMechbox
     def status
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "phase0_5_5",
+               mode: "phase0_5_6",
                status: "ok",
                api_version: ApiCapabilities::API_VERSION,
                database_available: DatabaseFeatures.available?,

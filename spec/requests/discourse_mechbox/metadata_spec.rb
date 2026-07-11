@@ -10,16 +10,16 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
     sign_in(user)
   end
 
-  it "returns the Phase 0.5.5 catalog contract" do
+  it "returns the Phase 0.5.6 catalog contract" do
     get "/mechbox/api/metadata"
 
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    expect(json["mode"]).to eq("phase0_5_5")
+    expect(json["mode"]).to eq("phase0_5_6")
     expect(json["api_version"]).to eq(1)
     expect(json["capabilities"]["metadata"]["enabled"]).to eq(true)
-    expect(json["capabilities"]["tools"]["enabled"]).to eq(false)
+    expect(json["capabilities"]["tools"]["enabled"]).to eq(true)
     expect(json["capabilities"]["calculate"]["enabled"]).to eq(false)
     expect(json["capabilities"]["records_index"]["enabled"]).to eq(false)
     expect(json["capabilities"]["favorites"]["enabled"]).to eq(false)

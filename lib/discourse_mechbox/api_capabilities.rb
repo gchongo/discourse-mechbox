@@ -12,7 +12,7 @@ module DiscourseMechbox
         description: "Bootstrap payload for the MechBox client",
       },
       tools: {
-        enabled: false,
+        enabled: true,
         description: "Tool catalog and per-tool schema metadata",
       },
       calculate: {
