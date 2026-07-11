@@ -1,27 +1,19 @@
 import Route from "@ember/routing/route";
-import { ajax } from "discourse/lib/ajax";
 
 export default class MechboxRoute extends Route {
-  async model() {
-    const [metadata, toolsPayload, recordsPayload, favoritesPayload] = await Promise.all([
-      ajax("/mechbox/api/metadata"),
-      ajax("/mechbox/api/tools"),
-      ajax("/mechbox/api/records", { data: { limit: 20 } }),
-      ajax("/mechbox/api/favorites"),
-    ]);
-
+  model() {
     return {
-      metadata,
-      categories: toolsPayload.categories || metadata.categories || [],
-      builtinTools: toolsPayload.builtin_tools || metadata.builtin_tools || [],
-      clientTools: toolsPayload.client_tools || metadata.client_tools || [],
-      records: recordsPayload.records || [],
-      favorites: favoritesPayload || [],
+      apiPrefix: "/mechbox/api",
+      futureInterfaces: [
+        "metadata",
+        "tools_index",
+        "calculate",
+        "records_index",
+        "favorites_index",
+        "templates_index",
+        "preferences_show",
+        "projects_index",
+      ],
     };
-  }
-
-  setupController(controller, model) {
-    super.setupController(controller, model);
-    controller.initializeFromModel(model);
   }
 }

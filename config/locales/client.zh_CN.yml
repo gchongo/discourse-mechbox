@@ -17,3 +17,7 @@ zh_CN:
       no_builtin_tools: "暂无可用内置工具。"
       no_records: "暂无历史记录。"
       invalid_inputs_json: "输入必须是合法的 JSON 对象。"
+      skeleton_title: "基础框架模式"
+      skeleton_message: "插件已简化为可启动骨架，业务功能将逐步接入。"
+      api_prefix_label: "API 前缀"
+      future_interfaces_title: "预留接口"
