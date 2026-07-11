@@ -2,6 +2,8 @@
 
 module DiscourseMechbox
   class BaseController < ::ApplicationController
+    include DiscourseMechbox::FeatureGate
+
     requires_plugin PLUGIN_NAME
 
     before_action :ensure_logged_in

@@ -5,7 +5,7 @@ module DiscourseMechbox
     def status
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "phase0_5_3",
+               mode: "phase0_5_4",
                status: "ok",
                api_version: ApiCapabilities::API_VERSION,
                database_available: DatabaseFeatures.available?,
@@ -16,7 +16,7 @@ module DiscourseMechbox
     def metadata
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "phase0_5_3",
+               mode: "phase0_5_4",
                api_version: ApiCapabilities::API_VERSION,
                home_route: "/mechbox",
                api_prefix: "/mechbox/api",
