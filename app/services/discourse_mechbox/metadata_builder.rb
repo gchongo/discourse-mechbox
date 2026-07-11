@@ -7,7 +7,7 @@ module DiscourseMechbox
 
       {
         plugin: DiscourseMechbox::PLUGIN_NAME,
-        mode: "phase0_5_8",
+        mode: "phase0_5_9",
         api_version: ApiCapabilities::API_VERSION,
         home_route: "/mechbox",
         api_prefix: "/mechbox/api",
@@ -25,7 +25,7 @@ module DiscourseMechbox
           max_records_per_user: SiteSetting.mechbox_max_records_per_user,
           default_unit_system: SiteSetting.mechbox_default_unit_system,
           effective_unit_system: UserPreferences.effective_unit_system(user),
-          can_manage_templates: false,
+          can_manage_templates: guardian.can_manage_mechbox_templates?,
         },
       }
     end

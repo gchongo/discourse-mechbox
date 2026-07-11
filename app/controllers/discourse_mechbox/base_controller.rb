@@ -5,9 +5,14 @@ module DiscourseMechbox
     requires_plugin PLUGIN_NAME
 
     before_action :ensure_logged_in
+    before_action :ensure_can_use_mechbox
     skip_before_action :check_xhr, raise: false
 
     private
+
+    def ensure_can_use_mechbox
+      raise Discourse::InvalidAccess unless guardian.can_use_mechbox?
+    end
 
     def require_api_feature!(feature)
       return true if DiscourseMechbox::ApiCapabilities.enabled?(feature)

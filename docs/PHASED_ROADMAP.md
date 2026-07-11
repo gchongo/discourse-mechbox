@@ -2,7 +2,7 @@
 
 与 [TOOL_ID_CONVENTIONS.md](./TOOL_ID_CONVENTIONS.md)、[BOOT_FAILURES.md](./BOOT_FAILURES.md) 配合。
 
-> **当前运行模式：Phase 0.5.8（待生产验证）**  
+> **当前运行模式：Phase 0.5.9（待生产验证）** — Phase 0 平台 API 收尾  
 > 业务实现位于 `archived/`，按下面步骤**一次只恢复一小块**，每步 rebuild 验证。
 
 ## Phase 0 — 骨架稳定 ✅ 当前
@@ -33,8 +33,10 @@
 | 0.5.5 | 恢复 `metadata_builder.rb` + `metadata_controller`；路由 `metadata#show` | ✅ 生产验证通过 |
 | 0.5.6 | 恢复 `tools_controller`；路由 `tools#index` / `tools#show` | ✅ 生产验证通过 |
 | 0.5.7 | 前端 `/mechbox` 从 metadata 渲染工具列表（无子路由） | ✅ 生产验证通过 |
-| 0.5.8 | 恢复 `user_preferences.rb`（metadata 依赖） | ✅ 代码已合入，待生产 rebuild 验证 |
-| 0.5.9 | 恢复 `guardian_extension.rb` + `Guardian.prepend` | rebuild + 权限正常 |
+| 0.5.8 | 恢复 `user_preferences.rb`（metadata 依赖） | ✅ 生产验证通过 |
+| 0.5.9 | 恢复 `guardian_extension.rb` + `Guardian.prepend` | ✅ 代码已合入，待生产 rebuild 验证 |
+
+**Phase 0 完成标志**：论坛稳定、侧边栏与 `/mechbox` 可用、metadata/tools API 可用、权限生效。
 
 **禁止在本阶段恢复**：`CalculatorRegistry`、`calculations_controller`、AR 模型、记录/收藏。
 

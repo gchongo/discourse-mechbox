@@ -30,6 +30,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/database_features"
   require_relative "lib/discourse_mechbox/tool_catalog"
   require_relative "lib/discourse_mechbox/user_preferences"
+  require_relative "lib/discourse_mechbox/guardian_extension"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
@@ -43,4 +44,6 @@ after_initialize do
     get "/mechbox(/*rest)" => "discourse_mechbox/mechbox_page#index",
         constraints: ->(request) { request.format.nil? || request.format.html? }
   end
+
+  reloadable_patch { Guardian.prepend(DiscourseMechbox::GuardianExtension) }
 end
