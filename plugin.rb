@@ -22,6 +22,7 @@ require_relative "lib/discourse_mechbox/engine"
 
 after_initialize do
   require_relative "lib/discourse_mechbox/api_capabilities"
+  require_relative "lib/discourse_mechbox/database_features"
   require_relative "app/controllers/discourse_mechbox/base_controller"
   require_relative "app/controllers/discourse_mechbox/skeleton_controller"
 

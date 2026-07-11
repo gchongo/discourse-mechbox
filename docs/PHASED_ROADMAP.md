@@ -25,8 +25,8 @@
 
 | 步骤 | 动作 | 验证 |
 |------|------|------|
-| 0.5.1 | 恢复 `api_capabilities.rb` → `lib/`（**勿用 concerns/**） | ✅ 代码已合入，待生产 rebuild 验证 |
-| 0.5.2 | 恢复 `database_features.rb` | rebuild 成功 |
+| 0.5.1 | 恢复 `api_capabilities.rb` → `lib/`（**勿用 concerns/**） | ✅ 生产验证通过 |
+| 0.5.2 | 恢复 `database_features.rb` | ✅ 代码已合入，待生产 rebuild 验证 |
 | 0.5.3 | 恢复 `tool_catalog.rb` | rebuild 成功 |
 | 0.5.4 | 恢复 `feature_gate.rb` 为 `lib/discourse_mechbox/feature_gate.rb` | rebuild 成功 |
 | 0.5.5 | 恢复 `metadata_builder.rb` + `metadata_controller`；路由 `metadata#show` | `GET /mechbox/api/metadata` 有 catalog |
