@@ -22,6 +22,10 @@ export default class MechboxToolController extends Controller {
     this.isCalculating = false;
   }
 
+  inputValueFor = (key) => {
+    return this.inputValues[key] ?? "";
+  };
+
   get resultJson() {
     if (!this.calculationResult) {
       return "";

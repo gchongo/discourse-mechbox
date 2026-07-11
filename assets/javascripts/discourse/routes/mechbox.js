@@ -22,11 +22,17 @@ const ANALYSIS_CATEGORIES = [
 
 export default class MechboxRoute extends Route {
   async model() {
-    const metadata = await ajax("/mechbox/api/metadata");
-
-    return {
-      metadata,
-      analysisCategories: ANALYSIS_CATEGORIES,
-    };
+    try {
+      const metadata = await ajax("/mechbox/api/metadata");
+      return { metadata, analysisCategories: ANALYSIS_CATEGORIES };
+    } catch {
+      return {
+        metadata: {
+          builtin_tools: [],
+          design_chains: [],
+        },
+        analysisCategories: ANALYSIS_CATEGORIES,
+      };
+    }
   }
 }

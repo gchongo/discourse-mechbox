@@ -23,7 +23,7 @@
 **状态：已完成（`gear_ratio`）**
 
 - `POST /mechbox/api/calculate` / `calculate/validate`
-- 前端 `mechbox.tool` → `/mechbox/tools/gear_ratio`
+- 前端 `mechbox-tool` → `/mechbox/tools/gear_ratio`
 - 计算默认 `save_record: false`（记录保存留待 Phase 4）
 
 其余 4 个内置工具（`unit_converter`, `rss_calculation`, `bolt_clamp_load`, `gdt_position`）已具备后端实现，按 [TOOL_ID_CONVENTIONS.md](./TOOL_ID_CONVENTIONS.md)  checklist 逐个点亮前端入口即可。

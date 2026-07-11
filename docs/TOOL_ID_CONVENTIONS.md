@@ -63,8 +63,8 @@
 
 | 路由名 | URL | 说明 |
 |--------|-----|------|
-| `mechbox.index` | `/mechbox` | 首页目录 + 可用内置工具列表 |
-| `mechbox.tool` | `/mechbox/tools/:tool_id` | 单工具计算页 |
+| `mechbox` | `/mechbox` | 首页目录 + 可用内置工具列表 |
+| `mechbox-tool` | `/mechbox/tools/:tool_id` | 单工具计算页 |
 
 仅 `available: true` 的工具应出现在可点击入口中。
 

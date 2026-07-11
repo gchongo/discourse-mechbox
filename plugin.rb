@@ -49,7 +49,9 @@ end
 
 require_relative "lib/discourse_mechbox/engine"
 
-after_initialize do
+after_initialize do |plugin|
+  next unless plugin.enabled?
+
   DiscourseMechbox::PHASE1_LOAD_PATHS.each { |path| require_relative path }
 
   reloadable_patch { Guardian.prepend(::DiscourseMechbox::GuardianExtension) }

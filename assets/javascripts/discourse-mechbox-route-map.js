@@ -1,6 +1,4 @@
 export default function () {
-  this.route("mechbox", { path: "/mechbox" }, function () {
-    this.route("index", { path: "/" });
-    this.route("tool", { path: "/tools/:tool_id" });
-  });
+  this.route("mechbox", { path: "/mechbox" });
+  this.route("mechbox-tool", { path: "/mechbox/tools/:tool_id" });
 }

@@ -4,6 +4,7 @@ import { acceptance, exists } from "discourse/tests/helpers/qunit-helpers";
 
 acceptance("MechBox | incremental page", function (needs) {
   needs.user();
+  needs.settings({ mechbox_enabled: true });
   needs.pretender((server, helper) => {
     server.get("/mechbox/api/metadata", () =>
       helper.response({

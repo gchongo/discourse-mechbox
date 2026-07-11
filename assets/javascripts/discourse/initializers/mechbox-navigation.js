@@ -1,22 +1,28 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 
 export default {
   name: "discourse-mechbox-navigation",
 
-  initialize() {
-    withPluginApi("0.8.7", (api) => {
-      const title = I18n.t("mechbox.nav_title");
+  initialize(container) {
+    const siteSettings = container.lookup("service:site-settings");
 
-      if (typeof api.addCommunitySectionLink === "function") {
-        api.addCommunitySectionLink({
-          name: "mechbox",
-          route: "mechbox",
-          title,
-          text: title,
-          icon: "calculator",
-        });
+    if (!siteSettings.mechbox_enabled) {
+      return;
+    }
+
+    withPluginApi("0.8.7", (api) => {
+      if (typeof api.addCommunitySectionLink !== "function") {
+        return;
       }
+
+      api.addCommunitySectionLink({
+        name: "mechbox",
+        route: "mechbox",
+        title: i18n("mechbox.nav_title"),
+        text: i18n("mechbox.nav_title"),
+        icon: "calculator",
+      });
     });
   },
 };

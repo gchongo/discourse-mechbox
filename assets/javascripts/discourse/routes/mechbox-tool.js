@@ -10,7 +10,8 @@ export default class MechboxToolRoute extends Route {
       return await ajax(`/mechbox/api/tools/${encodeURIComponent(params.tool_id)}`);
     } catch (error) {
       if (error?.jqXHR?.status === 404) {
-        return this.router.replaceWith("mechbox.index");
+        this.router.replaceWith("mechbox");
+        return null;
       }
 
       throw error;
@@ -19,6 +20,8 @@ export default class MechboxToolRoute extends Route {
 
   setupController(controller, model) {
     super.setupController(controller, model);
-    controller.resetFromTool(model);
+    if (model) {
+      controller.resetFromTool(model);
+    }
   }
 }
