@@ -19,17 +19,23 @@ module DiscourseMechbox
       tool = ToolCatalog.tool_summary(params[:tool_id])
       raise Discourse::NotFound if tool.blank?
 
-      templates =
-        if DatabaseFeatures.available?
-          FormulaTemplate
-            .list_for(guardian)
-            .where(tool_id: params[:tool_id])
-            .map { |template| FormulaTemplateSerializer.new(template, root: false).as_json }
-        else
-          []
-        end
+      render json: tool.merge(formula_templates: formula_templates_for(params[:tool_id]))
+    end
 
-      render json: tool.merge(formula_templates: templates)
+    private
+
+    def formula_templates_for(tool_id)
+      return [] if !DatabaseFeatures.available?
+
+      require_relative "../../models/discourse_mechbox/formula_template"
+      require_relative "../../serializers/discourse_mechbox/formula_template_serializer"
+
+      FormulaTemplate
+        .list_for(guardian)
+        .where(tool_id:)
+        .map { |template| FormulaTemplateSerializer.new(template, root: false).as_json }
+    rescue StandardError
+      []
     end
   end
 end

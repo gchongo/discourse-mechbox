@@ -22,7 +22,7 @@ register_svg_icon "floppy-disk"
 module ::DiscourseMechbox
   PLUGIN_NAME = "discourse-mechbox"
 
-  PHASE1_LOAD_PATHS = %w[
+  BOOT_LOAD_PATHS = %w[
     lib/discourse_mechbox/concerns/feature_gate
     lib/discourse_mechbox/api_capabilities
     lib/discourse_mechbox/database_features
@@ -31,13 +31,7 @@ module ::DiscourseMechbox
     lib/discourse_mechbox/formula_evaluator
     lib/discourse_mechbox/user_preferences
     lib/discourse_mechbox/guardian_extension
-    app/models/discourse_mechbox/calculation_record
-    app/models/discourse_mechbox/formula_template
-    app/models/discourse_mechbox/template_version
-    app/models/discourse_mechbox/favorite_tool
-    app/serializers/discourse_mechbox/formula_template_serializer
     app/services/discourse_mechbox/metadata_builder
-    app/services/discourse_mechbox/record_creator
     app/services/discourse_mechbox/calculation_runner
     app/controllers/discourse_mechbox/base_controller
     app/controllers/discourse_mechbox/skeleton_controller
@@ -49,10 +43,8 @@ end
 
 require_relative "lib/discourse_mechbox/engine"
 
-after_initialize do |plugin|
-  next unless plugin.enabled?
-
-  DiscourseMechbox::PHASE1_LOAD_PATHS.each { |path| require_relative path }
+after_initialize do
+  DiscourseMechbox::BOOT_LOAD_PATHS.each { |path| require_relative path }
 
   reloadable_patch { Guardian.prepend(::DiscourseMechbox::GuardianExtension) }
 

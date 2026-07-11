@@ -11,7 +11,7 @@ export default {
       return;
     }
 
-    withPluginApi("0.8.7", (api) => {
+    withPluginApi((api) => {
       if (typeof api.addCommunitySectionLink !== "function") {
         return;
       }

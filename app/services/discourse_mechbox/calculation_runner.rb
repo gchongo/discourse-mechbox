@@ -27,16 +27,15 @@ module DiscourseMechbox
         record = nil
         if persist && truthy?(params[:save_record]) && SiteSetting.mechbox_save_calculation_records &&
              DatabaseFeatures.available?
-          record =
-            RecordCreator.create!(
-              user: guardian.user,
-              tool_id: resolved_tool_id,
-              formula_template:,
-              title: params[:title],
-              inputs:,
-              outputs:,
-              unit_system:,
-            )
+          record = create_record(
+            user: guardian.user,
+            tool_id: resolved_tool_id,
+            formula_template:,
+            title: params[:title],
+            inputs:,
+            outputs:,
+            unit_system:,
+          )
         end
 
         {
@@ -56,12 +55,30 @@ module DiscourseMechbox
 
       def resolve_template(guardian:, template_id:)
         return if template_id.blank?
+        return if !DatabaseFeatures.available?
 
+        load_db_models!
         template = FormulaTemplate.active.find_by(id: template_id)
         raise Discourse::NotFound if template.blank?
         raise Discourse::InvalidAccess if !guardian.can_use_mechbox_template?(template)
 
         template
+      end
+
+      def create_record(**kwargs)
+        load_db_models!
+        require_relative "record_creator"
+        RecordCreator.create!(**kwargs)
+      rescue StandardError
+        nil
+      end
+
+      def load_db_models!
+        return if defined?(DiscourseMechbox::FormulaTemplate)
+
+        require_relative "../../models/discourse_mechbox/calculation_record"
+        require_relative "../../models/discourse_mechbox/formula_template"
+        require_relative "../../models/discourse_mechbox/template_version"
       end
 
       def normalize_inputs(raw)
