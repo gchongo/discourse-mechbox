@@ -12,6 +12,9 @@ zh_CN:
       nav_title: "机械工具箱"
       disclaimer: "计算结果仅供工程估算与学习参考，不能替代正式设计签核。"
       tools_title: "工具列表"
+      builtin_tools_title: "可用内置工具"
+      back_to_home: "返回首页"
+      tool_not_available: "该工具尚未接入。"
       workbench_title: "计算工作台"
       records_title: "最近记录"
       inputs_label: "输入参数（JSON）"
@@ -57,6 +60,7 @@ zh_CN:
         multi_chain_archive_note: "多链归档 · 方案管理：暂不纳入当前阶段。"
         status:
           planned: "规划中（目录已就绪）"
+          deferred: "已推迟（等待 projects 模块）"
         tools:
           shaft_system_chain:
             name: "轴系设计链"

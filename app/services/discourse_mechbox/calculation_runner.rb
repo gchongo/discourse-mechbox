@@ -25,7 +25,8 @@ module DiscourseMechbox
         outputs, resolved_tool_id, template_id = normalize_result(raw_result, tool_id, formula_template)
 
         record = nil
-        if persist && truthy?(params[:save_record]) && SiteSetting.mechbox_save_calculation_records
+        if persist && truthy?(params[:save_record]) && SiteSetting.mechbox_save_calculation_records &&
+             DatabaseFeatures.available?
           record =
             RecordCreator.create!(
               user: guardian.user,

@@ -5,6 +5,16 @@ module DiscourseMechbox
     IMPLEMENTATION_SERVER_BUILTIN = "server_builtin"
     IMPLEMENTATION_SERVER_TEMPLATE = "server_template"
     IMPLEMENTATION_CLIENT = "client"
+    IMPLEMENTATION_DESIGN_CHAIN = "design_chain"
+
+    # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
+    ENABLED_CLIENT_TOOL_IDS = [].freeze
+
+    # Multi-tool design chains — deferred to the projects module (Phase 5).
+    DESIGN_CHAIN_TOOLS = {
+      "shaft_system_chain" => { category: "design", status: "deferred" },
+      "bolt_connection_chain" => { category: "design", status: "deferred" },
+    }.freeze
 
     CATEGORIES = {
       "general" => { icon: "calculator", order: 0 },
@@ -122,6 +132,25 @@ module DiscourseMechbox
         CLIENT_TOOLS.keys
       end
 
+      def client_tool_available?(tool_id)
+        ENABLED_CLIENT_TOOL_IDS.include?(tool_id.to_s)
+      end
+
+      def design_chains_json
+        DESIGN_CHAIN_TOOLS.map do |tool_id, definition|
+          {
+            tool_id:,
+            name: I18n.t("mechbox.catalog.tools.#{tool_id}.name", default: tool_id.humanize),
+            description:
+              I18n.t("mechbox.catalog.tools.#{tool_id}.description", default: ""),
+            category: definition[:category],
+            implementation: IMPLEMENTATION_DESIGN_CHAIN,
+            status: definition[:status],
+            available: false,
+          }
+        end
+      end
+
       def known_tool_id?(tool_id)
         tool_id.present? &&
           (BUILTIN_TOOLS.key?(tool_id) || CLIENT_TOOLS.key?(tool_id) || template_tool?(tool_id))
@@ -172,6 +201,10 @@ module DiscourseMechbox
         end
       end
 
+      def available_client_tools_json
+        client_tools_json.select { |tool| tool[:available] }
+      end
+
       def tool_summary(tool_id)
         if (builtin = find_builtin(tool_id))
           return tool_json(tool_id, builtin, IMPLEMENTATION_SERVER_BUILTIN)
@@ -198,6 +231,16 @@ module DiscourseMechbox
       private
 
       def tool_json(tool_id, definition, implementation)
+        available =
+          case implementation
+          when IMPLEMENTATION_SERVER_BUILTIN
+            true
+          when IMPLEMENTATION_CLIENT
+            client_tool_available?(tool_id)
+          else
+            false
+          end
+
         {
           tool_id:,
           name: I18n.t("mechbox.tools.#{tool_id}.name", default: tool_id.humanize),
@@ -208,7 +251,7 @@ module DiscourseMechbox
           inputs: definition[:inputs] || [],
           outputs: definition[:outputs] || [],
           client_route: definition[:client_route],
-          available: implementation == IMPLEMENTATION_SERVER_BUILTIN,
+          available:,
         }
       end
     end

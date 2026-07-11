@@ -59,7 +59,8 @@ module DiscourseMechbox
       },
       client_tools: {
         enabled: false,
-        description: "Browser-side MechBox tools with optional server verification",
+        description:
+          "Browser-side MechBox tools. Enable per tool via ToolCatalog::ENABLED_CLIENT_TOOL_IDS.",
       },
       exports: {
         enabled: false,
@@ -71,7 +72,8 @@ module DiscourseMechbox
       },
       projects: {
         enabled: false,
-        description: "Multi-step design projects and tool chains",
+        description:
+          "Multi-step design projects and tool chains (shaft_system_chain, bolt_connection_chain)",
       },
       admin_stats: {
         enabled: true,

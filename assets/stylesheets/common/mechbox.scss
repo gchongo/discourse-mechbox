@@ -67,9 +67,8 @@
     margin-bottom: 1em;
   }
 
-  &__catalog-note {
-    color: var(--primary-medium);
-    margin-bottom: 1rem;
+  &__catalog-card--deferred {
+    opacity: 0.85;
   }
 
   &__analysis-grid {

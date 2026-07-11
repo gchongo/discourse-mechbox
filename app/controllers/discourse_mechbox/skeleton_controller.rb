@@ -37,10 +37,18 @@ module DiscourseMechbox
       "admin_stats",
     ].freeze
 
+    DEFERRED_FEATURES = %w[
+      projects_index
+      projects_create
+      projects_show
+      projects_update
+      projects_destroy
+    ].freeze
+
     def status
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "skeleton",
+               mode: "incremental",
                status: "ok",
              }
     end
@@ -48,12 +56,14 @@ module DiscourseMechbox
     def metadata
       render json: {
                plugin: DiscourseMechbox::PLUGIN_NAME,
-               mode: "skeleton",
+               mode: "incremental",
                home_route: "/mechbox",
                api_prefix: "/mechbox/api",
                capabilities: {
                  status: true,
-                 metadata: true,
+                 metadata: ApiCapabilities.enabled?(:metadata),
+                 tools: ApiCapabilities.enabled?(:tools),
+                 calculate: ApiCapabilities.enabled?(:calculate),
                },
                future_interfaces: FUTURE_INTERFACES,
              }

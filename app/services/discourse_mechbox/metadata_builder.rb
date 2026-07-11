@@ -13,6 +13,7 @@ module DiscourseMechbox
           categories: ToolCatalog.categories_json,
           builtin_tools: ToolCatalog.builtin_tools_json,
           client_tools: ToolCatalog.client_tools_json,
+          design_chains: ToolCatalog.design_chains_json,
           formula_templates: serialize_templates(templates),
           favorite_tool_ids: favorite_tool_ids(user),
           preferences: UserPreferences.fetch(user),
@@ -28,6 +29,8 @@ module DiscourseMechbox
       private
 
       def visible_templates(guardian)
+        return [] if !DatabaseFeatures.available?
+
         FormulaTemplate.list_for(guardian)
       end
 
@@ -36,6 +39,8 @@ module DiscourseMechbox
       end
 
       def favorite_tool_ids(user)
+        return [] if !DatabaseFeatures.available?
+
         FavoriteTool.where(user_id: user.id).order(created_at: :desc).pluck(:tool_id)
       end
     end

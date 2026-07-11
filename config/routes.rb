@@ -2,12 +2,12 @@
 
 DiscourseMechbox::Engine.routes.draw do
   get "/status" => "skeleton#status"
-  get "/metadata" => "skeleton#metadata"
+  get "/metadata" => "metadata#show"
+  get "/tools" => "tools#index"
+  get "/tools/:tool_id" => "tools#show"
+  post "/calculate" => "calculations#create"
+  post "/calculate/validate" => "calculations#validate"
 
-  get "/tools" => "skeleton#not_implemented", defaults: { feature: "tools_index" }
-  get "/tools/:tool_id" => "skeleton#not_implemented", defaults: { feature: "tools_show" }
-  post "/calculate" => "skeleton#not_implemented", defaults: { feature: "calculate" }
-  post "/calculate/validate" => "skeleton#not_implemented", defaults: { feature: "calculate_validate" }
   get "/records/search" => "skeleton#not_implemented", defaults: { feature: "records_search" }
   delete "/records/bulk" => "skeleton#not_implemented", defaults: { feature: "records_bulk_destroy" }
   get "/records" => "skeleton#not_implemented", defaults: { feature: "records_index" }

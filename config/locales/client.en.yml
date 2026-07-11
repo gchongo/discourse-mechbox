@@ -12,6 +12,9 @@ en:
       nav_title: "MechBox"
       disclaimer: "Results are engineering estimates only and do not replace formal design sign-off."
       tools_title: "Tools"
+      builtin_tools_title: "Available builtin tools"
+      back_to_home: "Back to home"
+      tool_not_available: "This tool is not integrated yet."
       workbench_title: "Workbench"
       records_title: "Recent records"
       inputs_label: "Inputs (JSON)"
@@ -57,6 +60,7 @@ en:
         multi_chain_archive_note: "Multi-chain archive / scheme management: excluded from this phase."
         status:
           planned: "Planned (directory ready)"
+          deferred: "Deferred (waiting for projects module)"
         tools:
           shaft_system_chain:
             name: "Shaft system chain"
