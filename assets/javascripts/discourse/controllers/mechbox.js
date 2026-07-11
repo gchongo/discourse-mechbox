@@ -5,6 +5,10 @@ export default class MechboxController extends Controller {
     return this.model.apiPrefix;
   }
 
+  get analysisCategories() {
+    return this.model.analysisCategories || [];
+  }
+
   get singleToolDirectory() {
     return this.model.singleToolDirectory || [];
   }
