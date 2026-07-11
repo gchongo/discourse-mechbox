@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class NormalizeDiscourseMechboxSchema < ActiveRecord::Migration[8.0]
+class NormalizeDiscourseMechboxSchema < ActiveRecord::Migration::Current
   def up
     return if !table_exists?(:mechbox_formula_templates)
 
