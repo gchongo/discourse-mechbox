@@ -1,4 +1,4 @@
-import { click, visit } from "@ember/test-helpers";
+import { click, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import { acceptance, exists } from "discourse/tests/helpers/qunit-helpers";
 
@@ -54,6 +54,16 @@ acceptance("MechBox | safe page", function (needs) {
         ],
       });
     });
+
+    server.post("/mechbox/api/calculate", () => {
+      return helper.response(200, {
+        tool_id: "gear_ratio",
+        outputs: {
+          ratio: 2,
+          output_speed_rpm: 500,
+        },
+      });
+    });
   });
 
   test("sidebar shows the MechBox community link", async function (assert) {
@@ -75,11 +85,19 @@ acceptance("MechBox | safe page", function (needs) {
     assert.true(exists(".mechbox__tool-list li"), "tools are rendered");
   });
 
-  test("renders the gear ratio tool page", async function (assert) {
-    await visit("/mechbox/tools/gear_ratio");
+  test("opens and calculates on the gear ratio tool page", async function (assert) {
+    await visit("/mechbox");
+    await click("a[href='/mechbox/tools/gear_ratio']");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
     assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
+
+    await fillIn("input[name='driver_teeth']", "20");
+    await fillIn("input[name='driven_teeth']", "40");
+    await fillIn("input[name='input_speed_rpm']", "1000");
+    await click(".mechbox__actions button");
+
+    assert.dom(".mechbox__result").includesText("output_speed_rpm");
   });
 });
