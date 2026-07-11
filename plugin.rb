@@ -19,8 +19,6 @@ register_svg_icon "chart-line"
 register_svg_icon "gear"
 register_svg_icon "floppy-disk"
 
-require_relative "lib/discourse_mechbox/engine"
-
 module ::DiscourseMechbox
   PLUGIN_NAME = "discourse-mechbox"
 
@@ -48,6 +46,8 @@ module ::DiscourseMechbox
     app/controllers/discourse_mechbox/calculations_controller
   ].freeze
 end
+
+require_relative "lib/discourse_mechbox/engine"
 
 after_initialize do
   DiscourseMechbox::PHASE1_LOAD_PATHS.each { |path| require_relative path }
