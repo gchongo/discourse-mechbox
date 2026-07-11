@@ -104,9 +104,12 @@ require_relative "lib/discourse_mechbox/engine"
 
 | 项目 | 风险 |
 |------|------|
-| `get "/mechbox(/*rest)" => "list#latest"` | 可能干扰主应用路由表 |
+| `get "/mechbox(/*rest)" => "list#latest"` | 可能干扰主应用路由表（已弃用） |
+| 无 HTML 回退路由 | `/mechbox` 硬刷新 404（Ember 路由仅客户端生效） |
 | 嵌套 Ember 路由 + 错误 `route` 名 | 插件启用时 JS 崩溃 → 白屏（非 502） |
 | 重复/冲突数据库迁移 | rebuild 时 migrate 失败 |
+
+**硬刷新修复（phase0_5_3）**：改用专用 `MechboxPageController#index`，对 HTML 请求 `render "default/empty"`（与 styleguide 插件相同模式），不再使用 `list#latest`。
 
 ## 不是原因的事项
 
