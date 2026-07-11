@@ -8,7 +8,8 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 
 export default class MechboxToolPage extends Component {
-  @tracked inputValues = {};
+  inputValues = {};
+
   @tracked result = null;
   @tracked isCalculating = false;
   @tracked errorMessage = null;
@@ -16,10 +17,6 @@ export default class MechboxToolPage extends Component {
   get model() {
     return this.args.model || {};
   }
-
-  inputValueFor = (key) => {
-    return this.inputValues[key] ?? "";
-  };
 
   get resultJson() {
     if (!this.result) {
@@ -31,10 +28,7 @@ export default class MechboxToolPage extends Component {
 
   @action
   updateInput(key, event) {
-    this.inputValues = {
-      ...this.inputValues,
-      [key]: event.target.value,
-    };
+    this.inputValues[key] = event.target.value;
   }
 
   @action
@@ -108,7 +102,7 @@ export default class MechboxToolPage extends Component {
             <input
               type="text"
               class="mechbox__inputs"
-              value={{this.inputValueFor input.key}}
+              name={{input.key}}
               {{on "input" (fn this.updateInput input.key)}}
             />
           {{/each}}

@@ -1,5 +1,5 @@
 import MechboxToolPage from "../components/mechbox-tool-page";
 
-<template>
-  <MechboxToolPage @model={{@model}} />
+export default <template>
+  <MechboxToolPage @model={{@controller.model}} />
 </template>
