@@ -5,7 +5,7 @@ module DiscourseMechbox
     def self.build
       {
         plugin: DiscourseMechbox::PLUGIN_NAME,
-        mode: "phase0_5_6",
+        mode: "phase0_5_7",
         api_version: ApiCapabilities::API_VERSION,
         home_route: "/mechbox",
         api_prefix: "/mechbox/api",
