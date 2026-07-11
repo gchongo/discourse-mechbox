@@ -8,15 +8,6 @@ export default {
     withPluginApi("0.8.7", (api) => {
       const title = I18n.t("mechbox.nav_title");
 
-      if (typeof api.addNavigationBarItem === "function") {
-        api.addNavigationBarItem({
-          name: "mechbox",
-          displayName: title,
-          href: "/mechbox",
-          forceActive: "mechbox",
-        });
-      }
-
       if (typeof api.addCommunitySectionLink === "function") {
         api.addCommunitySectionLink({
           name: "mechbox",
