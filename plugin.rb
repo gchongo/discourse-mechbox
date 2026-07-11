@@ -24,13 +24,13 @@ module ::DiscourseMechbox
 end
 
 require_relative "lib/discourse_mechbox/engine"
+require_relative "lib/discourse_mechbox/concerns/feature_gate"
 
 after_initialize do
   %w[
     lib/discourse_mechbox/api_capabilities.rb
     lib/discourse_mechbox/tool_catalog.rb
     lib/discourse_mechbox/user_preferences.rb
-    lib/discourse_mechbox/concerns/feature_gate.rb
     lib/discourse_mechbox/calculator_registry.rb
     lib/discourse_mechbox/formula_evaluator.rb
     lib/discourse_mechbox/guardian_extension.rb
