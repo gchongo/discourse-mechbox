@@ -47,7 +47,7 @@
 **状态：代码已合入，待生产验证**（`archived/` 中已有实现）
 
 - `POST /mechbox/api/calculate` / `calculate/validate`
-- 前端子路由 `/mechbox/tools/gear_ratio`（扁平路由，无嵌套）
+- 前端工具页复用 `/mechbox?tool_id=gear_ratio` 单路由；旧 `/mechbox/tools/gear_ratio` 仅做服务端跳转
 - 计算默认 `save_record: false`
 - 仅 `ENABLED_BUILTIN_TOOL_IDS` 中的工具可点击
 
@@ -55,7 +55,7 @@
 |------|------|------|
 | 1.1 | 恢复 `calculator_registry.rb` + `formula_evaluator.rb`，启用 `calculate` capability | 待验证 |
 | 1.2 | 恢复 `calculations_controller` + `calculation_runner` | 待验证 |
-| 1.3 | 前端 `mechbox-tool` 单页（避免 `concat`/嵌套路由） | 待验证 |
+| 1.3 | 前端 `/mechbox?tool_id=gear_ratio` 单路由工具页（避免额外 Ember outlet 路由） | 待验证 |
 | 1.4 | 验收：齿轮比可算、论坛仍稳定 | 待验证 |
 
 其余 4 个内置工具按 [TOOL_ID_CONVENTIONS.md](./TOOL_ID_CONVENTIONS.md) 逐个「点亮」。

@@ -38,7 +38,7 @@
 
 支持的 `type`：`number`, `integer`, `string`, `number_array`。
 
-前端 `/mechbox/tools/:tool_id` 根据 `inputs` 动态渲染表单；`outputs` 用于结果展示与文档。
+前端 `/mechbox?tool_id=<tool_id>` 根据 `inputs` 动态渲染表单；`outputs` 用于结果展示与文档。旧 `/mechbox/tools/:tool_id` 仅作为服务端兼容跳转入口。
 
 ## 3. 国际化
 
@@ -64,7 +64,7 @@
 | 路由名 | URL | 说明 |
 |--------|-----|------|
 | `mechbox` | `/mechbox` | 首页目录 + 可用内置工具列表 |
-| `mechbox-tool` | `/mechbox/tools/:tool_id` | 单工具计算页 |
+| `mechbox` | `/mechbox?tool_id=<tool_id>` | 单工具计算页 |
 
 仅 `available: true` 的工具应出现在可点击入口中。
 
@@ -75,7 +75,7 @@
 3. 在 `server.en.yml` / `server.zh_CN.yml` 添加 `mechbox.tools.<tool_id>` 文案
 4. 确认 `GET /mechbox/api/tools/<tool_id>` 返回正确 schema
 5. 确认 `POST /mechbox/api/calculate` 可计算
-6. 访问 `/mechbox/tools/<tool_id>` 完成端到端验证
+6. 访问 `/mechbox?tool_id=<tool_id>` 完成端到端验证
 7. 在 `spec/requests/discourse_mechbox/calculations_spec.rb` 补充请求测试
 
 ## 7. 接入一个新客户端工具（检查清单）
