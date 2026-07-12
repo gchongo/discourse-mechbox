@@ -1,18 +1,9 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
-import { action } from "@ember/object";
-import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
-import DButton from "discourse/ui-kit/d-button";
 
 export default class MechboxPage extends Component {
-  @tracked result = null;
-  @tracked isCalculating = false;
-  @tracked errorMessage = null;
-
   get model() {
     return this.args.model || {};
   }
@@ -21,73 +12,12 @@ export default class MechboxPage extends Component {
     return this.model.selected_tool;
   }
 
-  get resultJson() {
-    if (!this.result) {
-      return "";
-    }
-
-    return JSON.stringify(this.result, null, 2);
+  get catalogHref() {
+    return getURL("/mechbox");
   }
 
   toolHref(toolId) {
     return getURL(`/mechbox?tool_id=${toolId}`);
-  }
-
-  catalogHref() {
-    return getURL("/mechbox");
-  }
-
-  get calculateLabel() {
-    return this.isCalculating
-      ? i18n("mechbox.calculating")
-      : i18n("mechbox.calculate");
-  }
-
-  @action
-  async calculate() {
-    if (!this.selectedTool?.available) {
-      return;
-    }
-
-    this.isCalculating = true;
-    this.errorMessage = null;
-    this.result = null;
-
-    try {
-      this.result = await ajax("/mechbox/api/calculate", {
-        type: "POST",
-        data: {
-          tool_id: this.selectedTool.tool_id,
-          save_record: false,
-          inputs: this.parsedInputs(),
-        },
-      });
-    } catch (error) {
-      if (error.jqXHR?.responseJSON?.errors?.length) {
-        this.errorMessage = error.jqXHR.responseJSON.errors.join(" ");
-      } else {
-        popupAjaxError(error);
-      }
-    } finally {
-      this.isCalculating = false;
-    }
-  }
-
-  parsedInputs() {
-    const inputs = {};
-    const panel = document.querySelector(".mechbox__workbench-panel");
-
-    for (const input of this.selectedTool?.inputs || []) {
-      const raw = panel?.querySelector(`[name="${input.key}"]`)?.value;
-
-      if (input.type === "number" || input.type === "integer") {
-        inputs[input.key] = raw === "" || raw === undefined ? null : Number(raw);
-      } else {
-        inputs[input.key] = raw;
-      }
-    }
-
-    return inputs;
   }
 
   <template>
@@ -104,7 +34,10 @@ export default class MechboxPage extends Component {
         </header>
 
         {{#if this.selectedTool.available}}
-          <div class="mechbox__workbench-panel">
+          <div
+            class="mechbox__workbench-panel"
+            data-tool-id={{this.selectedTool.tool_id}}
+          >
             <h2>{{i18n "mechbox.workbench_title"}}</h2>
 
             {{#each this.selectedTool.inputs as |input|}}
@@ -116,27 +49,23 @@ export default class MechboxPage extends Component {
                 type="text"
                 class="mechbox__inputs"
                 name={{input.key}}
+                data-type={{input.type}}
                 autocomplete="off"
               />
             {{/each}}
 
             <div class="mechbox__actions">
-              <DButton
-                @label={{this.calculateLabel}}
-                @action={{this.calculate}}
-                @disabled={{this.isCalculating}}
-                class="btn-primary"
-              />
+              <button type="button" class="btn btn-primary mechbox__calculate-btn">
+                {{i18n "mechbox.calculate"}}
+              </button>
             </div>
 
-            {{#if this.errorMessage}}
-              <p class="mechbox__error">{{this.errorMessage}}</p>
-            {{/if}}
+            <p class="mechbox__error" hidden></p>
 
-            {{#if this.result}}
-              <h3>{{i18n "mechbox.result_title"}}</h3>
-              <pre class="mechbox__result">{{this.resultJson}}</pre>
-            {{/if}}
+            <h3 class="mechbox__result-title" hidden>
+              {{i18n "mechbox.result_title"}}
+            </h3>
+            <pre class="mechbox__result" hidden></pre>
           </div>
         {{else}}
           <p>{{i18n "mechbox.tool_not_available"}}</p>
