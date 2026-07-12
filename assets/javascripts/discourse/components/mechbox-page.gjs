@@ -95,7 +95,7 @@ export default class MechboxPage extends Component {
       {{#if this.selectedTool}}
         <header class="mechbox__header">
           <p>
-            <a href={{this.catalogHref}} class="mechbox__back-link">
+            <a href={{this.catalogHref}} class="mechbox__back-link raw-link">
               {{i18n "mechbox.back_to_home"}}
             </a>
           </p>
@@ -158,7 +158,10 @@ export default class MechboxPage extends Component {
                   <li>
                     <div>
                       {{#if (and tool.available this.model.capabilities.calculate.enabled)}}
-                        <a href={{this.toolHref tool.tool_id}} class="mechbox__tool-link">
+                        <a
+                          href={{this.toolHref tool.tool_id}}
+                          class="mechbox__tool-link raw-link"
+                        >
                           <span class="mechbox__tool-name">{{tool.name}}</span>
                         </a>
                       {{else}}
