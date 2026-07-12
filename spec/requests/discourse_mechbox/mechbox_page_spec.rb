@@ -10,9 +10,9 @@ RSpec.describe "DiscourseMechbox page", type: :request do
     sign_in(user)
   end
 
-  it "serves the Ember shell for tool URLs" do
+  it "redirects legacy tool URLs to the single Ember route" do
     get "/mechbox/tools/gear_ratio"
 
-    expect(response).to have_http_status(:ok)
+    expect(response).to redirect_to("/mechbox?tool_id=gear_ratio")
   end
 end

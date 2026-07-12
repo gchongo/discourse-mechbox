@@ -13,11 +13,26 @@ export default class MechboxRoute extends Route {
     }
   }
 
-  model() {
-    return ajax("/mechbox/api/metadata");
+  async model() {
+    const model = await ajax("/mechbox/api/metadata");
+    const toolId = new URLSearchParams(window.location.search).get("tool_id");
+
+    if (toolId) {
+      model.selected_tool = await ajax(`/mechbox/api/tools/${toolId}`);
+    }
+
+    return model;
   }
 
-  titleToken() {
-    return i18n("mechbox.title");
+  setupController(controller, model) {
+    super.setupController(controller, model);
+    controller.inputValues = {};
+    controller.result = null;
+    controller.isCalculating = false;
+    controller.errorMessage = null;
+  }
+
+  titleToken(model) {
+    return model?.selected_tool?.name || i18n("mechbox.title");
   }
 }
