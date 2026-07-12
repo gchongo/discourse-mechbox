@@ -1,10 +1,16 @@
 import Controller from "@ember/controller";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default class MechboxController extends Controller {
+  @service router;
+
+  queryParams = ["tool_id"];
+
+  @tracked tool_id = null;
   inputValues = {};
 
   @tracked result = null;
@@ -21,6 +27,16 @@ export default class MechboxController extends Controller {
     }
 
     return JSON.stringify(this.result, null, 2);
+  }
+
+  @action
+  openTool(tool) {
+    this.router.transitionTo({ queryParams: { tool_id: tool.tool_id } });
+  }
+
+  @action
+  backToCatalog() {
+    this.router.transitionTo({ queryParams: { tool_id: null } });
   }
 
   @action

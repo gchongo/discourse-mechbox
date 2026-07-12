@@ -1,5 +1,6 @@
 import { i18n } from "discourse-i18n";
 import { on } from "@ember/modifier";
+import { fn } from "@ember/helper";
 import { and } from "discourse/truth-helpers";
 
 export default <template>
@@ -7,9 +8,13 @@ export default <template>
     {{#if @controller.selectedTool}}
       <header class="mechbox__header">
         <p>
-          <a href="/mechbox" class="mechbox__back-link">
+          <button
+            type="button"
+            class="btn-flat mechbox__back-link"
+            {{on "click" @controller.backToCatalog}}
+          >
             {{i18n "mechbox.back_to_home"}}
-          </a>
+          </button>
         </p>
         <h1>{{@controller.selectedTool.name}}</h1>
         <p class="mechbox__disclaimer">{{@controller.selectedTool.description}}</p>
@@ -73,12 +78,13 @@ export default <template>
                 <li>
                   <div>
                     {{#if (and tool.available @controller.model.capabilities.calculate.enabled)}}
-                      <a
-                        href="/mechbox?tool_id={{tool.tool_id}}"
-                        class="mechbox__tool-link"
+                      <button
+                        type="button"
+                        class="btn-flat mechbox__tool-link"
+                        {{on "click" (fn @controller.openTool tool)}}
                       >
-                        <div class="mechbox__tool-name">{{tool.name}}</div>
-                      </a>
+                        <span class="mechbox__tool-name">{{tool.name}}</span>
+                      </button>
                     {{else}}
                       <div class="mechbox__tool-name">{{tool.name}}</div>
                     {{/if}}

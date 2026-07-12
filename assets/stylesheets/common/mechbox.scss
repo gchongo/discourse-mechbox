@@ -84,18 +84,20 @@
 
   &__tool-link,
   &__back-link {
-    color: inherit;
-    text-decoration: none;
+    color: var(--tertiary);
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
 
-    &:hover .mechbox__tool-name {
+    .mechbox__tool-name {
       color: var(--tertiary);
+    }
+
+    &:hover .mechbox__tool-name,
+    &:hover {
+      color: var(--tertiary-hover);
       text-decoration: underline;
     }
-  }
-
-  &__back-link:hover {
-    color: var(--tertiary);
-    text-decoration: underline;
   }
 
   &__input-label {

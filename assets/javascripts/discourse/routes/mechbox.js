@@ -7,18 +7,23 @@ export default class MechboxRoute extends Route {
   @service siteSettings;
   @service router;
 
+  queryParams = {
+    tool_id: {
+      refreshModel: true,
+    },
+  };
+
   beforeModel() {
     if (!this.siteSettings.mechbox_enabled) {
       return this.router.replaceWith("discovery.latest");
     }
   }
 
-  async model() {
+  async model(params) {
     const model = await ajax("/mechbox/api/metadata");
-    const toolId = new URLSearchParams(window.location.search).get("tool_id");
 
-    if (toolId) {
-      model.selected_tool = await ajax(`/mechbox/api/tools/${toolId}`);
+    if (params.tool_id) {
+      model.selected_tool = await ajax(`/mechbox/api/tools/${params.tool_id}`);
     }
 
     return model;

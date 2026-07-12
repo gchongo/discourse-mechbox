@@ -87,7 +87,7 @@ acceptance("MechBox | safe page", function (needs) {
 
   test("opens and calculates on the gear ratio tool page", async function (assert) {
     await visit("/mechbox");
-    await click("a[href='/mechbox?tool_id=gear_ratio']");
+    await click(".mechbox__tool-link");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
