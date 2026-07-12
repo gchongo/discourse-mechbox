@@ -87,7 +87,7 @@ acceptance("MechBox | safe page", function (needs) {
 
   test("opens and calculates on the gear ratio tool page", async function (assert) {
     await visit("/mechbox");
-    await click("a[href='/mechbox?tool_id=gear_ratio']");
+    await click("a[href='/mechbox/tools/gear_ratio']");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
@@ -99,5 +99,12 @@ acceptance("MechBox | safe page", function (needs) {
     await click(".mechbox__actions button");
 
     assert.dom(".mechbox__result").includesText("output_speed_rpm");
+  });
+
+  test("renders the gear ratio tool page on direct visit", async function (assert) {
+    await visit("/mechbox/tools/gear_ratio");
+
+    assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
+    assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
   });
 });

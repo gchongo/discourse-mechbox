@@ -4,16 +4,12 @@ import { action } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
-export default class MechboxController extends Controller {
+export default class MechboxToolController extends Controller {
   inputValues = {};
 
   @tracked result = null;
   @tracked isCalculating = false;
   @tracked errorMessage = null;
-
-  get selectedTool() {
-    return this.model?.selected_tool;
-  }
 
   get resultJson() {
     if (!this.result) {
@@ -32,7 +28,8 @@ export default class MechboxController extends Controller {
   async calculate(event) {
     event?.preventDefault?.();
 
-    if (!this.selectedTool?.available) {
+    const model = this.model;
+    if (!model?.available) {
       return;
     }
 
@@ -44,9 +41,9 @@ export default class MechboxController extends Controller {
       this.result = await ajax("/mechbox/api/calculate", {
         type: "POST",
         data: {
-          tool_id: this.selectedTool.tool_id,
+          tool_id: model.tool_id,
           save_record: false,
-          inputs: this.parsedInputs(),
+          inputs: this.parsedInputs(model),
         },
       });
     } catch (error) {
@@ -60,10 +57,10 @@ export default class MechboxController extends Controller {
     }
   }
 
-  parsedInputs() {
+  parsedInputs(model) {
     const inputs = {};
 
-    for (const input of this.selectedTool.inputs || []) {
+    for (const input of model.inputs || []) {
       const raw = this.inputValues[input.key];
 
       if (input.type === "number" || input.type === "integer") {

@@ -13,15 +13,8 @@ export default class MechboxRoute extends Route {
     }
   }
 
-  async model() {
-    const model = await ajax("/mechbox/api/metadata");
-    const toolId = new URLSearchParams(window.location.search).get("tool_id");
-
-    if (toolId) {
-      model.selected_tool = await ajax(`/mechbox/api/tools/${toolId}`);
-    }
-
-    return model;
+  model() {
+    return ajax("/mechbox/api/metadata");
   }
 
   titleToken() {
