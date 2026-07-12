@@ -1,30 +1,24 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import { on } from "@ember/modifier";
-import { fn } from "@ember/helper";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
+import DButton from "discourse/ui-kit/d-button";
 
 export default class MechboxPage extends Component {
-  inputValues = {};
-
-  @tracked selectedTool = null;
   @tracked result = null;
   @tracked isCalculating = false;
   @tracked errorMessage = null;
-  @tracked isLoadingTool = false;
-
-  constructor() {
-    super(...arguments);
-    this.selectedTool = this.args.model?.selected_tool || null;
-  }
 
   get model() {
     return this.args.model || {};
+  }
+
+  get selectedTool() {
+    return this.model.selected_tool;
   }
 
   get resultJson() {
@@ -35,45 +29,22 @@ export default class MechboxPage extends Component {
     return JSON.stringify(this.result, null, 2);
   }
 
-  resetWorkbench() {
-    this.inputValues = {};
-    this.result = null;
-    this.isCalculating = false;
-    this.errorMessage = null;
+  toolHref(toolId) {
+    return getURL(`/mechbox?tool_id=${toolId}`);
+  }
+
+  catalogHref() {
+    return getURL("/mechbox");
+  }
+
+  get calculateLabel() {
+    return this.isCalculating
+      ? i18n("mechbox.calculating")
+      : i18n("mechbox.calculate");
   }
 
   @action
-  async openTool(tool) {
-    this.isLoadingTool = true;
-    this.errorMessage = null;
-
-    try {
-      this.selectedTool = await ajax(`/mechbox/api/tools/${tool.tool_id}`);
-      this.resetWorkbench();
-      window.history.pushState(null, "", getURL(`/mechbox?tool_id=${tool.tool_id}`));
-    } catch (error) {
-      popupAjaxError(error);
-    } finally {
-      this.isLoadingTool = false;
-    }
-  }
-
-  @action
-  backToCatalog() {
-    this.selectedTool = null;
-    this.resetWorkbench();
-    window.history.pushState(null, "", getURL("/mechbox"));
-  }
-
-  @action
-  handleInput(event) {
-    this.inputValues[event.target.name] = event.target.value;
-  }
-
-  @action
-  async calculate(event) {
-    event?.preventDefault?.();
-
+  async calculate() {
     if (!this.selectedTool?.available) {
       return;
     }
@@ -104,9 +75,10 @@ export default class MechboxPage extends Component {
 
   parsedInputs() {
     const inputs = {};
+    const panel = document.querySelector(".mechbox__workbench-panel");
 
-    for (const input of this.selectedTool.inputs || []) {
-      const raw = this.inputValues[input.key];
+    for (const input of this.selectedTool?.inputs || []) {
+      const raw = panel?.querySelector(`[name="${input.key}"]`)?.value;
 
       if (input.type === "number" || input.type === "integer") {
         inputs[input.key] = raw === "" || raw === undefined ? null : Number(raw);
@@ -123,13 +95,9 @@ export default class MechboxPage extends Component {
       {{#if this.selectedTool}}
         <header class="mechbox__header">
           <p>
-            <button
-              type="button"
-              class="btn-flat mechbox__back-link"
-              {{on "click" this.backToCatalog}}
-            >
+            <a href={{this.catalogHref}} class="mechbox__back-link">
               {{i18n "mechbox.back_to_home"}}
-            </button>
+            </a>
           </p>
           <h1>{{this.selectedTool.name}}</h1>
           <p class="mechbox__disclaimer">{{this.selectedTool.description}}</p>
@@ -140,28 +108,25 @@ export default class MechboxPage extends Component {
             <h2>{{i18n "mechbox.workbench_title"}}</h2>
 
             {{#each this.selectedTool.inputs as |input|}}
-              <label class="mechbox__input-label">{{input.key}}</label>
+              <label class="mechbox__input-label" for="mechbox-input-{{input.key}}">
+                {{input.key}}
+              </label>
               <input
+                id="mechbox-input-{{input.key}}"
                 type="text"
                 class="mechbox__inputs"
                 name={{input.key}}
-                {{on "input" this.handleInput}}
+                autocomplete="off"
               />
             {{/each}}
 
             <div class="mechbox__actions">
-              <button
-                type="button"
-                class="btn btn-primary"
-                disabled={{this.isCalculating}}
-                {{on "click" this.calculate}}
-              >
-                {{#if this.isCalculating}}
-                  {{i18n "mechbox.calculating"}}
-                {{else}}
-                  {{i18n "mechbox.calculate"}}
-                {{/if}}
-              </button>
+              <DButton
+                @label={{this.calculateLabel}}
+                @action={{this.calculate}}
+                @disabled={{this.isCalculating}}
+                class="btn-primary"
+              />
             </div>
 
             {{#if this.errorMessage}}
@@ -193,14 +158,9 @@ export default class MechboxPage extends Component {
                   <li>
                     <div>
                       {{#if (and tool.available this.model.capabilities.calculate.enabled)}}
-                        <button
-                          type="button"
-                          class="btn-flat mechbox__tool-link"
-                          disabled={{this.isLoadingTool}}
-                          {{on "click" (fn this.openTool tool)}}
-                        >
+                        <a href={{this.toolHref tool.tool_id}} class="mechbox__tool-link">
                           <span class="mechbox__tool-name">{{tool.name}}</span>
-                        </button>
+                        </a>
                       {{else}}
                         <div class="mechbox__tool-name">{{tool.name}}</div>
                       {{/if}}
