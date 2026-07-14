@@ -8,7 +8,7 @@ module DiscourseMechbox
     IMPLEMENTATION_DESIGN_CHAIN = "design_chain"
 
     # Builtin calculators enabled one at a time for incremental rollout.
-    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio].freeze
+    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio bolt_clamp_load].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
     ENABLED_CLIENT_TOOL_IDS = [].freeze
@@ -70,13 +70,22 @@ module DiscourseMechbox
         category: "fastening",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
         inputs: [
-          { key: "torque_nm", type: "number", required: true },
+          {
+            key: "mode",
+            type: "string",
+            required: true,
+            description: "torque2force | force2torque",
+          },
+          { key: "torque_nm", type: "number", required: false },
+          { key: "preload_n", type: "number", required: false },
           { key: "nut_factor", type: "number", required: true },
           { key: "nominal_diameter_mm", type: "number", required: true },
         ],
         outputs: [
+          { key: "mode", type: "string" },
           { key: "preload_n", type: "number" },
           { key: "preload_kn", type: "number" },
+          { key: "torque_nm", type: "number" },
         ],
       },
       "gdt_position" => {

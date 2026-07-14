@@ -1,5 +1,6 @@
 import { click, fillIn, visit } from "@ember/test-helpers";
 import { test } from "qunit";
+import { parsePostData } from "discourse/tests/helpers/create-pretender";
 import { acceptance, exists } from "discourse/tests/helpers/qunit-helpers";
 
 acceptance("MechBox | safe page", function (needs) {
@@ -22,6 +23,12 @@ acceptance("MechBox | safe page", function (needs) {
             tool_id: "gear_ratio",
             name: "Gear ratio",
             description: "Calculate speed ratio from tooth counts.",
+            available: true,
+          },
+          {
+            tool_id: "bolt_clamp_load",
+            name: "Bolt preload",
+            description: "Estimate bolt preload from torque.",
             available: true,
           },
           {
@@ -55,7 +62,37 @@ acceptance("MechBox | safe page", function (needs) {
       });
     });
 
-    server.post("/mechbox/api/calculate", () => {
+    server.get("/mechbox/api/tools/bolt_clamp_load", () => {
+      return helper.response(200, {
+        tool_id: "bolt_clamp_load",
+        name: "Bolt preload",
+        description: "Estimate bolt preload from torque.",
+        available: true,
+        inputs: [
+          { key: "mode", type: "string" },
+          { key: "torque_nm", type: "number" },
+          { key: "preload_n", type: "number" },
+          { key: "nut_factor", type: "number" },
+          { key: "nominal_diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.post("/mechbox/api/calculate", (request) => {
+      const body = parsePostData(request.requestBody);
+
+      if (body.tool_id === "bolt_clamp_load") {
+        return helper.response(200, {
+          tool_id: "bolt_clamp_load",
+          outputs: {
+            mode: "torque2force",
+            preload_n: 25000,
+            preload_kn: 25,
+            torque_nm: 50,
+          },
+        });
+      }
+
       return helper.response(200, {
         tool_id: "gear_ratio",
         outputs: {
@@ -87,7 +124,7 @@ acceptance("MechBox | safe page", function (needs) {
 
   test("opens and calculates on the gear ratio tool page", async function (assert) {
     await visit("/mechbox");
-    await click(".mechbox__tool-link");
+    await click(".mechbox__tool-link[href*='gear_ratio']");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
@@ -99,6 +136,22 @@ acceptance("MechBox | safe page", function (needs) {
     await click(".mechbox__actions .btn");
 
     assert.dom(".mechbox__result").includesText("output_speed_rpm");
+  });
+
+  test("opens and calculates on the bolt preload tool page", async function (assert) {
+    await visit("/mechbox?tool_id=bolt_clamp_load");
+
+    assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
+    assert.dom("input[name='mode']").exists("mode input is rendered");
+    assert.dom("input[name='nut_factor']").exists("nut factor input is rendered");
+
+    await fillIn("input[name='mode']", "torque2force");
+    await fillIn("input[name='torque_nm']", "50");
+    await fillIn("input[name='nut_factor']", "0.2");
+    await fillIn("input[name='nominal_diameter_mm']", "10");
+    await click(".mechbox__actions .btn");
+
+    assert.dom(".mechbox__result").includesText("preload_n");
   });
 
   test("renders the gear ratio tool page on direct visit", async function (assert) {

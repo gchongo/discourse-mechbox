@@ -56,7 +56,7 @@ en:
         description: "Calculate speed ratio from tooth counts."
       bolt_clamp_load:
         name: "Bolt preload"
-        description: "Estimate bolt preload from torque."
+        description: "Estimate preload with T = K·F·d (torque↔preload). Set mode to torque2force or force2torque; nut_factor is often 0.2."
       gdt_position:
         name: "GD&T position"
         description: "Calculate position tolerance diameter."
