@@ -62,15 +62,23 @@ function fieldRow(labelEl, control, hintEl) {
   label.className = "mechbox-bolt__label";
   label.append(labelEl);
 
+  const colon = document.createElement("span");
+  colon.className = "mechbox-bolt__colon";
+  colon.textContent = "：";
+
   const controlWrap = document.createElement("div");
   controlWrap.className = "mechbox-bolt__control";
   controlWrap.append(control);
 
+  row.append(label, colon, controlWrap);
+
   if (hintEl) {
-    controlWrap.append(hintEl);
+    const unit = document.createElement("span");
+    unit.className = "mechbox-bolt__unit";
+    unit.append(hintEl);
+    row.append(unit);
   }
 
-  row.append(label, controlWrap);
   return row;
 }
 
@@ -405,10 +413,13 @@ async function mountBoltWorkbench(panel) {
   inputsCard.append(inputsTitle);
 
   const modeLegend = document.createElement("div");
-  modeLegend.className = "mechbox-bolt__field";
+  modeLegend.className = "mechbox-bolt__field mechbox-bolt__field--mode";
   const modeLabel = document.createElement("div");
   modeLabel.className = "mechbox-bolt__label";
   modeLabel.textContent = t("convert_direction");
+  const modeColon = document.createElement("span");
+  modeColon.className = "mechbox-bolt__colon";
+  modeColon.textContent = "：";
   const modeGroup = document.createElement("div");
   modeGroup.className = "mechbox-bolt__radios";
 
@@ -424,7 +435,7 @@ async function mountBoltWorkbench(panel) {
     label.append(radio, radioModeLabel(value));
     modeGroup.append(label);
   });
-  modeLegend.append(modeLabel, modeGroup);
+  modeLegend.append(modeLabel, modeColon, modeGroup);
   inputsCard.append(modeLegend);
 
   const diameterInput = numberInput("nominal_diameter_mm", "10");
