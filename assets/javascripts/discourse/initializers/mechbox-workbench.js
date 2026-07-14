@@ -139,10 +139,10 @@ function syncBoltModeFields(root) {
   const preloadField = root.querySelector('[data-field="preload_n"]');
 
   if (torqueField) {
-    torqueField.hidden = mode !== "torque2force";
+    torqueField.classList.toggle("is-mode-hidden", mode !== "torque2force");
   }
   if (preloadField) {
-    preloadField.hidden = mode !== "force2torque";
+    preloadField.classList.toggle("is-mode-hidden", mode !== "force2torque");
   }
 }
 
@@ -210,7 +210,7 @@ function resultRow(labelParts, valueParts, options = {}) {
 }
 
 async function renderBoltResults(panel, payload) {
-  const box = panel.querySelector(".mechbox-bolt__results");
+  const box = panel.querySelector(".mechbox-bolt__results-body");
   if (!box) {
     return;
   }
@@ -218,10 +218,6 @@ async function renderBoltResults(panel, payload) {
   const outputs = payload?.outputs || payload || {};
   box.replaceChildren();
   box.classList.add("is-visible");
-
-  const title = document.createElement("h3");
-  title.textContent = t("results_title");
-  box.append(title);
 
   const status = document.createElement("div");
   status.className = `mechbox-bolt__status ${outputs.pass ? "is-pass" : "is-attention"}`;
@@ -282,7 +278,6 @@ async function renderBoltResults(panel, payload) {
   );
   box.append(formulaBox);
 
-  box.hidden = false;
   await typesetRoot(box);
 }
 
@@ -493,7 +488,7 @@ async function mountBoltWorkbench(panel) {
     texNode("\\mathrm{N}")
   );
   preloadRow.dataset.field = "preload_n";
-  preloadRow.hidden = true;
+  preloadRow.classList.add("is-mode-hidden");
   inputsCard.append(preloadRow);
 
   inputsCard.append(boltDiagramSvg());
@@ -515,7 +510,15 @@ async function mountBoltWorkbench(panel) {
 
   const resultsCard = document.createElement("section");
   resultsCard.className = "mechbox-bolt__card mechbox-bolt__results";
-  resultsCard.hidden = true;
+  const resultsTitle = document.createElement("h3");
+  resultsTitle.textContent = t("results_title");
+  const resultsBody = document.createElement("div");
+  resultsBody.className = "mechbox-bolt__results-body";
+  const empty = document.createElement("div");
+  empty.className = "mechbox-bolt__results-empty";
+  empty.textContent = t("results_empty");
+  resultsBody.append(empty);
+  resultsCard.append(resultsTitle, resultsBody);
 
   grid.append(inputsCard, resultsCard);
   root.append(modes, formulaBar, warning, grid);

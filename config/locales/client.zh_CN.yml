@@ -78,6 +78,7 @@ zh_CN:
         estimate_warning: "简化模型仅供初步估算；正式设计请使用完整或专业模式。"
         input_title: "输入参数"
         results_title: "计算结果"
+        results_empty: "填写左侧参数后点击「开始计算」，结果将显示在这里。"
         convert_direction: "换算方向"
         mode_known: "已知"
         diameter: "公称直径"

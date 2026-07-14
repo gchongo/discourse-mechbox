@@ -78,6 +78,7 @@ en:
         estimate_warning: "The simplified model is for preliminary estimates only. Use full or professional mode for formal design."
         input_title: "Inputs"
         results_title: "Results"
+        results_empty: "Fill the left panel and click Calculate to see results here."
         convert_direction: "Conversion"
         mode_known: "Known"
         diameter: "Nominal diameter"

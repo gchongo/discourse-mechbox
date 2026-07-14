@@ -153,6 +153,8 @@ acceptance("MechBox | safe page", function (needs) {
 
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
     await waitFor(".mechbox-bolt");
+    assert.dom(".mechbox-bolt__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-bolt__results").exists("results column is rendered");
     assert.dom("input[name='torque_nm']").exists("torque input is rendered");
     assert.dom("select[name='grade']").exists("grade select is rendered");
 
@@ -161,8 +163,8 @@ acceptance("MechBox | safe page", function (needs) {
     await fillIn("input[name='nominal_diameter_mm']", "10");
     await click(".mechbox-bolt__calculate-btn");
 
-    await waitFor(".mechbox-bolt__results:not([hidden])");
-    assert.dom(".mechbox-bolt__results").includesText("25000");
+    await waitFor(".mechbox-bolt__status");
+    assert.dom(".mechbox-bolt__results-body").includesText("25000");
     assert.dom(".mechbox-bolt__status").exists("status badge is rendered");
   });
 
