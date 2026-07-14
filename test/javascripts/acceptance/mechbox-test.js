@@ -69,9 +69,13 @@ acceptance("MechBox | safe page", function (needs) {
         description: "Estimate bolt preload from torque.",
         available: true,
         inputs: [
-          { key: "torque_nm", type: "number" },
-          { key: "nut_factor", type: "number" },
+          { key: "mode", type: "string" },
           { key: "nominal_diameter_mm", type: "number" },
+          { key: "pitch_mm", type: "number" },
+          { key: "grade", type: "string" },
+          { key: "nut_factor", type: "number" },
+          { key: "torque_nm", type: "number" },
+          { key: "preload_n", type: "number" },
         ],
       });
     });
@@ -83,9 +87,18 @@ acceptance("MechBox | safe page", function (needs) {
         return helper.response(200, {
           tool_id: "bolt_clamp_load",
           outputs: {
+            mode: "torque2force",
+            grade: "8.8",
+            pitch_mm: 1.5,
             preload_n: 25000,
             preload_kn: 25,
             torque_nm: 50,
+            stress_area_mm2: 57.99,
+            stress_mpa: 431.1,
+            allow_stress_mpa: 400,
+            max_preload_n: 23196,
+            pass: false,
+            estimate_only: true,
           },
         });
       }
@@ -139,15 +152,18 @@ acceptance("MechBox | safe page", function (needs) {
     await visit("/mechbox?tool_id=bolt_clamp_load");
 
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    await waitFor("input[name='torque_nm']");
-    assert.dom("input[name='nut_factor']").exists("nut factor input is rendered");
+    await waitFor(".mechbox-bolt");
+    assert.dom("input[name='torque_nm']").exists("torque input is rendered");
+    assert.dom("select[name='grade']").exists("grade select is rendered");
 
     await fillIn("input[name='torque_nm']", "50");
     await fillIn("input[name='nut_factor']", "0.2");
     await fillIn("input[name='nominal_diameter_mm']", "10");
-    await click(".mechbox__actions .btn");
+    await click(".mechbox-bolt__calculate-btn");
 
-    assert.dom(".mechbox__result").includesText("preload_n");
+    await waitFor(".mechbox-bolt__results:not([hidden])");
+    assert.dom(".mechbox-bolt__results").includesText("25000");
+    assert.dom(".mechbox-bolt__status").exists("status badge is rendered");
   });
 
   test("renders the gear ratio tool page on direct visit", async function (assert) {

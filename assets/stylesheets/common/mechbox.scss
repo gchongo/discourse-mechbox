@@ -190,3 +190,301 @@
     color: var(--tertiary);
   }
 }
+
+.mechbox__workbench-panel--bolt {
+  .mechbox__actions,
+  .mechbox__error,
+  .mechbox__result-title,
+  .mechbox__result {
+    display: none;
+  }
+}
+
+.mechbox-tex {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.2;
+
+  .katex {
+    font-size: 1.05em;
+  }
+}
+
+.mechbox-bolt {
+  &__modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__mode-tab {
+    border: 1px solid var(--primary-low);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+    background: var(--secondary);
+
+    &.is-active {
+      background: var(--tertiary);
+      border-color: var(--tertiary);
+      color: var(--secondary);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    &.is-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__formula-bar {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 10px;
+    background: linear-gradient(
+      180deg,
+      var(--secondary-very-high) 0%,
+      var(--secondary) 100%
+    );
+
+    strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: var(--primary-high);
+    }
+
+    .mechbox-tex {
+      display: block;
+      text-align: center;
+    }
+  }
+
+  &__warning {
+    background: var(--highlight-low);
+    color: var(--primary);
+    border-left: 3px solid var(--highlight);
+    border-radius: 6px;
+    padding: 0.65rem 0.8rem;
+    margin: 0 0 1rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    align-items: start;
+  }
+
+  &__card {
+    border: 1px solid var(--primary-low);
+    border-radius: 12px;
+    background: var(--secondary);
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    h3 {
+      margin: 0 0 0.85rem;
+      font-size: var(--font-up-1);
+    }
+  }
+
+  &__field {
+    display: grid;
+    gap: 0.4rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: var(--primary-high);
+  }
+
+  &__mixed-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+  }
+
+  &__control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  &__input,
+  &__select {
+    min-width: 9rem;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
+  &__hint {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+  }
+
+  &__radios {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  &__radio {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: normal;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    background: var(--primary-very-low);
+  }
+
+  &__diagram {
+    margin: 0.85rem 0 1rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 10px;
+    padding: 0.65rem;
+    background: var(--primary-very-low);
+    text-align: center;
+  }
+
+  &__diagram-stage {
+    position: relative;
+    display: inline-block;
+    width: min(100%, 280px);
+  }
+
+  &__svg {
+    width: 100%;
+    height: auto;
+    color: var(--primary-medium);
+  }
+
+  &__diagram-symbol {
+    position: absolute;
+    color: var(--tertiary);
+
+    &--t {
+      left: 16%;
+      top: 28%;
+    }
+
+    &--f {
+      left: 52%;
+      bottom: 4%;
+    }
+
+    &--d {
+      right: 12%;
+      top: 48%;
+      color: var(--primary-high);
+    }
+  }
+
+  &__diagram-caption {
+    margin: 0.4rem 0 0;
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+  }
+
+  &__calculate-btn {
+    margin-top: 0.35rem;
+    width: 100%;
+  }
+
+  &__error {
+    color: var(--danger);
+    margin-top: 0.75rem;
+  }
+
+  &__status {
+    display: inline-block;
+    margin-bottom: 0.85rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.8rem;
+    font-size: var(--font-down-1);
+    font-weight: 600;
+
+    &.is-pass {
+      background: var(--success-low);
+      color: var(--success);
+    }
+
+    &.is-attention {
+      background: var(--highlight-medium);
+      color: var(--primary);
+    }
+  }
+
+  &__result-list {
+    margin: 0;
+  }
+
+  &__result-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    margin-bottom: 0.45rem;
+    border-radius: 8px;
+    background: var(--primary-very-low);
+
+    dt {
+      color: var(--primary-medium);
+      margin: 0;
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    &.is-danger dd {
+      color: var(--danger);
+    }
+  }
+
+  &__formula-box {
+    margin-top: 0.9rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: var(--secondary-very-high);
+    border: 1px solid var(--primary-low);
+
+    .mechbox-tex {
+      display: block;
+      text-align: center;
+      margin: 0.35rem 0;
+    }
+  }
+
+  &__formula-box-title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: var(--primary-high);
+  }
+
+  &__results.is-visible {
+    animation: mechbox-bolt-fade-in 180ms ease-out;
+  }
+}
+
+@keyframes mechbox-bolt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

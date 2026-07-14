@@ -92,22 +92,93 @@ module DiscourseMechbox
       { "ratio" => ratio, "output_speed_rpm" => output_speed_rpm }
     end
 
-    # Approximate bolt preload via T = K · F · d (torque → preload).
+    # Metric coarse pitch defaults (mm), aligned with MechBox METRIC_THREAD_PITCH.
+    METRIC_THREAD_PITCH = {
+      3 => 0.5,
+      4 => 0.7,
+      5 => 0.8,
+      6 => 1.0,
+      8 => 1.25,
+      10 => 1.5,
+      12 => 1.75,
+      14 => 2.0,
+      16 => 2.0,
+      18 => 2.5,
+      20 => 2.5,
+      22 => 2.5,
+      24 => 3.0,
+      27 => 3.0,
+      30 => 3.5,
+    }.freeze
+
+    # Allowable tensile stress (MPa), aligned with MechBox THREAD_GRADES.
+    BOLT_GRADES = {
+      "4.6" => { allow_stress: 160.0 },
+      "4.8" => { allow_stress: 200.0 },
+      "5.6" => { allow_stress: 190.0 },
+      "8.8" => { allow_stress: 400.0 },
+      "10.9" => { allow_stress: 560.0 },
+      "12.9" => { allow_stress: 630.0 },
+    }.freeze
+
+    # Simplified bolt preload: T = K · F · d, plus tensile stress check.
     def self.calculate_bolt_clamp_load(inputs)
-      torque_nm = numeric_input(inputs, "torque_nm")
+      mode = inputs["mode"].to_s.presence || "torque2force"
+      grade = inputs["grade"].to_s.presence || "8.8"
       nut_factor = numeric_input(inputs, "nut_factor")
       nominal_diameter_mm = numeric_input(inputs, "nominal_diameter_mm")
 
-      if torque_nm <= 0 || nut_factor <= 0 || nominal_diameter_mm <= 0
+      if nut_factor <= 0 || nominal_diameter_mm <= 0
         raise Error, I18n.t("mechbox.errors.positive_values_required")
       end
 
-      preload_n = torque_nm / (nut_factor * nominal_diameter_mm / 1000.0)
+      grade_meta = BOLT_GRADES[grade]
+      raise Error, I18n.t("mechbox.errors.invalid_input", field: "grade") if grade_meta.blank?
+
+      pitch_mm =
+        if inputs["pitch_mm"].present?
+          numeric_input(inputs, "pitch_mm")
+        else
+          METRIC_THREAD_PITCH[nominal_diameter_mm.round] || 1.5
+        end
+      raise Error, I18n.t("mechbox.errors.positive_values_required") if pitch_mm <= 0
+
+      case mode
+      when "torque2force"
+        torque_nm = numeric_input(inputs, "torque_nm")
+        raise Error, I18n.t("mechbox.errors.positive_values_required") if torque_nm <= 0
+
+        preload_n = torque_nm / (nut_factor * nominal_diameter_mm / 1000.0)
+      when "force2torque"
+        preload_n = numeric_input(inputs, "preload_n")
+        raise Error, I18n.t("mechbox.errors.positive_values_required") if preload_n <= 0
+
+        torque_nm = nut_factor * preload_n * nominal_diameter_mm / 1000.0
+      else
+        raise Error, I18n.t("mechbox.errors.invalid_input", field: "mode")
+      end
+
+      # As ≈ π/4 · (d - 0.9382·P)^2  (MechBox calcTensileStressArea)
+      pitch_diameter = nominal_diameter_mm - 0.9382 * pitch_mm
+      stress_area_mm2 = (Math::PI / 4.0) * (pitch_diameter**2)
+      allow_stress_mpa = grade_meta[:allow_stress]
+      stress_mpa = stress_area_mm2.positive? ? preload_n / stress_area_mm2 : 0.0
+      max_preload_n = allow_stress_mpa * stress_area_mm2
+      pass = preload_n.positive? && stress_mpa <= allow_stress_mpa
 
       {
+        "mode" => mode,
+        "grade" => grade,
+        "pitch_mm" => pitch_mm,
         "preload_n" => preload_n,
         "preload_kn" => preload_n / 1000.0,
         "torque_nm" => torque_nm,
+        "stress_area_mm2" => stress_area_mm2,
+        "stress_mpa" => stress_mpa,
+        "allow_stress_mpa" => allow_stress_mpa,
+        "max_preload_n" => max_preload_n,
+        "pass" => pass,
+        "estimate_only" => true,
       }
     end
 

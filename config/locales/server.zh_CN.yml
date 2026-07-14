@@ -56,7 +56,7 @@ zh_CN:
         description: "根据齿数计算转速比。"
       bolt_clamp_load:
         name: "螺栓预紧力"
-        description: "用简化公式 T = K·F·d，由拧紧扭矩估算预紧力。nut_factor 常用 0.2。"
+        description: "简化模型：用扭矩系数法 T = K·F·d 估算预紧力，并校核拉应力。正式设计请选用完整/专业模型。"
       gdt_position:
         name: "GD&T 位置度"
         description: "计算位置度直径。"

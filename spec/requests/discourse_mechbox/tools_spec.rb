@@ -52,13 +52,18 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
 
     expect(json["tool_id"]).to eq("bolt_clamp_load")
     expect(json["available"]).to eq(true)
-    expect(json["inputs"].map { |input| input["key"] }).to eq(
-      %w[torque_nm nut_factor nominal_diameter_mm],
+    expect(json["inputs"].map { |input| input["key"] }).to include(
+      "mode",
+      "nominal_diameter_mm",
+      "grade",
+      "nut_factor",
+      "torque_nm",
+      "preload_n",
     )
     expect(json["outputs"].map { |output| output["key"] }).to include(
       "preload_n",
-      "preload_kn",
-      "torque_nm",
+      "stress_mpa",
+      "pass",
     )
   end
 end
