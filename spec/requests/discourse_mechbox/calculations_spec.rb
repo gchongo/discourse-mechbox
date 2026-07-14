@@ -61,13 +61,12 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
   end
 
-  it "runs builtin bolt_clamp_load torque-to-force calculation" do
+  it "runs builtin bolt_clamp_load calculation" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "bolt_clamp_load",
            save_record: false,
            inputs: {
-             mode: "torque2force",
              torque_nm: 50,
              nut_factor: 0.2,
              nominal_diameter_mm: 10,
@@ -78,40 +77,17 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     json = response.parsed_body
 
     expect(json["tool_id"]).to eq("bolt_clamp_load")
-    expect(json["outputs"]["mode"]).to eq("torque2force")
     expect(json["outputs"]["preload_n"]).to eq(25_000.0)
     expect(json["outputs"]["preload_kn"]).to eq(25.0)
     expect(json["outputs"]["torque_nm"]).to eq(50.0)
   end
 
-  it "runs builtin bolt_clamp_load force-to-torque calculation" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "bolt_clamp_load",
-           save_record: false,
-           inputs: {
-             mode: "force2torque",
-             preload_n: 25_000,
-             nut_factor: 0.2,
-             nominal_diameter_mm: 10,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    json = response.parsed_body
-
-    expect(json["outputs"]["mode"]).to eq("force2torque")
-    expect(json["outputs"]["torque_nm"]).to eq(50.0)
-    expect(json["outputs"]["preload_n"]).to eq(25_000.0)
-  end
-
-  it "returns 422 for invalid bolt_clamp_load mode" do
+  it "returns 422 for invalid bolt_clamp_load inputs" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "bolt_clamp_load",
            inputs: {
-             mode: "unknown",
-             torque_nm: 50,
+             torque_nm: 0,
              nut_factor: 0.2,
              nominal_diameter_mm: 10,
            },

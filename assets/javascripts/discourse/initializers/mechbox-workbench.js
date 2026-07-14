@@ -3,7 +3,71 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 
-let clickHandlerRegistered = false;
+let handlersRegistered = false;
+
+function parseInputsSchema(panel) {
+  const raw = panel.getAttribute("data-inputs-json");
+
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function mountWorkbenchForm(panel) {
+  if (!panel || panel.dataset.mounted === "true") {
+    return;
+  }
+
+  const mount = panel.querySelector(".mechbox__form-mount");
+
+  if (!mount) {
+    return;
+  }
+
+  mount.replaceChildren();
+
+  for (const field of parseInputsSchema(panel)) {
+    const key = field?.key;
+
+    if (!key) {
+      continue;
+    }
+
+    const label = document.createElement("label");
+    label.className = "mechbox__input-label";
+    label.htmlFor = `mechbox-input-${key}`;
+    label.textContent = key;
+
+    const input = document.createElement("input");
+    input.id = `mechbox-input-${key}`;
+    input.type = "text";
+    input.className = "mechbox__inputs";
+    input.name = key;
+    input.dataset.type = field.type || "string";
+    input.autocomplete = "off";
+
+    if (key === "nut_factor") {
+      input.placeholder = "0.2";
+    }
+
+    mount.append(label, input);
+  }
+
+  panel.dataset.mounted = "true";
+}
+
+function mountAllWorkbenchForms() {
+  document
+    .querySelectorAll(".mechbox__workbench-panel:not([data-mounted='true'])")
+    .forEach(mountWorkbenchForm);
+}
 
 function parsedInputs(panel) {
   const inputs = {};
@@ -82,6 +146,7 @@ async function calculate(event) {
   }
 
   event.preventDefault();
+  mountWorkbenchForm(panel);
 
   const originalLabel = button.textContent;
   button.disabled = true;
@@ -112,21 +177,30 @@ async function calculate(event) {
   }
 }
 
-function registerCalculateHandler() {
-  if (clickHandlerRegistered || typeof document === "undefined") {
+function registerHandlers(api) {
+  if (handlersRegistered || typeof document === "undefined") {
     return;
   }
 
   document.addEventListener("click", calculate);
-  clickHandlerRegistered = true;
+
+  const observer = new MutationObserver(() => {
+    mountAllWorkbenchForms();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  api.onPageChange(() => mountAllWorkbenchForms());
+  mountAllWorkbenchForms();
+
+  handlersRegistered = true;
 }
 
 export default {
   name: "discourse-mechbox-workbench",
 
   initialize() {
-    withPluginApi(() => {
-      registerCalculateHandler();
+    withPluginApi((api) => {
+      registerHandlers(api);
     });
   },
 };

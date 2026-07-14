@@ -70,19 +70,11 @@ module DiscourseMechbox
         category: "fastening",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
         inputs: [
-          {
-            key: "mode",
-            type: "string",
-            required: true,
-            description: "torque2force | force2torque",
-          },
-          { key: "torque_nm", type: "number", required: false },
-          { key: "preload_n", type: "number", required: false },
+          { key: "torque_nm", type: "number", required: true },
           { key: "nut_factor", type: "number", required: true },
           { key: "nominal_diameter_mm", type: "number", required: true },
         ],
         outputs: [
-          { key: "mode", type: "string" },
           { key: "preload_n", type: "number" },
           { key: "preload_kn", type: "number" },
           { key: "torque_nm", type: "number" },

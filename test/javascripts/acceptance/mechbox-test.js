@@ -1,4 +1,4 @@
-import { click, fillIn, visit } from "@ember/test-helpers";
+import { click, fillIn, visit, waitFor } from "@ember/test-helpers";
 import { test } from "qunit";
 import { parsePostData } from "discourse/tests/helpers/create-pretender";
 import { acceptance, exists } from "discourse/tests/helpers/qunit-helpers";
@@ -69,9 +69,7 @@ acceptance("MechBox | safe page", function (needs) {
         description: "Estimate bolt preload from torque.",
         available: true,
         inputs: [
-          { key: "mode", type: "string" },
           { key: "torque_nm", type: "number" },
-          { key: "preload_n", type: "number" },
           { key: "nut_factor", type: "number" },
           { key: "nominal_diameter_mm", type: "number" },
         ],
@@ -85,7 +83,6 @@ acceptance("MechBox | safe page", function (needs) {
         return helper.response(200, {
           tool_id: "bolt_clamp_load",
           outputs: {
-            mode: "torque2force",
             preload_n: 25000,
             preload_kn: 25,
             torque_nm: 50,
@@ -128,7 +125,7 @@ acceptance("MechBox | safe page", function (needs) {
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
+    await waitFor("input[name='driver_teeth']");
 
     await fillIn("input[name='driver_teeth']", "20");
     await fillIn("input[name='driven_teeth']", "40");
@@ -142,10 +139,9 @@ acceptance("MechBox | safe page", function (needs) {
     await visit("/mechbox?tool_id=bolt_clamp_load");
 
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    assert.dom("input[name='mode']").exists("mode input is rendered");
+    await waitFor("input[name='torque_nm']");
     assert.dom("input[name='nut_factor']").exists("nut factor input is rendered");
 
-    await fillIn("input[name='mode']", "torque2force");
     await fillIn("input[name='torque_nm']", "50");
     await fillIn("input[name='nut_factor']", "0.2");
     await fillIn("input[name='nominal_diameter_mm']", "10");
@@ -158,7 +154,7 @@ acceptance("MechBox | safe page", function (needs) {
     await visit("/mechbox?tool_id=gear_ratio");
 
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
+    await waitFor("input[name='driver_teeth']");
     assert.dom("input[name='driven_teeth']").exists("driven teeth input is rendered");
     assert.dom("input[name='input_speed_rpm']").exists("input speed input is rendered");
   });

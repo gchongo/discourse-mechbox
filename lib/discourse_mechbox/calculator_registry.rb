@@ -92,34 +92,19 @@ module DiscourseMechbox
       { "ratio" => ratio, "output_speed_rpm" => output_speed_rpm }
     end
 
-    # Approximate bolt preload via T = K · F · d
-    # mode: torque2force (default) | force2torque
+    # Approximate bolt preload via T = K · F · d (torque → preload).
     def self.calculate_bolt_clamp_load(inputs)
-      mode = inputs["mode"].to_s.presence || "torque2force"
+      torque_nm = numeric_input(inputs, "torque_nm")
       nut_factor = numeric_input(inputs, "nut_factor")
       nominal_diameter_mm = numeric_input(inputs, "nominal_diameter_mm")
 
-      if nut_factor <= 0 || nominal_diameter_mm <= 0
+      if torque_nm <= 0 || nut_factor <= 0 || nominal_diameter_mm <= 0
         raise Error, I18n.t("mechbox.errors.positive_values_required")
       end
 
-      case mode
-      when "torque2force"
-        torque_nm = numeric_input(inputs, "torque_nm")
-        raise Error, I18n.t("mechbox.errors.positive_values_required") if torque_nm <= 0
-
-        preload_n = torque_nm / (nut_factor * nominal_diameter_mm / 1000.0)
-      when "force2torque"
-        preload_n = numeric_input(inputs, "preload_n")
-        raise Error, I18n.t("mechbox.errors.positive_values_required") if preload_n <= 0
-
-        torque_nm = nut_factor * preload_n * nominal_diameter_mm / 1000.0
-      else
-        raise Error, I18n.t("mechbox.errors.invalid_input", field: "mode")
-      end
+      preload_n = torque_nm / (nut_factor * nominal_diameter_mm / 1000.0)
 
       {
-        "mode" => mode,
         "preload_n" => preload_n,
         "preload_kn" => preload_n / 1000.0,
         "torque_nm" => torque_nm,

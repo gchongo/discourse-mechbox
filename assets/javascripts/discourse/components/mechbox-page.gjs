@@ -16,6 +16,10 @@ export default class MechboxPage extends Component {
     return getURL("/mechbox");
   }
 
+  get inputsJson() {
+    return JSON.stringify(this.selectedTool?.inputs || []);
+  }
+
   toolHref(toolId) {
     return getURL(`/mechbox?tool_id=${toolId}`);
   }
@@ -37,22 +41,12 @@ export default class MechboxPage extends Component {
           <div
             class="mechbox__workbench-panel"
             data-tool-id={{this.selectedTool.tool_id}}
+            data-inputs-json={{this.inputsJson}}
           >
             <h2>{{i18n "mechbox.workbench_title"}}</h2>
 
-            {{#each this.selectedTool.inputs as |input|}}
-              <label class="mechbox__input-label" for="mechbox-input-{{input.key}}">
-                {{input.key}}
-              </label>
-              <input
-                id="mechbox-input-{{input.key}}"
-                type="text"
-                class="mechbox__inputs"
-                name={{input.key}}
-                data-type={{input.type}}
-                autocomplete="off"
-              />
-            {{/each}}
+            {{! Form fields are mounted by mechbox-workbench initializer (vanilla DOM). }}
+            <div class="mechbox__form-mount"></div>
 
             <div class="mechbox__actions">
               <button type="button" class="btn btn-primary mechbox__calculate-btn">
