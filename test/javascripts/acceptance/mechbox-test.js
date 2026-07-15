@@ -155,6 +155,7 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-bolt");
     assert.dom(".mechbox-bolt__grid").exists("two-column grid is rendered");
     assert.dom(".mechbox-bolt__results").exists("results column is rendered");
+    assert.dom(".mechbox-bolt__mode-tab").exists("calc mode tabs are rendered");
     assert.dom("input[name='torque_nm']").exists("torque input is rendered");
     assert.dom("select[name='grade']").exists("grade select is rendered");
 
@@ -166,6 +167,22 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-bolt__status");
     assert.dom(".mechbox-bolt__results-body").includesText("25000");
     assert.dom(".mechbox-bolt__status").exists("status badge is rendered");
+  });
+
+  test("switches between bolt calc modes", async function (assert) {
+    await visit("/mechbox?tool_id=bolt_clamp_load");
+    await waitFor(".mechbox-bolt");
+
+    assert.dom("input[name='nut_factor']").exists("simple mode shows nut factor");
+
+    await click(".mechbox-bolt__mode-tab[data-calc-mode='full']");
+    assert.dom("input[name='mu_g']").exists("full mode shows mu_g");
+    assert
+      .dom("[data-calc-show='simple']")
+      .hasClass("is-mode-hidden", "simple-only fields are hidden in full mode");
+
+    await click(".mechbox-bolt__mode-tab[data-calc-mode='professional']");
+    assert.dom("input[name='grip_length']").exists("professional mode shows grip length");
   });
 
   test("renders the gear ratio tool page on direct visit", async function (assert) {

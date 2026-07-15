@@ -56,7 +56,7 @@ en:
         description: "Calculate speed ratio from tooth counts."
       bolt_clamp_load:
         name: "Bolt preload"
-        description: "Simplified model: estimate preload with T = K·F·d and check tensile stress. Use full/professional modes for formal design."
+        description: "Three modes: simplified, full (VDI 2230), and professional (stiffness / embedment / thermal)."
       gdt_position:
         name: "GD&T position"
         description: "Calculate position tolerance diameter."

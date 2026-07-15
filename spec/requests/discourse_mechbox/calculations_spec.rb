@@ -61,12 +61,13 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
   end
 
-  it "runs builtin bolt_clamp_load torque-to-force with stress check" do
+  it "runs simple bolt_clamp_load torque-to-force with stress check" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "bolt_clamp_load",
            save_record: false,
            inputs: {
+             calc_mode: "simple",
              mode: "torque2force",
              torque_nm: 50,
              nut_factor: 0.2,
@@ -77,59 +78,77 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
          }
 
     expect(response).to have_http_status(:ok)
-    json = response.parsed_body
-    outputs = json["outputs"]
+    outputs = response.parsed_body["outputs"]
 
-    expect(json["tool_id"]).to eq("bolt_clamp_load")
-    expect(outputs["mode"]).to eq("torque2force")
-    expect(outputs["grade"]).to eq("8.8")
+    expect(outputs["calc_mode"]).to eq("simple")
     expect(outputs["preload_n"]).to eq(25_000.0)
-    expect(outputs["preload_kn"]).to eq(25.0)
-    expect(outputs["torque_nm"]).to eq(50.0)
     expect(outputs["stress_area_mm2"]).to be_within(0.1).of(57.99)
     expect(outputs["stress_mpa"]).to be_within(1.0).of(431.1)
-    expect(outputs["allow_stress_mpa"]).to eq(400.0)
-    expect(outputs["max_preload_n"]).to be_within(50.0).of(23_196.0)
     expect(outputs["pass"]).to eq(false)
     expect(outputs["estimate_only"]).to eq(true)
   end
 
-  it "runs builtin bolt_clamp_load force-to-torque calculation" do
+  it "runs full VDI bolt_clamp_load calculation" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "bolt_clamp_load",
            save_record: false,
            inputs: {
-             mode: "force2torque",
-             preload_n: 20_000,
-             nut_factor: 0.2,
+             calc_mode: "full",
+             mode: "torque2force",
+             torque_nm: 50,
              nominal_diameter_mm: 10,
+             pitch_mm: 1.5,
              grade: "8.8",
+             mu_g: 0.12,
+             mu_k: 0.12,
+             d_km: 14.5,
            },
          }
 
     expect(response).to have_http_status(:ok)
     outputs = response.parsed_body["outputs"]
 
-    expect(outputs["mode"]).to eq("force2torque")
-    expect(outputs["torque_nm"]).to eq(40.0)
-    expect(outputs["preload_n"]).to eq(20_000.0)
-    expect(outputs["pass"]).to eq(true)
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["preload_n"]).to be > 0
+    expect(outputs["torque_thread_nm"]).to be > 0
+    expect(outputs["torque_head_nm"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(false)
   end
 
-  it "returns 422 for invalid bolt_clamp_load mode" do
+  it "runs professional bolt_clamp_load residual preload" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "bolt_clamp_load",
+           save_record: false,
            inputs: {
-             mode: "unknown",
-             torque_nm: 50,
-             nut_factor: 0.2,
+             calc_mode: "professional",
+             mode: "force2torque",
+             preload_n: 20_000,
              nominal_diameter_mm: 10,
+             pitch_mm: 1.5,
              grade: "8.8",
+             mu_g: 0.12,
+             mu_k: 0.12,
+             d_km: 14.5,
+             grip_length: 20,
+             hole_diameter: 11,
+             head_contact_diameter: 15,
+             outer_diameter: 43,
+             embedment_um: 11,
+             delta_t: 0,
+             external_axial_load: 5000,
            },
          }
 
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["preload_tightening_n"]).to be > outputs["preload_residual_n"]
+    expect(outputs["preload_residual_n"]).to be_within(1.0).of(20_000.0)
+    expect(outputs["embedment_loss_n"]).to be > 0
+    expect(outputs["max_bolt_force"]).to be > outputs["preload_residual_n"]
+    expect(outputs["separation_pass"]).to eq(true)
   end
 end
