@@ -83,7 +83,7 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["count"]).to eq(2)
   end
 
-  it "runs gdt_position with tolerance check" do
+  it "rejects gdt_position until it is folded into size_chain" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "gdt_position",
@@ -92,46 +92,6 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
              deviation_x_mm: 0.03,
              deviation_y_mm: 0.04,
              tolerance_diameter_mm: 0.2,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-    expect(outputs["position_diameter_mm"]).to be_within(0.0001).of(0.1)
-    expect(outputs["margin_mm"]).to be_within(0.0001).of(0.1)
-    expect(outputs["utilization"]).to be_within(0.001).of(0.5)
-    expect(outputs["pass"]).to eq(true)
-  end
-
-  it "runs gdt_position without tolerance" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "gdt_position",
-           save_record: false,
-           inputs: {
-             deviation_x_mm: 1.0,
-             deviation_y_mm: 1.0,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-    expect(outputs["position_diameter_mm"]).to be_within(0.001).of(2.828)
-    expect(outputs).not_to have_key("pass")
-  end
-
-  it "rejects calculations for tools that are not enabled" do
-    allow(DiscourseMechbox::ToolCatalog).to receive(:builtin_tool_available?).with(
-      "gdt_position",
-    ).and_return(false)
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "gdt_position",
-           save_record: false,
-           inputs: {
-             deviation_x_mm: 1.0,
-             deviation_y_mm: 1.0,
            },
          }
 

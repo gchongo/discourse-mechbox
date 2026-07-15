@@ -13,7 +13,6 @@ module DiscourseMechbox
       bolt_clamp_load
       unit_converter
       rss_calculation
-      gdt_position
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.

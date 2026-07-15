@@ -37,7 +37,7 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
       "bolt_clamp_load",
     )
     expect(json["home"]["mech_groups"].map { |g| g["id"] }).not_to include("design-chain")
-    expect(json["home"]["counts"]["available"]).to eq(5)
+    expect(json["home"]["counts"]["available"]).to eq(4)
     expect(json["home"]["counts"]["catalog"]).to be > 40
     expect(json["formula_templates"]).to eq([])
     expect(json["favorite_tool_ids"]).to eq([])

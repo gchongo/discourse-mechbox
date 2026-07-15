@@ -69,7 +69,6 @@ module DiscourseMechbox
           { id: "tolerance_allocation", tool_id: "tolerance_allocation", icon: "scale-balanced" },
           { id: "fit", tool_id: "fit", icon: "scale-balanced" },
           { id: "gdt_stack", tool_id: "gdt_stack", icon: "crosshairs" },
-          { id: "gdt_position", tool_id: "gdt_position", icon: "crosshairs" },
           { id: "unit_converter", tool_id: "unit_converter", icon: "arrows-left-right" },
           { id: "interference_fit", tool_id: "interference_fit", icon: "coins" },
           { id: "thermal_expansion", tool_id: "thermal_expansion", icon: "sun" },

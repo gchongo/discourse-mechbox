@@ -8,11 +8,12 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 5 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`gdt_position` |
-| ⏳ 首页目录 | 58 | 分析 18 + 统计 7 + 机械 33（含上述已接入） |
+| ✅ 已接入 | 4 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation` |
+| ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
-**W1 完成** ✅：`unit_converter` · `rss_calculation` · `gdt_position`（含可选公差校核）
+**W1 完成** ✅：`unit_converter` · `rss_calculation`  
+**产品修正**：`gdt_position` **不作为独立首页工具**。位置度属于「尺寸链编辑器 / 分析类型（GD&T）」与后续 `gdt_stack`；计算核可保留供尺寸链内复用，但不点亮、不上目录。  
 **下一步**：W2.1 `thread` 螺纹强度
 
 ---
@@ -41,7 +42,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 |------|---------|------|----------|------|----------|
 | 1.1 | `unit_converter` | 单位换算 | 服务端 builtin | ★ | mm/in、MPa/psi 互转 |
 | 1.2 | `rss_calculation` | RSS 计算 | 服务端 builtin | ★ | 基础 RSS；加权可二期 |
-| 1.3 | `gdt_position` | GD&T 位置度 | 服务端 builtin | ★☆ | 位置度直径；可后续并入 GD&T 栈 |
+| 1.3 | ~~`gdt_position`~~ | （已撤销独立工具） | — | — | 并入尺寸链 / GD&T 栈，不上首页 |
 
 **每工具清单**：Registry 公式 → 通用或专用 vanilla 表单 → `ENABLED_BUILTIN` 点亮 → 中英文案 → 请求/验收测试 → rebuild。
 

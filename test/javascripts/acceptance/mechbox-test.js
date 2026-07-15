@@ -102,33 +102,11 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "bolt",
                   available: true,
                 },
-                {
-                  id: "gdt_position",
-                  tool_id: "gdt_position",
-                  name: "GD&T position",
-                  description: "ΔX/ΔY → position diameter",
-                  icon: "crosshairs",
-                  available: true,
-                },
               ],
             },
           ],
-          counts: { available: 5, catalog: 58 },
+          counts: { available: 4, catalog: 57 },
         },
-      });
-    });
-
-    server.get("/mechbox/api/tools/gdt_position", () => {
-      return helper.response(200, {
-        tool_id: "gdt_position",
-        name: "GD&T position",
-        description: "Calculate position tolerance diameter.",
-        available: true,
-        inputs: [
-          { key: "deviation_x_mm", type: "number" },
-          { key: "deviation_y_mm", type: "number" },
-          { key: "tolerance_diameter_mm", type: "number" },
-        ],
       });
     });
 
@@ -228,19 +206,6 @@ acceptance("MechBox | safe page", function (needs) {
           outputs: {
             rss: 5,
             count: 2,
-          },
-        });
-      }
-
-      if (body.tool_id === "gdt_position") {
-        return helper.response(200, {
-          tool_id: "gdt_position",
-          outputs: {
-            position_diameter_mm: 0.1,
-            tolerance_diameter_mm: 0.2,
-            margin_mm: 0.1,
-            utilization: 0.5,
-            pass: true,
           },
         });
       }
@@ -375,24 +340,5 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-rss__dl");
 
     assert.dom(".mechbox-rss__dl").includesText("5");
-  });
-
-  test("opens and calculates on the gdt position page", async function (assert) {
-    await visit("/mechbox?tool_id=gdt_position");
-
-    await waitFor(".mechbox-gdt");
-    assert.dom("input[name='deviation_x_mm']").exists("X deviation input is rendered");
-    assert
-      .dom("input[name='tolerance_diameter_mm']")
-      .exists("tolerance input is rendered");
-
-    await fillIn("input[name='deviation_x_mm']", "0.03");
-    await fillIn("input[name='deviation_y_mm']", "0.04");
-    await fillIn("input[name='tolerance_diameter_mm']", "0.2");
-    await click(".mechbox-gdt__calculate-btn");
-    await waitFor(".mechbox-gdt__status");
-
-    assert.dom(".mechbox-gdt__hero-value").includesText("0.1");
-    assert.dom(".mechbox-gdt__status").hasClass("is-pass", "pass badge is rendered");
   });
 });
