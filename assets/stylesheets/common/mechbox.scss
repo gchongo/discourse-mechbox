@@ -490,7 +490,8 @@
 .mechbox-thread,
 .mechbox-key,
 .mechbox-bolt-group,
-.mechbox-weld {
+.mechbox-weld,
+.mechbox-spring {
   &__modes {
     display: flex;
     flex-wrap: wrap;

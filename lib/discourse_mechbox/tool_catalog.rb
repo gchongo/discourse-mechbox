@@ -17,6 +17,7 @@ module DiscourseMechbox
       key
       bolt_group
       weld
+      spring
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -227,6 +228,32 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "spring" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "material", type: "string", required: false },
+          { key: "wire_diameter_mm", type: "number", required: true },
+          { key: "mean_diameter_mm", type: "number", required: false },
+          { key: "outer_diameter_mm", type: "number", required: false },
+          { key: "active_coils", type: "number", required: true },
+          { key: "load_n", type: "number", required: false },
+          { key: "allowable_shear_mpa", type: "number", required: false },
+          { key: "free_length_mm", type: "number", required: false },
+          { key: "install_height_mm", type: "number", required: false },
+          { key: "working_height_mm", type: "number", required: false },
+          { key: "load_min_n", type: "number", required: false },
+          { key: "load_max_n", type: "number", required: false },
+          { key: "target_cycles", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "spring_rate_n_per_mm", type: "number" },
+          { key: "shear_stress_mpa", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -244,7 +271,6 @@ module DiscourseMechbox
       "chain" => { category: "transmission", route: "/chain" },
       "clutch" => { category: "transmission", route: "/clutch" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "spring" => { category: "structural", route: "/spring" },
       "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },
       "structural" => { category: "structural", route: "/structural" },

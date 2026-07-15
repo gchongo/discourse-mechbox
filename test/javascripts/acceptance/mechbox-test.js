@@ -134,10 +134,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "medal",
                   available: true,
                 },
+                {
+                  id: "spring",
+                  tool_id: "spring",
+                  name: "Spring design",
+                  description: "Rate and shear",
+                  icon: "rotate",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 8, catalog: 57 },
+          counts: { available: 9, catalog: 57 },
         },
       });
     });
@@ -205,6 +213,22 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "leg_size_mm", type: "number" },
           { key: "weld_length_mm", type: "number" },
           { key: "force_n", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/spring", () => {
+      return helper.response(200, {
+        tool_id: "spring",
+        name: "Spring design",
+        description: "Helical compression spring.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "wire_diameter_mm", type: "number" },
+          { key: "mean_diameter_mm", type: "number" },
+          { key: "active_coils", type: "number" },
+          { key: "load_n", type: "number" },
         ],
       });
     });
@@ -383,6 +407,24 @@ acceptance("MechBox | safe page", function (needs) {
                 pass: true,
               },
             ],
+          },
+        });
+      }
+
+      if (body.tool_id === "spring") {
+        return helper.response(200, {
+          tool_id: "spring",
+          outputs: {
+            calc_mode: "simple",
+            spring_rate_n_per_mm: 18.6,
+            deflection_mm: 8.06,
+            shear_stress_mpa: 425.9,
+            allowable_shear_mpa: 529,
+            shear_pass: true,
+            wahl_factor: 1.25,
+            spring_index: 6,
+            estimate_only: true,
+            pass: false,
           },
         });
       }
@@ -617,5 +659,30 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-weld-show='butt']")
       .doesNotHaveClass("is-mode-hidden", "butt mode shows thickness");
+  });
+
+  test("opens and calculates on the spring design page", async function (assert) {
+    await visit("/mechbox?tool_id=spring");
+
+    await waitFor(".mechbox-spring");
+    assert.dom(".mechbox-spring__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-spring__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert
+      .dom("input[name='wire_diameter_mm']")
+      .exists("wire diameter input is rendered");
+    assert.dom(".mechbox-spring__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='load_n']", "150");
+    await click(".mechbox-spring__calculate-btn");
+    await waitFor(".mechbox-spring__status");
+
+    assert.dom(".mechbox-spring__status").hasClass("is-attention");
+    assert.dom(".mechbox-spring__results-body").includesText("18.6");
+
+    await click(".mechbox-spring__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows free length");
   });
 });

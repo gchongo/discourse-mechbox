@@ -70,6 +70,9 @@ zh_CN:
       weld:
         name: "焊缝强度"
         description: "角焊缝与对接焊缝强度估算，支持简化、三标准对照与专业（合成应力/HAZ）模式。"
+      spring:
+        name: "弹簧设计"
+        description: "圆柱螺旋压缩弹簧刚度与切应力校核，支持简化、完整与专业（疲劳）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

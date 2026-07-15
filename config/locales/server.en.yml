@@ -70,6 +70,9 @@ en:
       weld:
         name: "Weld strength"
         description: "Fillet and butt weld estimates; simple, three-standard, and professional (combined / HAZ) modes."
+      spring:
+        name: "Spring design"
+        description: "Helical compression spring rate and shear check; simple, full, and professional (fatigue) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

@@ -401,6 +401,60 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["standards"].size).to eq(3)
   end
 
+  it "runs simple spring rate and shear estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "spring",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             material: "50CrVA",
+             wire_diameter_mm: 3,
+             mean_diameter_mm: 18,
+             active_coils: 6,
+             load_n: 200,
+             allowable_shear_mpa: 700,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["spring_rate_n_per_mm"]).to be > 0
+    expect(outputs["shear_stress_mpa"]).to be > 0
+    expect(outputs["wahl_factor"]).to be > 1
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full spring with buckling and test load" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "spring",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             material: "50CrVA",
+             wire_diameter_mm: 1.1,
+             outer_diameter_mm: 6.5,
+             active_coils: 5,
+             total_coils: 7,
+             free_length_mm: 15,
+             install_height_mm: 13,
+             working_height_mm: 12,
+             allowable_shear_mpa: 529,
+             end_type: "fixed",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["buckling"]).to be_present
+    expect(outputs["test_load_n"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

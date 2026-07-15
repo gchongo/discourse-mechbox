@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 8 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld` |
+| ✅ 已接入 | 9 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -18,7 +18,8 @@
 **W2.2 完成** ✅：`key` 平键连接（简化 / 完整推荐键长 / 专业多键与幅值门限）  
 **W2.3 完成** ✅：`bolt_group` 螺栓组（简化 / 矢量分解 / 专业抗滑与撬力）  
 **W2.4 完成** ✅：`weld` 焊缝强度（角焊/对接；简化 / 三标准 / 专业合成与 HAZ）  
-**下一步**：W2.5 `spring` 弹簧设计
+**W2.5 完成** ✅：`spring` 弹簧设计（简化刚度剪切 / 完整稳定性 / 专业疲劳）  
+**下一步**：W2.6 `clutch` 离合器
 
 ---
 
@@ -62,8 +63,8 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 2.2 | `key` | 平键连接 | `/key` | ★★ | ✅ |
 | 2.3 | `bolt_group` | 螺栓组 | `/bolt-group` | ★★☆ | ✅ |
 | 2.4 | `weld` | 焊缝强度 | `/weld` | ★★ | ✅ |
-| 2.5 | `spring` | 弹簧设计 | `/spring` | ★★ |
-| 2.6 | `clutch` | 离合器 | `/clutch` | ★☆ |
+| 2.5 | `spring` | 弹簧设计 | `/spring` | ★★ | ✅ |
+| 2.6 | `clutch` | 离合器 | `/clutch` | ★☆ | |
 | 2.7 | `belt` | 皮带传动 | `/belt` | ★★ |
 | 2.8 | `chain` | 链传动 | `/chain` | ★★ |
 

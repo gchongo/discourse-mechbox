@@ -15,6 +15,7 @@ module DiscourseMechbox
       key
       bolt_group
       weld
+      spring
     ].freeze
 
     UNIT_FACTORS = {
@@ -123,6 +124,12 @@ module DiscourseMechbox
     def self.calculate_weld(inputs)
       DiscourseMechbox::WeldCalculator.calculate(inputs)
     rescue DiscourseMechbox::WeldCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_spring(inputs)
+      DiscourseMechbox::SpringCalculator.calculate(inputs)
+    rescue DiscourseMechbox::SpringCalculator::Error => error
       raise Error, error.message
     end
 
