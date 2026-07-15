@@ -1,6 +1,12 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
+import {
+  ensureKatex,
+  mixedLabel,
+  texNode,
+  typesetRoot,
+} from "./mechbox-tex";
 
 const METRIC_THREAD_PITCH = {
   3: 0.5,
@@ -27,6 +33,10 @@ function t(key, options) {
   return i18n(`mechbox.thread.${key}`, options);
 }
 
+function suggestedPitch(diameter) {
+  return METRIC_THREAD_PITCH[Math.round(Number(diameter))] || 1.5;
+}
+
 function formatNumber(value, digits = 2) {
   const num = Number(value);
   if (!Number.isFinite(num)) {
@@ -35,79 +45,440 @@ function formatNumber(value, digits = 2) {
   return Number(num.toFixed(digits)).toString();
 }
 
-function suggestedPitch(diameter) {
-  return METRIC_THREAD_PITCH[Math.round(Number(diameter))] || 1.5;
-}
-
-function fieldRow(labelText, control, hintText) {
+function fieldRow(labelEl, control, unitEl) {
   const row = document.createElement("div");
   row.className = "mechbox-thread__field";
 
   const label = document.createElement("label");
   label.className = "mechbox-thread__label";
-  label.textContent = labelText;
+  label.append(labelEl);
 
-  row.append(label, control);
+  const controlWrap = document.createElement("div");
+  controlWrap.className = "mechbox-thread__control";
+  controlWrap.append(control);
 
-  if (hintText) {
-    const hint = document.createElement("p");
-    hint.className = "mechbox-thread__hint";
-    hint.textContent = hintText;
-    row.append(hint);
+  const unit = document.createElement("span");
+  unit.className = "mechbox-thread__unit";
+  if (unitEl) {
+    unit.append(unitEl);
   }
 
+  row.append(label, controlWrap, unit);
   return row;
 }
 
-function numberInput(name, value, step = "any") {
+function numberInput(name, value) {
   const input = document.createElement("input");
-  input.className = "mechbox-thread__control mechbox__inputs";
-  input.type = "number";
+  input.type = "text";
+  input.inputMode = "decimal";
+  input.className = "mechbox__inputs mechbox-thread__input";
   input.name = name;
-  input.dataset.type = "number";
-  input.step = step;
-  input.autocomplete = "off";
   input.value = value;
+  input.autocomplete = "off";
+  input.dataset.type = "number";
   return input;
 }
 
-function selectInput(name, options, selected) {
-  const select = document.createElement("select");
-  select.className = "mechbox-thread__control mechbox__inputs";
-  select.name = name;
-  select.dataset.type = "string";
-  for (const opt of options) {
-    const option = document.createElement("option");
-    option.value = opt.value;
-    option.textContent = opt.label;
-    if (opt.value === selected) {
-      option.selected = true;
-    }
-    select.append(option);
-  }
-  return select;
-}
-
-function setModeVisibility(root, mode) {
-  root.querySelectorAll("[data-calc-show]").forEach((el) => {
-    const modes = el.getAttribute("data-calc-show").split(/\s+/);
-    el.classList.toggle("is-mode-hidden", !modes.includes(mode));
+function markUserEdited(input) {
+  input.addEventListener("input", () => {
+    input.dataset.userEdited = "true";
   });
 }
 
-function appendDlRow(list, label, value) {
-  const dt = document.createElement("dt");
-  dt.textContent = label;
-  const dd = document.createElement("dd");
-  dd.textContent = value;
-  list.append(dt, dd);
+function getCalcMode(root) {
+  return root.dataset.calcMode || "simple";
 }
 
-export function mountThreadWorkbench(panel) {
+function setCalcMode(root, mode) {
+  root.dataset.calcMode = mode;
+}
+
+function syncCalcModeVisibility(root) {
+  const calcMode = getCalcMode(root);
+  root.querySelectorAll("[data-calc-show]").forEach((el) => {
+    const modes = (el.dataset.calcShow || "").split(/\s+/).filter(Boolean);
+    el.classList.toggle("is-mode-hidden", !modes.includes(calcMode));
+  });
+}
+
+function syncModeTabs(root) {
+  const calcMode = getCalcMode(root);
+  root.querySelectorAll("[data-calc-mode]").forEach((tab) => {
+    tab.classList.toggle("is-active", tab.dataset.calcMode === calcMode);
+  });
+}
+
+function syncDiameterHints(root) {
+  const diameter =
+    Number(root.querySelector('input[name="diameter_mm"]')?.value) || 12;
+  const pitch = root.querySelector('input[name="pitch_mm"]');
+  const hint = root.querySelector("[data-diameter-hint]");
+  const dKm = root.querySelector('input[name="d_km"]');
+  const engaged = root.querySelector('input[name="engaged_length_mm"]');
+
+  if (hint) {
+    hint.replaceChildren();
+    hint.append(texNode(`\\mathrm{M}${diameter}`));
+    typesetRoot(hint);
+  }
+
+  if (pitch && !pitch.dataset.userEdited) {
+    pitch.value = String(suggestedPitch(diameter));
+  }
+
+  if (dKm && !dKm.dataset.userEdited) {
+    dKm.value = String(Number((1.45 * diameter).toFixed(2)));
+  }
+
+  if (engaged && !engaged.dataset.userEdited) {
+    engaged.value = String(Number((1.5 * diameter).toFixed(1)));
+  }
+}
+
+function updateFormulaBar(root) {
+  const bar = root.querySelector(".mechbox-thread__formula-bar");
+  const warning = root.querySelector(".mechbox-thread__warning");
+  if (!bar) {
+    return;
+  }
+
+  const calcMode = getCalcMode(root);
+  bar.replaceChildren();
+
+  const title = document.createElement("strong");
+  if (calcMode === "simple") {
+    title.textContent = t("formula_title");
+    bar.append(title);
+    bar.append(
+      texNode("A_{s}=\\dfrac{\\pi}{4}(d-0.9382P)^{2}", { displayMode: true })
+    );
+    bar.append(
+      texNode("\\sigma=F/A_{s},\\quad T=\\mu d F/1000", { displayMode: true })
+    );
+    if (warning) {
+      warning.textContent = t("estimate_warning");
+      warning.hidden = false;
+    }
+  } else if (calcMode === "full") {
+    title.textContent = t("formula_title_full");
+    bar.append(title);
+    bar.append(
+      texNode("\\tau=\\max(F/A_{ext}, F/A_{int})", { displayMode: true })
+    );
+    bar.append(
+      texNode("m_{eff,min}=k\\cdot d", { displayMode: true })
+    );
+    if (warning) {
+      warning.textContent = t("estimate_warning_full");
+      warning.hidden = false;
+    }
+  } else {
+    title.textContent = t("formula_title_pro");
+    bar.append(title);
+    bar.append(
+      texNode(
+        "T=F\\left(0.16P+0.58 d_{2}\\mu_{G}+0.5 D_{km}\\mu_{K}\\right)/1000",
+        { displayMode: true }
+      )
+    );
+    if (warning) {
+      warning.textContent = t("estimate_warning_pro");
+      warning.hidden = false;
+    }
+  }
+
+  typesetRoot(bar);
+}
+
+function applyCalcMode(root, mode) {
+  setCalcMode(root, mode);
+  syncModeTabs(root);
+  syncCalcModeVisibility(root);
+  updateFormulaBar(root);
+}
+
+function modeTabLabel(mode) {
+  if (mode === "simple") {
+    return t("mode_simple");
+  }
+  if (mode === "full") {
+    return t("mode_full");
+  }
+  return t("mode_professional");
+}
+
+function resultRow(labelParts, valueParts, options = {}) {
+  const row = document.createElement("div");
+  row.className = "mechbox-thread__result-row";
+  if (options.danger) {
+    row.classList.add("is-danger");
+  }
+
+  const dt = document.createElement("dt");
+  dt.append(mixedLabel(labelParts));
+  const dd = document.createElement("dd");
+  dd.append(mixedLabel(valueParts));
+  row.append(dt, dd);
+  return row;
+}
+
+function collectInputs(root) {
+  const calcMode = getCalcMode(root);
+  const inputs = {
+    calc_mode: calcMode,
+    diameter_mm: Number(root.querySelector('input[name="diameter_mm"]')?.value),
+    pitch_mm: Number(root.querySelector('input[name="pitch_mm"]')?.value),
+    grade: root.querySelector('select[name="grade"]')?.value || "8.8",
+    axial_force_n: Number(
+      root.querySelector('input[name="axial_force_n"]')?.value
+    ),
+    engaged_length_mm: Number(
+      root.querySelector('input[name="engaged_length_mm"]')?.value
+    ),
+  };
+
+  if (calcMode === "simple") {
+    inputs.friction_coeff = Number(
+      root.querySelector('input[name="friction_coeff"]')?.value
+    );
+  } else {
+    inputs.nut_material =
+      root.querySelector('select[name="nut_material"]')?.value || "steel";
+  }
+
+  if (calcMode === "professional") {
+    inputs.mu_g = Number(root.querySelector('input[name="mu_g"]')?.value);
+    inputs.mu_k = Number(root.querySelector('input[name="mu_k"]')?.value);
+    inputs.d_km = Number(root.querySelector('input[name="d_km"]')?.value);
+  }
+
+  return inputs;
+}
+
+function appendFormulaBox(box, calcMode) {
+  const formulaBox = document.createElement("div");
+  formulaBox.className = "mechbox-thread__formula-box";
+  const formulaTitle = document.createElement("div");
+  formulaTitle.className = "mechbox-thread__formula-box-title";
+
+  if (calcMode === "simple") {
+    formulaTitle.textContent = t("formula_title");
+    formulaBox.append(formulaTitle);
+    formulaBox.append(
+      texNode("A_{s}=\\dfrac{\\pi}{4}(d-0.9382P)^{2}", { displayMode: true })
+    );
+    formulaBox.append(
+      texNode("\\sigma=F/A_{s}", { displayMode: true })
+    );
+    formulaBox.append(
+      texNode("T=\\mu d F/1000", { displayMode: true })
+    );
+  } else if (calcMode === "full") {
+    formulaTitle.textContent = t("formula_title_full");
+    formulaBox.append(formulaTitle);
+    formulaBox.append(
+      texNode("A_{ext}=0.5\\pi d_{1} L_{e}", { displayMode: true })
+    );
+    formulaBox.append(
+      texNode("A_{int}=0.5\\pi d_{2} L_{e}", { displayMode: true })
+    );
+    formulaBox.append(
+      texNode("m_{eff,min}=k\\cdot d", { displayMode: true })
+    );
+  } else {
+    formulaTitle.textContent = t("formula_title_pro");
+    formulaBox.append(formulaTitle);
+    formulaBox.append(
+      texNode(
+        "T=F\\left(0.16P+0.58 d_{2}\\mu_{G}+0.5 D_{km}\\mu_{K}\\right)/1000",
+        { displayMode: true }
+      )
+    );
+    formulaBox.append(
+      texNode("\\eta=\\sigma/\\sigma_{allow}", { displayMode: true })
+    );
+  }
+
+  box.append(formulaBox);
+}
+
+async function renderResults(panel, payload) {
+  const box = panel.querySelector(".mechbox-thread__results-body");
+  if (!box) {
+    return;
+  }
+
+  const outputs = payload?.outputs || {};
+  const calcMode = outputs.calc_mode || "simple";
+  box.replaceChildren();
+  box.classList.add("is-visible");
+
+  const status = document.createElement("div");
+  status.className = `mechbox-thread__status ${
+    outputs.estimate_only
+      ? "is-attention"
+      : outputs.pass
+        ? "is-pass"
+        : "is-attention"
+  }`;
+  status.textContent = `${t("overall")}: ${
+    outputs.estimate_only
+      ? t("status_estimate")
+      : outputs.pass
+        ? t("status_pass")
+        : t("status_attention")
+  }`;
+  box.append(status);
+
+  const list = document.createElement("dl");
+  list.className = "mechbox-thread__result-list";
+
+  list.append(
+    resultRow(
+      [{ text: `${t("result_stress_area")} ` }, { tex: "A_{s}" }],
+      [
+        {
+          tex: `${formatNumber(outputs.stress_area_mm2)}\\,\\mathrm{mm}^{2}`,
+        },
+      ]
+    ),
+    resultRow(
+      [{ text: t("result_diameters") }],
+      [
+        {
+          tex: `${formatNumber(outputs.pitch_diameter_mm, 3)}/${formatNumber(outputs.minor_diameter_mm, 3)}\\,\\mathrm{mm}`,
+        },
+      ]
+    ),
+    resultRow(
+      [{ text: `${t("result_tensile")} ` }, { tex: "\\sigma" }],
+      [
+        {
+          tex: `${formatNumber(outputs.tensile_stress_mpa, 1)}\\,\\mathrm{MPa}`,
+        },
+      ],
+      { danger: outputs.tensile_pass === false }
+    ),
+    resultRow(
+      [{ text: `${t("result_shear")} ` }, { tex: "\\tau" }],
+      [
+        {
+          tex: `${formatNumber(outputs.shear_stress_mpa, 1)}\\,\\mathrm{MPa}`,
+        },
+      ],
+      { danger: outputs.shear_pass === false }
+    ),
+    resultRow(
+      [{ text: `${t("result_torque")} ` }, { tex: "T" }],
+      [
+        {
+          tex: `${formatNumber(outputs.tightening_torque_nm)}\\,\\mathrm{N\\cdot m}`,
+        },
+        {
+          text: ` (${t(`torque_${outputs.torque_method}`)})`,
+        },
+      ]
+    ),
+    resultRow(
+      [{ text: t("result_max_force") }],
+      [
+        {
+          tex: `${formatNumber(outputs.max_allowable_force_n, 0)}\\,\\mathrm{N}`,
+        },
+      ]
+    )
+  );
+
+  if (calcMode === "full" || calcMode === "professional") {
+    list.append(
+      resultRow(
+        [{ text: t("result_min_engagement") }],
+        [
+          {
+            tex: `${formatNumber(outputs.min_engagement_mm, 1)}\\,\\mathrm{mm}`,
+          },
+        ],
+        { danger: outputs.engagement_pass === false }
+      ),
+      resultRow(
+        [{ text: t("result_critical_side") }],
+        [{ text: t(`side_${outputs.critical_shear_side}`) }]
+      )
+    );
+  }
+
+  if (calcMode === "professional") {
+    list.append(
+      resultRow(
+        [{ text: t("result_utilization") }],
+        [
+          {
+            tex: `${formatNumber(Number(outputs.utilization) * 100, 1)}\\%`,
+          },
+        ]
+      )
+    );
+  }
+
+  box.append(list);
+  appendFormulaBox(box, calcMode);
+  await typesetRoot(box);
+}
+
+function setThreadError(panel, message) {
+  const error = panel.querySelector(".mechbox-thread__error");
+  if (!error) {
+    return;
+  }
+  if (message) {
+    error.textContent = message;
+    error.hidden = false;
+  } else {
+    error.textContent = "";
+    error.hidden = true;
+  }
+}
+
+async function calculateThread(panel, button) {
+  const root = panel.querySelector(".mechbox-thread");
+  if (!root) {
+    return;
+  }
+
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = i18n("mechbox.calculating");
+  setThreadError(panel, null);
+
+  try {
+    const result = await ajax("/mechbox/api/calculate", {
+      type: "POST",
+      data: {
+        tool_id: "thread",
+        save_record: false,
+        inputs: collectInputs(root),
+      },
+    });
+    await renderResults(panel, result);
+  } catch (error) {
+    if (error.jqXHR?.responseJSON?.errors?.length) {
+      setThreadError(panel, error.jqXHR.responseJSON.errors.join(" "));
+    } else {
+      popupAjaxError(error);
+    }
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
+
+export async function mountThreadWorkbench(panel) {
   const mount = panel.querySelector(".mechbox__form-mount");
   if (!mount) {
     return;
   }
+
+  await ensureKatex();
 
   panel.classList.remove(
     "mechbox__workbench-panel--bolt",
@@ -116,283 +487,202 @@ export function mountThreadWorkbench(panel) {
     "mechbox__workbench-panel--gdt"
   );
   panel.classList.add("mechbox__workbench-panel--thread");
+
+  ["mechbox__actions", "mechbox__error", "mechbox__result-title", "mechbox__result"].forEach(
+    (cls) => {
+      const el = panel.querySelector(`.${cls}`);
+      if (el) {
+        el.hidden = true;
+      }
+    }
+  );
+
   mount.replaceChildren();
 
   const root = document.createElement("div");
   root.className = "mechbox-thread";
-  root.dataset.calcMode = "simple";
+  setCalcMode(root, "simple");
 
-  const modeBar = document.createElement("div");
-  modeBar.className = "mechbox-thread__modes";
-  for (const mode of CALC_MODES) {
-    const tab = document.createElement("button");
-    tab.type = "button";
-    tab.className = "mechbox-thread__mode-tab";
-    tab.dataset.calcMode = mode;
-    tab.textContent = t(`mode_${mode}`);
-    if (mode === "simple") {
-      tab.classList.add("is-active");
-    }
-    modeBar.append(tab);
-  }
+  const modes = document.createElement("div");
+  modes.className = "mechbox-thread__modes";
+  CALC_MODES.forEach((mode) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mechbox-thread__mode-tab";
+    btn.dataset.calcMode = mode;
+    btn.textContent = modeTabLabel(mode);
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      applyCalcMode(root, mode);
+      typesetRoot(root);
+    });
+    modes.append(btn);
+  });
+
+  const formulaBar = document.createElement("div");
+  formulaBar.className = "mechbox-thread__formula-bar";
+
+  const warning = document.createElement("p");
+  warning.className = "mechbox-thread__warning";
 
   const grid = document.createElement("div");
   grid.className = "mechbox-thread__grid";
 
-  const formCard = document.createElement("section");
-  formCard.className = "mechbox-thread__card";
+  const inputsCard = document.createElement("section");
+  inputsCard.className = "mechbox-thread__card";
+  const inputsTitle = document.createElement("h3");
+  inputsTitle.textContent = t("input_title");
+  inputsCard.append(inputsTitle);
 
-  const resultsCard = document.createElement("section");
-  resultsCard.className = "mechbox-thread__card mechbox-thread__results";
+  const diameterInput = numberInput("diameter_mm", "12");
+  diameterInput.addEventListener("input", () => syncDiameterHints(root));
 
-  const resultsBody = document.createElement("div");
-  resultsBody.className = "mechbox-thread__results-body";
-  resultsBody.innerHTML = `<p class="mechbox-thread__empty">${t("results_empty")}</p>`;
+  const pitchInput = numberInput("pitch_mm", "1.75");
+  markUserEdited(pitchInput);
 
-  const diameterInput = numberInput("diameter_mm", "12", "1");
-  const pitchInput = numberInput("pitch_mm", "1.75", "0.25");
-  const gradeSelect = selectInput(
-    "grade",
-    GRADES.map((g) => ({ value: g, label: g })),
-    "8.8"
-  );
-  const forceInput = numberInput("axial_force_n", "25000", "500");
-  const engagedInput = numberInput("engaged_length_mm", "18", "0.5");
-  const frictionInput = numberInput("friction_coeff", "0.2", "0.05");
-  const nutSelect = selectInput(
-    "nut_material",
-    [
-      { value: "steel", label: t("nut_steel") },
-      { value: "soft", label: t("nut_soft") },
-    ],
-    "steel"
-  );
-  const muGInput = numberInput("mu_g", "0.12", "0.02");
-  const muKInput = numberInput("mu_k", "0.12", "0.02");
-  const dKmInput = numberInput("d_km", String((1.45 * 12).toFixed(2)), "0.5");
-
-  const pitchSuggest = document.createElement("button");
-  pitchSuggest.type = "button";
-  pitchSuggest.className = "btn btn-default btn-small mechbox-thread__suggest";
-  pitchSuggest.textContent = t("use_standard_pitch");
-  pitchSuggest.addEventListener("click", () => {
-    pitchInput.value = String(suggestedPitch(diameterInput.value));
-  });
-
-  diameterInput.addEventListener("change", () => {
-    pitchInput.value = String(suggestedPitch(diameterInput.value));
-    dKmInput.value = String((1.45 * Number(diameterInput.value || 12)).toFixed(2));
-    if (!engagedInput.dataset.touched) {
-      engagedInput.value = String((1.5 * Number(diameterInput.value || 12)).toFixed(1));
+  const gradeSelect = document.createElement("select");
+  gradeSelect.className = "mechbox-thread__select";
+  gradeSelect.name = "grade";
+  GRADES.forEach((g) => {
+    const opt = document.createElement("option");
+    opt.value = g;
+    opt.textContent = g;
+    if (g === "8.8") {
+      opt.selected = true;
     }
-  });
-  engagedInput.addEventListener("input", () => {
-    engagedInput.dataset.touched = "true";
+    gradeSelect.append(opt);
   });
 
-  const frictionWrap = document.createElement("div");
-  frictionWrap.dataset.calcShow = "simple";
-  frictionWrap.append(fieldRow(t("friction_coeff"), frictionInput));
+  const forceInput = numberInput("axial_force_n", "25000");
+  const engagedInput = numberInput("engaged_length_mm", "18");
+  markUserEdited(engagedInput);
 
-  const nutWrap = document.createElement("div");
-  nutWrap.dataset.calcShow = "full professional";
-  nutWrap.append(fieldRow(t("nut_material"), nutSelect));
+  const frictionInput = numberInput("friction_coeff", "0.2");
+  const frictionRow = fieldRow(
+    mixedLabel([{ text: t("friction_coeff") }, { text: " " }, { tex: "\\mu" }]),
+    frictionInput,
+    document.createTextNode("—")
+  );
+  frictionRow.dataset.calcShow = "simple";
 
-  const vdiWrap = document.createElement("div");
-  vdiWrap.dataset.calcShow = "professional";
-  vdiWrap.append(
-    fieldRow(t("mu_g"), muGInput),
-    fieldRow(t("mu_k"), muKInput),
-    fieldRow(t("d_km"), dKmInput, t("d_km_hint"))
+  const nutSelect = document.createElement("select");
+  nutSelect.className = "mechbox-thread__select";
+  nutSelect.name = "nut_material";
+  [
+    ["steel", t("nut_steel")],
+    ["soft", t("nut_soft")],
+  ].forEach(([value, label]) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = label;
+    nutSelect.append(opt);
+  });
+  const nutRow = fieldRow(
+    document.createTextNode(t("nut_material")),
+    nutSelect,
+    document.createTextNode("—")
+  );
+  nutRow.dataset.calcShow = "full professional";
+
+  const muGInput = numberInput("mu_g", "0.12");
+  const muKInput = numberInput("mu_k", "0.12");
+  const dKmInput = numberInput("d_km", "17.4");
+  markUserEdited(dKmInput);
+
+  const muGRow = fieldRow(
+    mixedLabel([{ text: t("mu_g") }, { text: " " }, { tex: "\\mu_{G}" }]),
+    muGInput,
+    document.createTextNode("—")
+  );
+  muGRow.dataset.calcShow = "professional";
+
+  const muKRow = fieldRow(
+    mixedLabel([{ text: t("mu_k") }, { text: " " }, { tex: "\\mu_{K}" }]),
+    muKInput,
+    document.createTextNode("—")
+  );
+  muKRow.dataset.calcShow = "professional";
+
+  const dKmRow = fieldRow(
+    mixedLabel([{ text: t("d_km") }, { text: " " }, { tex: "D_{km}" }]),
+    dKmInput,
+    document.createTextNode("mm")
+  );
+  dKmRow.dataset.calcShow = "professional";
+
+  const diameterHint = document.createElement("span");
+  diameterHint.dataset.diameterHint = "true";
+
+  inputsCard.append(
+    fieldRow(
+      mixedLabel([{ text: t("diameter") }, { text: " " }, { tex: "d" }]),
+      diameterInput,
+      diameterHint
+    ),
+    fieldRow(
+      mixedLabel([{ text: t("pitch") }, { text: " " }, { tex: "P" }]),
+      pitchInput,
+      document.createTextNode("mm")
+    ),
+    fieldRow(
+      document.createTextNode(t("grade")),
+      gradeSelect,
+      document.createTextNode("—")
+    ),
+    fieldRow(
+      mixedLabel([{ text: t("axial_force") }, { text: " " }, { tex: "F" }]),
+      forceInput,
+      document.createTextNode("N")
+    ),
+    fieldRow(
+      mixedLabel([
+        { text: t("engaged_length") },
+        { text: " " },
+        { tex: "L_{e}" },
+      ]),
+      engagedInput,
+      document.createTextNode("mm")
+    ),
+    frictionRow,
+    nutRow,
+    muGRow,
+    muKRow,
+    dKmRow
   );
 
   const calcBtn = document.createElement("button");
   calcBtn.type = "button";
   calcBtn.className = "btn btn-primary mechbox-thread__calculate-btn";
   calcBtn.textContent = t("calculate");
+  calcBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    calculateThread(panel, calcBtn);
+  });
+  inputsCard.append(calcBtn);
 
-  const actions = document.createElement("div");
-  actions.className = "mechbox-thread__actions";
-  actions.append(calcBtn);
+  const error = document.createElement("p");
+  error.className = "mechbox-thread__error";
+  error.hidden = true;
+  inputsCard.append(error);
 
-  const pitchRow = fieldRow(t("pitch"), pitchInput);
-  pitchRow.append(pitchSuggest);
+  const resultsCard = document.createElement("section");
+  resultsCard.className = "mechbox-thread__card mechbox-thread__results";
+  const resultsTitle = document.createElement("h3");
+  resultsTitle.textContent = t("results_title");
+  const resultsBody = document.createElement("div");
+  resultsBody.className = "mechbox-thread__results-body";
+  resultsBody.innerHTML = `<p class="mechbox-thread__results-empty">${t(
+    "results_empty"
+  )}</p>`;
+  resultsCard.append(resultsTitle, resultsBody);
 
-  formCard.append(
-    fieldRow(t("diameter"), diameterInput, t("diameter_hint")),
-    pitchRow,
-    fieldRow(t("grade"), gradeSelect),
-    fieldRow(t("axial_force"), forceInput),
-    fieldRow(t("engaged_length"), engagedInput),
-    frictionWrap,
-    nutWrap,
-    vdiWrap,
-    actions
-  );
-
-  resultsCard.append(
-    Object.assign(document.createElement("h3"), {
-      className: "mechbox-thread__results-title",
-      textContent: t("results_title"),
-    }),
-    resultsBody
-  );
-
-  grid.append(formCard, resultsCard);
-  root.append(modeBar, grid);
+  grid.append(inputsCard, resultsCard);
+  root.append(modes, formulaBar, warning, grid);
   mount.append(root);
 
-  setModeVisibility(root, "simple");
-
-  modeBar.addEventListener("click", (event) => {
-    const tab = event.target.closest(".mechbox-thread__mode-tab");
-    if (!tab) {
-      return;
-    }
-    const mode = tab.dataset.calcMode;
-    root.dataset.calcMode = mode;
-    modeBar.querySelectorAll(".mechbox-thread__mode-tab").forEach((el) => {
-      el.classList.toggle("is-active", el === tab);
-    });
-    setModeVisibility(root, mode);
-  });
-
-  calcBtn.addEventListener("click", async () => {
-    const mode = root.dataset.calcMode || "simple";
-    const original = calcBtn.textContent;
-    calcBtn.disabled = true;
-    calcBtn.textContent = i18n("mechbox.calculating");
-
-    const inputs = {
-      calc_mode: mode,
-      diameter_mm: Number(diameterInput.value),
-      pitch_mm: Number(pitchInput.value),
-      grade: gradeSelect.value,
-      axial_force_n: Number(forceInput.value),
-      engaged_length_mm: Number(engagedInput.value),
-    };
-
-    if (mode === "simple") {
-      inputs.friction_coeff = Number(frictionInput.value);
-    } else {
-      inputs.nut_material = nutSelect.value;
-    }
-
-    if (mode === "professional") {
-      inputs.mu_g = Number(muGInput.value);
-      inputs.mu_k = Number(muKInput.value);
-      inputs.d_km = Number(dKmInput.value);
-    }
-
-    try {
-      const result = await ajax("/mechbox/api/calculate", {
-        type: "POST",
-        data: {
-          tool_id: "thread",
-          save_record: false,
-          inputs,
-        },
-      });
-
-      const outputs = result?.outputs || {};
-      resultsBody.replaceChildren();
-
-      const status = document.createElement("p");
-      status.className = `mechbox-thread__status ${
-        outputs.estimate_only
-          ? "is-estimate"
-          : outputs.pass
-            ? "is-pass"
-            : "is-fail"
-      }`;
-      status.textContent = outputs.estimate_only
-        ? t("status_estimate")
-        : outputs.pass
-          ? t("status_pass")
-          : t("status_fail");
-      resultsBody.append(status);
-
-      const list = document.createElement("dl");
-      list.className = "mechbox-thread__dl";
-      appendDlRow(
-        list,
-        t("result_stress_area"),
-        `${formatNumber(outputs.stress_area_mm2)} mm²`
-      );
-      appendDlRow(
-        list,
-        t("result_diameters"),
-        `${formatNumber(outputs.pitch_diameter_mm, 3)} / ${formatNumber(
-          outputs.minor_diameter_mm,
-          3
-        )} mm`
-      );
-      appendDlRow(
-        list,
-        t("result_tensile"),
-        `${formatNumber(outputs.tensile_stress_mpa, 1)} MPa`
-      );
-      appendDlRow(
-        list,
-        t("result_shear"),
-        `${formatNumber(outputs.shear_stress_mpa, 1)} MPa`
-      );
-      appendDlRow(
-        list,
-        t("result_torque"),
-        `${formatNumber(outputs.tightening_torque_nm)} N·m (${t(
-          `torque_${outputs.torque_method}`
-        )})`
-      );
-      appendDlRow(
-        list,
-        t("result_max_force"),
-        `${formatNumber(outputs.max_allowable_force_n, 0)} N`
-      );
-
-      if (outputs.min_engagement_mm != null) {
-        appendDlRow(
-          list,
-          t("result_min_engagement"),
-          `${formatNumber(outputs.min_engagement_mm, 1)} mm`
-        );
-        appendDlRow(
-          list,
-          t("result_critical_side"),
-          t(`side_${outputs.critical_shear_side}`)
-        );
-      }
-
-      if (outputs.utilization != null) {
-        appendDlRow(
-          list,
-          t("result_utilization"),
-          `${formatNumber(Number(outputs.utilization) * 100, 1)} %`
-        );
-      }
-
-      resultsBody.append(list);
-
-      const formula = document.createElement("p");
-      formula.className = "mechbox-thread__formula";
-      formula.textContent =
-        mode === "professional" ? t("formula_pro") : t("formula_simple");
-      resultsBody.append(formula);
-    } catch (error) {
-      if (error.jqXHR?.responseJSON?.errors?.length) {
-        resultsBody.replaceChildren();
-        const err = document.createElement("p");
-        err.className = "mechbox-thread__error";
-        err.textContent = error.jqXHR.responseJSON.errors.join(" ");
-        resultsBody.append(err);
-      } else {
-        popupAjaxError(error);
-      }
-    } finally {
-      calcBtn.disabled = false;
-      calcBtn.textContent = original;
-    }
-  });
+  applyCalcMode(root, "simple");
+  syncDiameterHints(root);
+  await typesetRoot(root);
 
   panel.dataset.mounted = "true";
 }

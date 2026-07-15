@@ -390,6 +390,9 @@ acceptance("MechBox | safe page", function (needs) {
     await visit("/mechbox?tool_id=thread");
 
     await waitFor(".mechbox-thread");
+    assert.dom(".mechbox-thread__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-thread__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-thread__warning").exists("warning bar is rendered");
     assert.dom("input[name='diameter_mm']").exists("diameter input is rendered");
     assert.dom(".mechbox-thread__mode-tab").exists("mode tabs are rendered");
 
@@ -397,8 +400,8 @@ acceptance("MechBox | safe page", function (needs) {
     await click(".mechbox-thread__calculate-btn");
     await waitFor(".mechbox-thread__status");
 
-    assert.dom(".mechbox-thread__status").hasClass("is-estimate");
-    assert.dom(".mechbox-thread__dl").includesText("40");
+    assert.dom(".mechbox-thread__status").hasClass("is-attention");
+    assert.dom(".mechbox-thread__results-body").includesText("40");
 
     await click(".mechbox-thread__mode-tab[data-calc-mode='full']");
     assert
