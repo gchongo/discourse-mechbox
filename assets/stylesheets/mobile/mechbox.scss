@@ -28,7 +28,8 @@
 .mechbox__page:has(.mechbox-bolt),
 .mechbox__page:has(.mechbox-thread),
 .mechbox__page:has(.mechbox-key),
-.mechbox__page:has(.mechbox-bolt-group) {
+.mechbox__page:has(.mechbox-bolt-group),
+.mechbox__page:has(.mechbox-weld) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -36,7 +37,8 @@
 .mechbox__workbench-panel--bolt,
 .mechbox__workbench-panel--thread,
 .mechbox__workbench-panel--key,
-.mechbox__workbench-panel--bolt-group {
+.mechbox__workbench-panel--bolt-group,
+.mechbox__workbench-panel--weld {
   border: 0;
   border-radius: 0;
   padding: 0.75rem 0.65rem;
@@ -47,7 +49,8 @@
 .mechbox-bolt,
 .mechbox-thread,
 .mechbox-key,
-.mechbox-bolt-group {
+.mechbox-bolt-group,
+.mechbox-weld {
   &__formula-bar {
     border-radius: 8px;
   }

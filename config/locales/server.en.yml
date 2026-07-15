@@ -67,6 +67,9 @@ en:
       bolt_group:
         name: "Bolt group"
         description: "Eccentric shear and moment load sharing; simple, vector, and professional (slip / prying) modes."
+      weld:
+        name: "Weld strength"
+        description: "Fillet and butt weld estimates; simple, three-standard, and professional (combined / HAZ) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

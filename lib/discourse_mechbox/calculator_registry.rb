@@ -14,6 +14,7 @@ module DiscourseMechbox
       thread
       key
       bolt_group
+      weld
     ].freeze
 
     UNIT_FACTORS = {
@@ -116,6 +117,12 @@ module DiscourseMechbox
     def self.calculate_bolt_group(inputs)
       DiscourseMechbox::BoltGroupCalculator.calculate(inputs)
     rescue DiscourseMechbox::BoltGroupCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_weld(inputs)
+      DiscourseMechbox::WeldCalculator.calculate(inputs)
+    rescue DiscourseMechbox::WeldCalculator::Error => error
       raise Error, error.message
     end
 

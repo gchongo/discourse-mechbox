@@ -126,10 +126,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "table-cells",
                   available: true,
                 },
+                {
+                  id: "weld",
+                  tool_id: "weld",
+                  name: "Weld strength",
+                  description: "Fillet / butt weld",
+                  icon: "medal",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 7, catalog: 57 },
+          counts: { available: 8, catalog: 57 },
         },
       });
     });
@@ -181,6 +189,22 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "shear_x_n", type: "number" },
           { key: "shear_y_n", type: "number" },
           { key: "moment_nmm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/weld", () => {
+      return helper.response(200, {
+        tool_id: "weld",
+        name: "Weld strength",
+        description: "Fillet and butt weld estimates.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "weld_type", type: "string" },
+          { key: "leg_size_mm", type: "number" },
+          { key: "weld_length_mm", type: "number" },
+          { key: "force_n", type: "number" },
         ],
       });
     });
@@ -335,6 +359,30 @@ acceptance("MechBox | safe page", function (needs) {
             force_pass: true,
             estimate_only: true,
             pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "weld") {
+        return helper.response(200, {
+          tool_id: "weld",
+          outputs: {
+            calc_mode: "simple",
+            weld_type: "fillet",
+            throat_mm: 4.2,
+            shear_stress_mpa: 59.524,
+            allowable_shear_mpa: 160,
+            shear_pass: true,
+            estimate_only: true,
+            pass: false,
+            standards: [
+              {
+                id: "gb",
+                standard: "GB/T 985 (simplified)",
+                allowable_shear_mpa: 160,
+                pass: true,
+              },
+            ],
           },
         });
       }
@@ -545,5 +593,29 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows friction fields");
+  });
+
+  test("opens and calculates on the weld strength page", async function (assert) {
+    await visit("/mechbox?tool_id=weld");
+
+    await waitFor(".mechbox-weld");
+    assert.dom(".mechbox-weld__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-weld__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='leg_size_mm']").exists("leg size input is rendered");
+    assert.dom(".mechbox-weld__mode-tab").exists("mode tabs are rendered");
+    assert.dom(".mechbox-weld__formula-box").doesNotExist("result formula box removed");
+
+    await fillIn("input[name='force_n']", "20000");
+    await click(".mechbox-weld__calculate-btn");
+    await waitFor(".mechbox-weld__status");
+
+    assert.dom(".mechbox-weld__status").hasClass("is-attention");
+    assert.dom(".mechbox-weld__results-body").includesText("59.5");
+
+    await click(".mechbox-weld__type-tab[data-weld-type='butt']");
+    assert
+      .dom("[data-weld-show='butt']")
+      .doesNotHaveClass("is-mode-hidden", "butt mode shows thickness");
   });
 });

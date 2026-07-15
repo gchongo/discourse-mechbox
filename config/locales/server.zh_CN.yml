@@ -67,6 +67,9 @@ zh_CN:
       bolt_group:
         name: "螺栓组"
         description: "偏心剪力与弯矩下的螺栓组载荷分配，支持简化、矢量分解与专业（抗滑/撬力）模式。"
+      weld:
+        name: "焊缝强度"
+        description: "角焊缝与对接焊缝强度估算，支持简化、三标准对照与专业（合成应力/HAZ）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

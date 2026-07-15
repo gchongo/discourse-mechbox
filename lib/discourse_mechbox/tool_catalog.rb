@@ -16,6 +16,7 @@ module DiscourseMechbox
       thread
       key
       bolt_group
+      weld
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -200,6 +201,32 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "weld" => {
+        category: "fastening",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "weld_type", type: "string", required: true },
+          { key: "steel_grade", type: "string", required: false },
+          { key: "leg_size_mm", type: "number", required: false },
+          { key: "thickness_mm", type: "number", required: false },
+          { key: "weld_length_mm", type: "number", required: true },
+          { key: "force_n", type: "number", required: true },
+          { key: "eccentricity_mm", type: "number", required: false },
+          { key: "heat_input", type: "number", required: false },
+          { key: "plate_thickness_mm", type: "number", required: false },
+          { key: "stress_range_mpa", type: "number", required: false },
+          { key: "penetration_efficiency", type: "number", required: false },
+          { key: "stress_concentration", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "weld_type", type: "string" },
+          { key: "shear_stress_mpa", type: "number" },
+          { key: "normal_stress_mpa", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -217,7 +244,6 @@ module DiscourseMechbox
       "chain" => { category: "transmission", route: "/chain" },
       "clutch" => { category: "transmission", route: "/clutch" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "weld" => { category: "fastening", route: "/weld" },
       "spring" => { category: "structural", route: "/spring" },
       "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },

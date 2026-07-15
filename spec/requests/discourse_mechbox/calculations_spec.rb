@@ -331,6 +331,76 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["pass"]).to eq(false)
   end
 
+  it "runs simple fillet weld estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "weld",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             weld_type: "fillet",
+             steel_grade: "Q235",
+             leg_size_mm: 6,
+             weld_length_mm: 80,
+             force_n: 20_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["weld_type"]).to eq("fillet")
+    expect(outputs["throat_mm"]).to be_within(0.01).of(4.2)
+    expect(outputs["shear_stress_mpa"]).to be_within(0.1).of(59.524)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full fillet weld three-standard comparison" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "weld",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             weld_type: "fillet",
+             steel_grade: "Q235",
+             leg_size_mm: 6,
+             weld_length_mm: 80,
+             force_n: 20_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["standards"].size).to eq(3)
+    expect(outputs["strictest_standard"]).to be_present
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs full butt weld normal stress check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "weld",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             weld_type: "butt",
+             steel_grade: "Q235",
+             thickness_mm: 8,
+             weld_length_mm: 100,
+             force_n: 50_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["weld_type"]).to eq("butt")
+    expect(outputs["normal_stress_mpa"]).to be_within(0.1).of(62.5)
+    expect(outputs["standards"].size).to eq(3)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
