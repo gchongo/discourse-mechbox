@@ -13,6 +13,7 @@ module DiscourseMechbox
       bolt_clamp_load
       unit_converter
       rss_calculation
+      thread
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -121,6 +122,32 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "thread" => {
+        category: "fastening",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "diameter_mm", type: "number", required: true },
+          { key: "pitch_mm", type: "number", required: false },
+          { key: "grade", type: "string", required: true },
+          { key: "axial_force_n", type: "number", required: true },
+          { key: "engaged_length_mm", type: "number", required: false },
+          { key: "friction_coeff", type: "number", required: false },
+          { key: "nut_material", type: "string", required: false },
+          { key: "mu_g", type: "number", required: false },
+          { key: "mu_k", type: "number", required: false },
+          { key: "d_km", type: "number", required: false },
+          { key: "torque_nm", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "stress_area_mm2", type: "number" },
+          { key: "tensile_stress_mpa", type: "number" },
+          { key: "shear_stress_mpa", type: "number" },
+          { key: "tightening_torque_nm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -139,7 +166,6 @@ module DiscourseMechbox
       "clutch" => { category: "transmission", route: "/clutch" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "bolt_group" => { category: "fastening", route: "/bolt-group" },
-      "thread" => { category: "fastening", route: "/thread" },
       "weld" => { category: "fastening", route: "/weld" },
       "key" => { category: "fastening", route: "/key" },
       "spring" => { category: "structural", route: "/spring" },

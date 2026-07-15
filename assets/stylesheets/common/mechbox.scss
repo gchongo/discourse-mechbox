@@ -331,7 +331,8 @@
 .mechbox__workbench-panel--bolt,
 .mechbox__workbench-panel--units,
 .mechbox__workbench-panel--rss,
-.mechbox__workbench-panel--gdt {
+.mechbox__workbench-panel--gdt,
+.mechbox__workbench-panel--thread {
   .mechbox__actions,
   .mechbox__error,
   .mechbox__result-title,
@@ -342,7 +343,8 @@
 
 .mechbox-units,
 .mechbox-rss,
-.mechbox-gdt {
+.mechbox-gdt,
+.mechbox-thread {
   &__grid {
     display: grid;
     gap: 1rem;
@@ -436,8 +438,67 @@
 @media (max-width: 700px) {
   .mechbox-units__grid,
   .mechbox-rss__grid,
-  .mechbox-gdt__grid {
+  .mechbox-gdt__grid,
+  .mechbox-thread__grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.mechbox-thread {
+  &__modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__mode-tab {
+    appearance: none;
+    border: 1px solid var(--primary-low);
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: var(--font-down-1);
+    background: var(--secondary);
+    cursor: pointer;
+
+    &.is-active {
+      border-color: var(--tertiary);
+      background: var(--tertiary-low);
+      color: var(--tertiary);
+      font-weight: 600;
+    }
+  }
+
+  &__suggest {
+    margin-top: 0.35rem;
+  }
+
+  .is-mode-hidden {
+    display: none !important;
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    font-size: var(--font-down-1);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+
+    &.is-pass {
+      background: var(--success-low);
+      color: var(--success);
+    }
+
+    &.is-fail {
+      background: var(--danger-low);
+      color: var(--danger);
+    }
+
+    &.is-estimate {
+      background: var(--highlight-low);
+      color: var(--highlight);
+    }
   }
 }
 

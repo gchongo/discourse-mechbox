@@ -102,11 +102,36 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "bolt",
                   available: true,
                 },
+                {
+                  id: "thread",
+                  tool_id: "thread",
+                  name: "Thread strength",
+                  description: "Tensile/shear stress",
+                  icon: "link",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 4, catalog: 57 },
+          counts: { available: 5, catalog: 57 },
         },
+      });
+    });
+
+    server.get("/mechbox/api/tools/thread", () => {
+      return helper.response(200, {
+        tool_id: "thread",
+        name: "Thread strength",
+        description: "Tensile and shear check.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "diameter_mm", type: "number" },
+          { key: "pitch_mm", type: "number" },
+          { key: "grade", type: "string" },
+          { key: "axial_force_n", type: "number" },
+          { key: "engaged_length_mm", type: "number" },
+        ],
       });
     });
 
@@ -206,6 +231,25 @@ acceptance("MechBox | safe page", function (needs) {
           outputs: {
             rss: 5,
             count: 2,
+          },
+        });
+      }
+
+      if (body.tool_id === "thread") {
+        return helper.response(200, {
+          tool_id: "thread",
+          outputs: {
+            calc_mode: "simple",
+            stress_area_mm2: 58.0,
+            pitch_diameter_mm: 9.026,
+            minor_diameter_mm: 8.376,
+            tensile_stress_mpa: 344.8,
+            shear_stress_mpa: 120.0,
+            tightening_torque_nm: 40,
+            torque_method: "simple_mu_d_f",
+            max_allowable_force_n: 23200,
+            estimate_only: true,
+            pass: false,
           },
         });
       }
@@ -340,5 +384,25 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-rss__dl");
 
     assert.dom(".mechbox-rss__dl").includesText("5");
+  });
+
+  test("opens and calculates on the thread strength page", async function (assert) {
+    await visit("/mechbox?tool_id=thread");
+
+    await waitFor(".mechbox-thread");
+    assert.dom("input[name='diameter_mm']").exists("diameter input is rendered");
+    assert.dom(".mechbox-thread__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='axial_force_n']", "20000");
+    await click(".mechbox-thread__calculate-btn");
+    await waitFor(".mechbox-thread__status");
+
+    assert.dom(".mechbox-thread__status").hasClass("is-estimate");
+    assert.dom(".mechbox-thread__dl").includesText("40");
+
+    await click(".mechbox-thread__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows nut material");
   });
 });

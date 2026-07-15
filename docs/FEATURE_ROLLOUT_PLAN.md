@@ -8,13 +8,14 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 4 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation` |
+| ✅ 已接入 | 5 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
 **W1 完成** ✅：`unit_converter` · `rss_calculation`  
 **产品修正**：`gdt_position` **不作为独立首页工具**。位置度属于「尺寸链编辑器 / 分析类型（GD&T）」与后续 `gdt_stack`；计算核可保留供尺寸链内复用，但不点亮、不上目录。  
-**下一步**：W2.1 `thread` 螺纹强度
+**W2.1 完成** ✅：`thread` 螺纹强度（简化 / 完整 / 专业 VDI）  
+**下一步**：W2.2 `key` 平键连接
 
 ---
 

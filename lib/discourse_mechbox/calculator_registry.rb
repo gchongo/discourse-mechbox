@@ -11,6 +11,7 @@ module DiscourseMechbox
       gear_ratio
       bolt_clamp_load
       gdt_position
+      thread
     ].freeze
 
     UNIT_FACTORS = {
@@ -95,6 +96,12 @@ module DiscourseMechbox
     def self.calculate_bolt_clamp_load(inputs)
       DiscourseMechbox::BoltPreloadCalculator.calculate(inputs)
     rescue DiscourseMechbox::BoltPreloadCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_thread(inputs)
+      DiscourseMechbox::ThreadCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ThreadCalculator::Error => error
       raise Error, error.message
     end
 

@@ -98,6 +98,84 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(response).to have_http_status(:unprocessable_entity)
   end
 
+  it "runs simple thread strength calculation" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thread",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             diameter_mm: 10,
+             pitch_mm: 1.5,
+             grade: "8.8",
+             axial_force_n: 20_000,
+             engaged_length_mm: 15,
+             friction_coeff: 0.2,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["stress_area_mm2"]).to be > 0
+    expect(outputs["tensile_stress_mpa"]).to be > 0
+    expect(outputs["tightening_torque_nm"]).to be_within(0.1).of(40.0)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full thread strength with engagement check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thread",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             diameter_mm: 10,
+             pitch_mm: 1.5,
+             grade: "8.8",
+             axial_force_n: 10_000,
+             engaged_length_mm: 12,
+             nut_material: "steel",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["min_engagement_mm"]).to eq(8.0)
+    expect(outputs["engagement_pass"]).to eq(true)
+    expect(outputs["critical_shear_side"]).to be_present
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional thread VDI torque" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thread",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             diameter_mm: 10,
+             pitch_mm: 1.5,
+             grade: "8.8",
+             axial_force_n: 20_000,
+             engaged_length_mm: 15,
+             nut_material: "steel",
+             mu_g: 0.12,
+             mu_k: 0.12,
+             d_km: 14.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["torque_method"]).to eq("vdi_2230")
+    expect(outputs["tightening_torque_nm"]).to be > 0
+    expect(outputs["utilization"]).to be > 0
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

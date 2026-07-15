@@ -58,6 +58,9 @@ zh_CN:
       bolt_clamp_load:
         name: "螺栓预紧力"
         description: "支持简化、完整（VDI 2230）与专业（刚度/嵌入/热膨胀）三档预紧力计算。"
+      thread:
+        name: "螺纹强度"
+        description: "拉应力 / 剪应力 / 旋合长度校核，支持简化、完整与专业（VDI）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

@@ -58,6 +58,9 @@ en:
       bolt_clamp_load:
         name: "Bolt preload"
         description: "Three modes: simplified, full (VDI 2230), and professional (stiffness / embedment / thermal)."
+      thread:
+        name: "Thread strength"
+        description: "Tensile/shear stress and engagement check; simple, full, and professional (VDI) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."
