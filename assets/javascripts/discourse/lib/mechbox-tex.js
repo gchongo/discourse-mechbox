@@ -95,6 +95,39 @@ export function texNode(tex, { displayMode = false, className = "" } = {}) {
   return el;
 }
 
+/** Title + optional hint in parentheses, then display-mode formulas. */
+export function fillFormulaBar(bar, { title, hint, formulas = [] } = {}) {
+  if (!bar) {
+    return;
+  }
+
+  bar.replaceChildren();
+
+  const heading = document.createElement("div");
+  heading.className = "mechbox-formula-heading";
+
+  const titleEl = document.createElement("strong");
+  titleEl.className = "mechbox-formula-title";
+  titleEl.textContent = title || "";
+  heading.append(titleEl);
+
+  if (hint) {
+    const hintEl = document.createElement("span");
+    hintEl.className = "mechbox-formula-hint";
+    hintEl.textContent = `（${hint}）`;
+    heading.append(hintEl);
+  }
+
+  bar.append(heading);
+
+  for (const formula of formulas) {
+    if (!formula) {
+      continue;
+    }
+    bar.append(texNode(formula, { displayMode: true }));
+  }
+}
+
 export function mixedLabel(parts) {
   const wrap = document.createElement("span");
   wrap.className = "mechbox-bolt__mixed-label";

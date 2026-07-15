@@ -3,6 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import {
   ensureKatex,
+  fillFormulaBar,
   mixedLabel,
   texNode,
   typesetRoot,
@@ -137,54 +138,40 @@ function syncDiameterHints(root) {
 
 function updateFormulaBar(root) {
   const bar = root.querySelector(".mechbox-thread__formula-bar");
-  const warning = root.querySelector(".mechbox-thread__warning");
   if (!bar) {
     return;
   }
 
   const calcMode = getCalcMode(root);
-  bar.replaceChildren();
-
-  const title = document.createElement("strong");
   if (calcMode === "simple") {
-    title.textContent = t("formula_title");
-    bar.append(title);
-    bar.append(
-      texNode("A_{s}=\\dfrac{\\pi}{4}(d-0.9382P)^{2}", { displayMode: true })
-    );
-    bar.append(
-      texNode("\\sigma=F/A_{s},\\quad T=\\mu d F/1000", { displayMode: true })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title"),
+      hint: t("estimate_warning"),
+      formulas: [
+        "A_{s}=\\dfrac{\\pi}{4}(d-0.9382P)^{2}",
+        "\\sigma=F/A_{s}",
+        "T=\\mu d F/1000",
+      ],
+    });
   } else if (calcMode === "full") {
-    title.textContent = t("formula_title_full");
-    bar.append(title);
-    bar.append(
-      texNode("\\tau=\\max(F/A_{ext}, F/A_{int})", { displayMode: true })
-    );
-    bar.append(
-      texNode("m_{eff,min}=k\\cdot d", { displayMode: true })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_full");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title_full"),
+      hint: t("estimate_warning_full"),
+      formulas: [
+        "A_{ext}=0.5\\pi d_{1} L_{e}",
+        "A_{int}=0.5\\pi d_{2} L_{e}",
+        "m_{eff,min}=k\\cdot d",
+      ],
+    });
   } else {
-    title.textContent = t("formula_title_pro");
-    bar.append(title);
-    bar.append(
-      texNode(
+    fillFormulaBar(bar, {
+      title: t("formula_title_pro"),
+      hint: t("estimate_warning_pro"),
+      formulas: [
         "T=F\\left(0.16P+0.58 d_{2}\\mu_{G}+0.5 D_{km}\\mu_{K}\\right)/1000",
-        { displayMode: true }
-      )
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_pro");
-      warning.hidden = false;
-    }
+        "\\eta=\\sigma/\\sigma_{allow}",
+      ],
+    });
   }
 
   typesetRoot(bar);
@@ -255,52 +242,6 @@ function collectInputs(root) {
   return inputs;
 }
 
-function appendFormulaBox(box, calcMode) {
-  const formulaBox = document.createElement("div");
-  formulaBox.className = "mechbox-thread__formula-box";
-  const formulaTitle = document.createElement("div");
-  formulaTitle.className = "mechbox-thread__formula-box-title";
-
-  if (calcMode === "simple") {
-    formulaTitle.textContent = t("formula_title");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode("A_{s}=\\dfrac{\\pi}{4}(d-0.9382P)^{2}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("\\sigma=F/A_{s}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("T=\\mu d F/1000", { displayMode: true })
-    );
-  } else if (calcMode === "full") {
-    formulaTitle.textContent = t("formula_title_full");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode("A_{ext}=0.5\\pi d_{1} L_{e}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("A_{int}=0.5\\pi d_{2} L_{e}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("m_{eff,min}=k\\cdot d", { displayMode: true })
-    );
-  } else {
-    formulaTitle.textContent = t("formula_title_pro");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode(
-        "T=F\\left(0.16P+0.58 d_{2}\\mu_{G}+0.5 D_{km}\\mu_{K}\\right)/1000",
-        { displayMode: true }
-      )
-    );
-    formulaBox.append(
-      texNode("\\eta=\\sigma/\\sigma_{allow}", { displayMode: true })
-    );
-  }
-
-  box.append(formulaBox);
-}
 
 async function renderResults(panel, payload) {
   const box = panel.querySelector(".mechbox-thread__results-body");
@@ -421,7 +362,6 @@ async function renderResults(panel, payload) {
   }
 
   box.append(list);
-  appendFormulaBox(box, calcMode);
   await typesetRoot(box);
 }
 
@@ -521,9 +461,6 @@ export async function mountThreadWorkbench(panel) {
 
   const formulaBar = document.createElement("div");
   formulaBar.className = "mechbox-thread__formula-bar";
-
-  const warning = document.createElement("p");
-  warning.className = "mechbox-thread__warning";
 
   const grid = document.createElement("div");
   grid.className = "mechbox-thread__grid";
@@ -677,7 +614,7 @@ export async function mountThreadWorkbench(panel) {
   resultsCard.append(resultsTitle, resultsBody);
 
   grid.append(inputsCard, resultsCard);
-  root.append(modes, formulaBar, warning, grid);
+  root.append(modes, formulaBar, grid);
   mount.append(root);
 
   applyCalcMode(root, "simple");

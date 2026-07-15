@@ -546,26 +546,31 @@
       var(--secondary) 100%
     );
 
-    strong {
-      display: block;
-      margin-bottom: 0.35rem;
+    .mechbox-formula-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.25rem 0.45rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .mechbox-formula-title {
+      font-weight: 700;
       color: var(--primary-high);
+    }
+
+    .mechbox-formula-hint {
+      font-size: var(--font-down-1);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--primary-medium);
     }
 
     .mechbox-tex {
       display: block;
       text-align: center;
+      margin: 0.2rem 0;
     }
-  }
-
-  &__warning {
-    background: var(--highlight-low);
-    color: var(--primary);
-    border-left: 3px solid var(--highlight);
-    border-radius: 6px;
-    padding: 0.65rem 0.8rem;
-    margin: 0 0 1rem;
-    font-size: var(--font-down-1);
   }
 
   &__grid {
@@ -802,26 +807,6 @@
     &.is-danger dd {
       color: var(--danger);
     }
-  }
-
-  &__formula-box {
-    margin-top: 0.9rem;
-    padding: 0.75rem;
-    border-radius: 10px;
-    background: var(--secondary-very-high);
-    border: 1px solid var(--primary-low);
-
-    .mechbox-tex {
-      display: block;
-      text-align: center;
-      margin: 0.35rem 0;
-    }
-  }
-
-  &__formula-box-title {
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-    color: var(--primary-high);
   }
 
   &__bolt-table {

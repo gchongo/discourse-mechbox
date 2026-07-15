@@ -52,8 +52,6 @@ export default class MechboxPage extends Component {
             data-tool-id={{this.selectedTool.tool_id}}
             data-inputs-json={{this.inputsJson}}
           >
-            <h2>{{i18n "mechbox.workbench_title"}}</h2>
-
             {{! Form fields are mounted by mechbox-workbench initializer (vanilla DOM). }}
             <div class="mechbox__form-mount"></div>
 

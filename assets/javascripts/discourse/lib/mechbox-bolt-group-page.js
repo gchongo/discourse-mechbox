@@ -3,6 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import {
   ensureKatex,
+  fillFormulaBar,
   mixedLabel,
   texNode,
   typesetRoot,
@@ -85,29 +86,37 @@ function modeTabLabel(mode) {
 function syncFormulaBar(root) {
   const mode = getCalcMode(root);
   const bar = root.querySelector(".mechbox-bolt-group__formula-bar");
-  const warning = root.querySelector(".mechbox-bolt-group__warning");
-  if (!bar || !warning) {
+  if (!bar) {
     return;
   }
 
-  bar.replaceChildren();
-  const title = document.createElement("strong");
   if (mode === "full") {
-    title.textContent = t("formula_title_full");
-    bar.append(title, document.createTextNode(" · "));
-    bar.append(texNode("F_i = F/n + M\\times r_i / I_p"));
-    warning.textContent = t("estimate_warning_full");
+    fillFormulaBar(bar, {
+      title: t("formula_title_full"),
+      hint: t("estimate_warning_full"),
+      formulas: [
+        "F_{ix} = \\frac{F_x}{n} - \\frac{M y_i}{I_p},\\quad F_{iy} = \\frac{F_y}{n} + \\frac{M x_i}{I_p}",
+      ],
+    });
   } else if (mode === "professional") {
-    title.textContent = t("formula_title_pro");
-    bar.append(title, document.createTextNode(" · "));
-    bar.append(texNode("F_{\\mathrm{slip}} = \\mu\\,\\Sigma F_{\\mathrm{clamp}}"));
-    warning.textContent = t("estimate_warning_pro");
+    fillFormulaBar(bar, {
+      title: t("formula_title_pro"),
+      hint: t("estimate_warning_pro"),
+      formulas: [
+        "F_{\\mathrm{comb}} = \\sqrt{V^2+T^2},\\quad F_{\\mathrm{slip}}=\\mu\\sum F_{\\mathrm{clamp}}",
+      ],
+    });
   } else {
-    title.textContent = t("formula_title");
-    bar.append(title, document.createTextNode(" · "));
-    bar.append(texNode("F_{\\max} \\approx F/n + M r_{\\max}/J"));
-    warning.textContent = t("estimate_warning");
+    fillFormulaBar(bar, {
+      title: t("formula_title"),
+      hint: t("estimate_warning"),
+      formulas: [
+        "F_{\\max} \\approx \\frac{\\sqrt{F_x^2+F_y^2}}{n} + \\frac{M r_{\\max}}{J}",
+      ],
+    });
   }
+
+  typesetRoot(bar);
 }
 
 function applyCalcMode(root, mode) {
@@ -172,89 +181,6 @@ function readInputs(root) {
   }
 
   return inputs;
-}
-
-function appendFormulaBox(box, mode) {
-  const formulaBox = document.createElement("div");
-  formulaBox.className = "mechbox-bolt-group__formula-box";
-  const formulaTitle = document.createElement("div");
-  formulaTitle.className = "mechbox-bolt-group__formula-box-title";
-
-  if (mode === "simple") {
-    formulaTitle.textContent = t("formula_title");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode("F_{\\max} \\approx \\frac{\\sqrt{F_x^2+F_y^2}}{n} + \\frac{M r_{\\max}}{J}", {
-        displayMode: true,
-      })
-    );
-  } else if (mode === "full") {
-    formulaTitle.textContent = t("formula_title_full");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode(
-        "F_{ix} = \\frac{F_x}{n} - \\frac{M y_i}{I_p},\\quad F_{iy} = \\frac{F_y}{n} + \\frac{M x_i}{I_p}",
-        { displayMode: true }
-      )
-    );
-  } else {
-    formulaTitle.textContent = t("formula_title_pro");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode(
-        "F_{\\mathrm{comb}} = \\sqrt{V^2+T^2},\\quad F_{\\mathrm{slip}}=\\mu\\sum F_{\\mathrm{clamp}}",
-        { displayMode: true }
-      )
-    );
-  }
-
-  box.append(formulaBox);
-}
-
-function renderBoltTable(list, bolts) {
-  if (!bolts?.length) {
-    return;
-  }
-
-  const heading = document.createElement("h4");
-  heading.className = "mechbox-bolt-group__section-title";
-  heading.textContent = t("result_per_bolt");
-  list.append(heading);
-
-  const table = document.createElement("table");
-  table.className = "mechbox-bolt-group__bolt-table";
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  ["#", "x", "y", "Fx", "Fy", "|V|"].forEach((label) => {
-    const th = document.createElement("th");
-    th.textContent = label;
-    headRow.append(th);
-  });
-  thead.append(headRow);
-  table.append(thead);
-
-  const tbody = document.createElement("tbody");
-  bolts.forEach((bolt) => {
-    const tr = document.createElement("tr");
-    if (bolt.pass === false) {
-      tr.classList.add("is-danger");
-    }
-    [
-      bolt.index,
-      formatNumber(bolt.x_mm, 1),
-      formatNumber(bolt.y_mm, 1),
-      formatNumber(bolt.fx_n, 0),
-      formatNumber(bolt.fy_n, 0),
-      formatNumber(bolt.shear_force_n, 0),
-    ].forEach((cell) => {
-      const td = document.createElement("td");
-      td.textContent = String(cell);
-      tr.append(td);
-    });
-    tbody.append(tr);
-  });
-  table.append(tbody);
-  list.append(table);
 }
 
 async function renderResults(panel, payload) {
@@ -372,7 +298,6 @@ async function renderResults(panel, payload) {
     renderBoltTable(box, outputs.bolts);
   }
 
-  appendFormulaBox(box, calcMode);
   await typesetRoot(box);
 }
 
@@ -478,8 +403,6 @@ export async function mountBoltGroupWorkbench(panel) {
 
   const formulaBar = document.createElement("div");
   formulaBar.className = "mechbox-bolt-group__formula-bar";
-  const warning = document.createElement("p");
-  warning.className = "mechbox-bolt-group__warning";
 
   const grid = document.createElement("div");
   grid.className = "mechbox-bolt-group__grid";
@@ -604,7 +527,7 @@ export async function mountBoltGroupWorkbench(panel) {
   resultsCard.append(resultsTitle, resultsBody);
 
   grid.append(inputsCard, resultsCard);
-  root.append(modes, formulaBar, warning, grid);
+  root.append(modes, formulaBar, grid);
   mount.append(root);
 
   applyCalcMode(root, "simple");

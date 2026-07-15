@@ -3,6 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import {
   ensureKatex,
+  fillFormulaBar,
   mixedLabel,
   texNode,
   typesetRoot,
@@ -136,50 +137,37 @@ function syncStdKeyHints(root) {
 
 function updateFormulaBar(root) {
   const bar = root.querySelector(".mechbox-key__formula-bar");
-  const warning = root.querySelector(".mechbox-key__warning");
   if (!bar) {
     return;
   }
 
   const calcMode = getCalcMode(root);
-  bar.replaceChildren();
-  const title = document.createElement("strong");
-
   if (calcMode === "simple") {
-    title.textContent = t("formula_title");
-    bar.append(title);
-    bar.append(texNode("F_t=2000T/d", { displayMode: true }));
-    bar.append(
-      texNode("\\tau=F/(b L),\\quad \\sigma_c=2F/(h L_h)", {
-        displayMode: true,
-      })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title"),
+      hint: t("estimate_warning"),
+      formulas: [
+        "F_t=2000T/d",
+        "\\tau=F/(b L)",
+        "\\sigma_c=2F/(h L_h)",
+      ],
+    });
   } else if (calcMode === "full") {
-    title.textContent = t("formula_title_full");
-    bar.append(title);
-    bar.append(
-      texNode("L_{\\min}=\\max\\!\\left(\\dfrac{F}{b[\\tau]},\\dfrac{2F}{h[\\sigma_c]}\\right)", {
-        displayMode: true,
-      })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_full");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title_full"),
+      hint: t("estimate_warning_full"),
+      formulas: [
+        "L_{\\min}=\\max\\!\\left(\\dfrac{F}{b[\\tau]},\\dfrac{2F}{h[\\sigma_c]}\\right)",
+      ],
+    });
   } else {
-    title.textContent = t("formula_title_pro");
-    bar.append(title);
-    bar.append(
-      texNode("F_i=F_t/n,\\quad \\tau_a=F_a/(b L)", { displayMode: true })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_pro");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title_pro"),
+      hint: t("estimate_warning_pro"),
+      formulas: [
+        "F_i=F_t/n,\\quad \\tau_a \\le 0.5[\\tau]",
+      ],
+    });
   }
 
   typesetRoot(bar);
@@ -259,34 +247,6 @@ function collectInputs(root) {
   return inputs;
 }
 
-function appendFormulaBox(box, calcMode) {
-  const formulaBox = document.createElement("div");
-  formulaBox.className = "mechbox-key__formula-box";
-  const formulaTitle = document.createElement("div");
-  formulaTitle.className = "mechbox-key__formula-box-title";
-
-  if (calcMode === "simple") {
-    formulaTitle.textContent = t("formula_title");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(texNode("F_t=2000T/d", { displayMode: true }));
-    formulaBox.append(texNode("\\tau=F/(b L)", { displayMode: true }));
-    formulaBox.append(texNode("\\sigma_c=2F/(h L_h)", { displayMode: true }));
-  } else if (calcMode === "full") {
-    formulaTitle.textContent = t("formula_title_full");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode("L_{\\min}=\\max(F/(b[\\tau]), 2F/(h[\\sigma_c]))", {
-        displayMode: true,
-      })
-    );
-  } else {
-    formulaTitle.textContent = t("formula_title_pro");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(texNode("\\tau_a \\le 0.5[\\tau]", { displayMode: true }));
-  }
-
-  box.append(formulaBox);
-}
 
 async function renderResults(panel, payload) {
   const box = panel.querySelector(".mechbox-key__results-body");
@@ -405,7 +365,6 @@ async function renderResults(panel, payload) {
   }
 
   box.append(list);
-  appendFormulaBox(box, calcMode);
   await typesetRoot(box);
 }
 
@@ -506,8 +465,6 @@ export async function mountKeyWorkbench(panel) {
 
   const formulaBar = document.createElement("div");
   formulaBar.className = "mechbox-key__formula-bar";
-  const warning = document.createElement("p");
-  warning.className = "mechbox-key__warning";
 
   const grid = document.createElement("div");
   grid.className = "mechbox-key__grid";
@@ -658,7 +615,7 @@ export async function mountKeyWorkbench(panel) {
   resultsCard.append(resultsTitle, resultsBody);
 
   grid.append(inputsCard, resultsCard);
-  root.append(modes, formulaBar, warning, grid);
+  root.append(modes, formulaBar, grid);
   mount.append(root);
 
   applyCalcMode(root, "simple");

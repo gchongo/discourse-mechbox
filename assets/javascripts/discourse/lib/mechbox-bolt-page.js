@@ -3,6 +3,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import {
   ensureKatex,
+  fillFormulaBar,
   mixedLabel,
   texNode,
   typesetRoot,
@@ -241,49 +242,41 @@ function syncDiameterHints(root) {
 
 function updateFormulaBar(root) {
   const bar = root.querySelector(".mechbox-bolt__formula-bar");
-  const warning = root.querySelector(".mechbox-bolt__warning");
   if (!bar) {
     return;
   }
 
   const calcMode = getCalcMode(root);
-  bar.replaceChildren();
-
-  const title = document.createElement("strong");
   if (calcMode === "simple") {
-    title.textContent = t("formula_title");
-    bar.append(title);
-    bar.append(texNode("T = K \\cdot F \\cdot d", { displayMode: true }));
-    if (warning) {
-      warning.textContent = t("estimate_warning");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_title"),
+      hint: t("estimate_warning"),
+      formulas: [
+        "T = K \\cdot F \\cdot d",
+        "F = \\dfrac{T}{K \\cdot d}",
+        "\\sigma = \\dfrac{F}{A_{s}}",
+      ],
+    });
   } else if (calcMode === "full") {
-    title.textContent = t("formula_vdi");
-    bar.append(title);
-    bar.append(
-      texNode(
+    fillFormulaBar(bar, {
+      title: t("formula_vdi"),
+      hint: t("estimate_warning_full"),
+      formulas: [
         "M_{A} = F\\left(0.16P + 0.58 d_{2}\\mu_{G} + \\dfrac{D_{km}}{2}\\mu_{K}\\right)",
-        { displayMode: true }
-      )
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_full");
-      warning.hidden = false;
-    }
+        "\\sigma = \\dfrac{F}{A_{s}}",
+      ],
+    });
   } else {
-    title.textContent = t("formula_stiffness");
-    bar.append(title);
-    bar.append(
-      texNode("F_{V} = F_{M} + F_{Z} - \\Delta F_{VT}", { displayMode: true })
-    );
-    bar.append(
-      texNode("\\Phi = \\dfrac{k_{S}}{k_{S}+k_{P}}", { displayMode: true })
-    );
-    if (warning) {
-      warning.textContent = t("estimate_warning_pro");
-      warning.hidden = false;
-    }
+    fillFormulaBar(bar, {
+      title: t("formula_stiffness"),
+      hint: t("estimate_warning_pro"),
+      formulas: [
+        "F_{V} = F_{M} + F_{Z} - \\Delta F_{VT}",
+        "F_{Z} = \\dfrac{f_{Z}}{\\delta_{S}+\\delta_{P}}",
+        "\\Phi = \\dfrac{k_{S}}{k_{S}+k_{P}}",
+        "\\sigma = \\dfrac{F_{V}}{A_{s}}",
+      ],
+    });
   }
 
   typesetRoot(bar);
@@ -534,55 +527,6 @@ function appendProfessionalResults(list, outputs) {
   );
 }
 
-function appendFormulaBox(box, calcMode) {
-  const formulaBox = document.createElement("div");
-  formulaBox.className = "mechbox-bolt__formula-box";
-  const formulaTitle = document.createElement("div");
-  formulaTitle.className = "mechbox-bolt__formula-box-title";
-
-  if (calcMode === "simple") {
-    formulaTitle.textContent = t("formula_title");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(texNode("T = K \\cdot F \\cdot d", { displayMode: true }));
-    formulaBox.append(
-      texNode("F = \\dfrac{T}{K \\cdot d}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("\\sigma = \\dfrac{F}{A_{s}}", { displayMode: true })
-    );
-  } else if (calcMode === "full") {
-    formulaTitle.textContent = t("formula_vdi");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode(
-        "M_{A} = F\\left(0.16P + 0.58 d_{2}\\mu_{G} + \\dfrac{D_{km}}{2}\\mu_{K}\\right)",
-        { displayMode: true }
-      )
-    );
-    formulaBox.append(
-      texNode("\\sigma = \\dfrac{F}{A_{s}}", { displayMode: true })
-    );
-  } else {
-    formulaTitle.textContent = t("formula_stiffness");
-    formulaBox.append(formulaTitle);
-    formulaBox.append(
-      texNode("F_{V} = F_{M} + F_{Z} - \\Delta F_{VT}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("F_{Z} = \\dfrac{f_{Z}}{\\delta_{S}+\\delta_{P}}", {
-        displayMode: true,
-      })
-    );
-    formulaBox.append(
-      texNode("\\Phi = \\dfrac{k_{S}}{k_{S}+k_{P}}", { displayMode: true })
-    );
-    formulaBox.append(
-      texNode("\\sigma = \\dfrac{F_{V}}{A_{s}}", { displayMode: true })
-    );
-  }
-
-  box.append(formulaBox);
-}
 
 async function renderBoltResults(panel, payload) {
   const box = panel.querySelector(".mechbox-bolt__results-body");
@@ -616,7 +560,6 @@ async function renderBoltResults(panel, payload) {
   }
 
   box.append(list);
-  appendFormulaBox(box, calcMode);
 
   await typesetRoot(box);
 }
@@ -747,9 +690,6 @@ export async function mountBoltWorkbench(panel) {
 
   const formulaBar = document.createElement("div");
   formulaBar.className = "mechbox-bolt__formula-bar";
-
-  const warning = document.createElement("p");
-  warning.className = "mechbox-bolt__warning";
 
   const grid = document.createElement("div");
   grid.className = "mechbox-bolt__grid";
@@ -1034,7 +974,7 @@ export async function mountBoltWorkbench(panel) {
   resultsCard.append(resultsTitle, resultsBody);
 
   grid.append(inputsCard, resultsCard);
-  root.append(modes, formulaBar, warning, grid);
+  root.append(modes, formulaBar, grid);
   mount.replaceChildren(root);
 
   applyCalcMode(root, "simple");

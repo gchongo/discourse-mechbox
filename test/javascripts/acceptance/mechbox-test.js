@@ -477,9 +477,10 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-thread");
     assert.dom(".mechbox-thread__grid").exists("two-column grid is rendered");
     assert.dom(".mechbox-thread__formula-bar").exists("formula bar is rendered");
-    assert.dom(".mechbox-thread__warning").exists("warning bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
     assert.dom("input[name='diameter_mm']").exists("diameter input is rendered");
     assert.dom(".mechbox-thread__mode-tab").exists("mode tabs are rendered");
+    assert.dom(".mechbox-thread__formula-box").doesNotExist("result formula box removed");
 
     await fillIn("input[name='axial_force_n']", "20000");
     await click(".mechbox-thread__calculate-btn");
@@ -500,9 +501,10 @@ acceptance("MechBox | safe page", function (needs) {
     await waitFor(".mechbox-key");
     assert.dom(".mechbox-key__grid").exists("two-column grid is rendered");
     assert.dom(".mechbox-key__formula-bar").exists("formula bar is rendered");
-    assert.dom(".mechbox-key__warning").exists("warning bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
     assert.dom("input[name='torque_nm']").exists("torque input is rendered");
     assert.dom(".mechbox-key__mode-tab").exists("mode tabs are rendered");
+    assert.dom(".mechbox-key__formula-box").doesNotExist("result formula box removed");
 
     await fillIn("input[name='torque_nm']", "200");
     await click(".mechbox-key__calculate-btn");
@@ -525,9 +527,12 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom(".mechbox-bolt-group__formula-bar")
       .exists("formula bar is rendered");
-    assert.dom(".mechbox-bolt-group__warning").exists("warning bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
     assert.dom("input[name='bolt_count']").exists("bolt count input is rendered");
     assert.dom(".mechbox-bolt-group__mode-tab").exists("mode tabs are rendered");
+    assert
+      .dom(".mechbox-bolt-group__formula-box")
+      .doesNotExist("result formula box removed");
 
     await fillIn("input[name='shear_x_n']", "5000");
     await click(".mechbox-bolt-group__calculate-btn");
