@@ -34,17 +34,67 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
   it "validates inputs without persisting a record" do
     post "/mechbox/api/calculate/validate",
          params: {
-           tool_id: "gdt_position",
+           tool_id: "unit_converter",
            save_record: true,
+           inputs: {
+             value: 25.4,
+             from_unit: "mm",
+             to_unit: "in",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["valid"]).to eq(true)
+    expect(response.parsed_body["outputs"]["converted_value"]).to be_within(0.0001).of(1.0)
+  end
+
+  it "runs unit_converter length conversion" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "unit_converter",
+           save_record: false,
+           inputs: {
+             value: 1,
+             from_unit: "in",
+             to_unit: "mm",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["converted_value"]).to be_within(0.001).of(25.4)
+    expect(outputs["from_unit"]).to eq("in")
+    expect(outputs["to_unit"]).to eq("mm")
+  end
+
+  it "runs rss_calculation" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "rss_calculation",
+           save_record: false,
+           inputs: {
+             values: [3, 4],
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["rss"]).to eq(5.0)
+    expect(outputs["count"]).to eq(2)
+  end
+
+  it "rejects calculations for tools that are not enabled" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gdt_position",
+           save_record: false,
            inputs: {
              deviation_x_mm: 1.0,
              deviation_y_mm: 1.0,
            },
          }
 
-    expect(response).to have_http_status(:ok)
-    expect(response.parsed_body["valid"]).to eq(true)
-    expect(response.parsed_body["outputs"]["position_diameter_mm"]).to be_within(0.001).of(2.828)
+    expect(response).to have_http_status(:unprocessable_entity)
   end
 
   it "returns 422 for invalid gear_ratio inputs" do

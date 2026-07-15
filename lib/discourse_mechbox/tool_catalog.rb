@@ -8,7 +8,7 @@ module DiscourseMechbox
     IMPLEMENTATION_DESIGN_CHAIN = "design_chain"
 
     # Builtin calculators enabled one at a time for incremental rollout.
-    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio bolt_clamp_load].freeze
+    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
     ENABLED_CLIENT_TOOL_IDS = [].freeze

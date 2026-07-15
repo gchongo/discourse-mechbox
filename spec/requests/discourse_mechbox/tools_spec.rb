@@ -18,10 +18,14 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
 
     gear_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "gear_ratio" }
     bolt_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "bolt_clamp_load" }
-    planned_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "unit_converter" }
+    unit_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "unit_converter" }
+    rss_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "rss_calculation" }
+    planned_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "gdt_position" }
 
     expect(gear_tool["available"]).to eq(true)
     expect(bolt_tool["available"]).to eq(true)
+    expect(unit_tool["available"]).to eq(true)
+    expect(rss_tool["available"]).to eq(true)
     expect(planned_tool["available"]).to eq(false)
     expect(json["client_tools"]).to be_an(Array)
     expect(json["design_chains"]).to eq([])

@@ -36,6 +36,31 @@ en:
         mech_title: "Mechanical tools"
         coming_soon: "Coming soon"
         counts: "Available %{available} / catalog %{catalog}"
+      units:
+        dimension_label: "Dimension"
+        value: "Value"
+        from_unit: "From"
+        to_unit: "To"
+        swap: "Swap units"
+        calculate: "Convert"
+        results_title: "Result"
+        results_empty: "Enter values on the left, then convert."
+        result_note: "Convert within length, pressure, or force. Speed currently supports rpm only."
+        dimension:
+          length: "Length"
+          pressure: "Pressure"
+          force: "Force"
+          speed: "Speed"
+      rss:
+        values: "Tolerance values"
+        values_placeholder: "One value per line, or comma-separated"
+        values_hint: "RSS = √(Σ Tᵢ²) for tolerance stack-up estimates."
+        calculate: "Calculate"
+        results_title: "Result"
+        results_empty: "Enter values, then calculate."
+        result_rss: "RSS"
+        result_count: "Count"
+        formula: "Formula: RSS = √(v₁² + v₂² + … + vₙ²)"
       catalog:
         analysis_type_title: "Analysis types"
         analysis_categories:

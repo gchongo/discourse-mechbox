@@ -13,6 +13,8 @@ module DiscourseMechbox
           tool_id = formula_template.tool_id
         elsif CalculatorRegistry::BUILTIN_TOOL_IDS.exclude?(tool_id)
           raise CalculatorRegistry::Error, I18n.t("mechbox.errors.unknown_tool")
+        elsif !ToolCatalog.builtin_tool_available?(tool_id)
+          raise CalculatorRegistry::Error, I18n.t("mechbox.errors.tool_not_enabled", tool_id:)
         end
 
         raw_result =

@@ -58,6 +58,14 @@ acceptance("MechBox | safe page", function (needs) {
           ],
           stat_tools: [
             {
+              id: "rss_calculation",
+              tool_id: "rss_calculation",
+              name: "RSS calculation",
+              description: "Basic RSS",
+              icon: "chart-column",
+              available: true,
+            },
+            {
               id: "tol_convert",
               name: "Tolerance conversion",
               description: "T ↔ σ",
@@ -70,6 +78,14 @@ acceptance("MechBox | safe page", function (needs) {
               id: "chain",
               name: "Dimension chain and strength",
               tools: [
+                {
+                  id: "unit_converter",
+                  tool_id: "unit_converter",
+                  name: "Unit conversion",
+                  description: "MPa/psi · mm/in",
+                  icon: "arrows-left-right",
+                  available: true,
+                },
                 {
                   id: "gear_ratio",
                   tool_id: "gear_ratio",
@@ -89,8 +105,32 @@ acceptance("MechBox | safe page", function (needs) {
               ],
             },
           ],
-          counts: { available: 2, catalog: 57 },
+          counts: { available: 4, catalog: 57 },
         },
+      });
+    });
+
+    server.get("/mechbox/api/tools/unit_converter", () => {
+      return helper.response(200, {
+        tool_id: "unit_converter",
+        name: "Unit converter",
+        description: "Convert engineering units.",
+        available: true,
+        inputs: [
+          { key: "value", type: "number" },
+          { key: "from_unit", type: "string" },
+          { key: "to_unit", type: "string" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/rss_calculation", () => {
+      return helper.response(200, {
+        tool_id: "rss_calculation",
+        name: "RSS calculation",
+        description: "Root sum square.",
+        available: true,
+        inputs: [{ key: "values", type: "number_array" }],
       });
     });
 
@@ -145,6 +185,27 @@ acceptance("MechBox | safe page", function (needs) {
             max_preload_n: 23196,
             pass: false,
             estimate_only: true,
+          },
+        });
+      }
+
+      if (body.tool_id === "unit_converter") {
+        return helper.response(200, {
+          tool_id: "unit_converter",
+          outputs: {
+            converted_value: 25.4,
+            from_unit: "in",
+            to_unit: "mm",
+          },
+        });
+      }
+
+      if (body.tool_id === "rss_calculation") {
+        return helper.response(200, {
+          tool_id: "rss_calculation",
+          outputs: {
+            rss: 5,
+            count: 2,
           },
         });
       }
@@ -252,5 +313,32 @@ acceptance("MechBox | safe page", function (needs) {
 
     assert.true(exists(".mechbox__home"), "home is rendered again");
     assert.false(exists(".mechbox__workbench-panel"), "workbench is hidden");
+  });
+
+  test("opens and converts on the unit converter page", async function (assert) {
+    await visit("/mechbox?tool_id=unit_converter");
+
+    await waitFor(".mechbox-units");
+    assert.dom("input[name='value']").exists("value input is rendered");
+    assert.dom("select[name='from_unit']").exists("from unit select is rendered");
+
+    await fillIn("input[name='value']", "1");
+    await click(".mechbox-units__calculate-btn");
+    await waitFor(".mechbox-units__hero-to");
+
+    assert.dom(".mechbox-units__hero-to").includesText("25.4");
+  });
+
+  test("opens and calculates on the rss page", async function (assert) {
+    await visit("/mechbox?tool_id=rss_calculation");
+
+    await waitFor(".mechbox-rss");
+    assert.dom("textarea[name='values']").exists("values textarea is rendered");
+
+    await fillIn("textarea[name='values']", "3\n4");
+    await click(".mechbox-rss__calculate-btn");
+    await waitFor(".mechbox-rss__dl");
+
+    assert.dom(".mechbox-rss__dl").includesText("5");
   });
 });

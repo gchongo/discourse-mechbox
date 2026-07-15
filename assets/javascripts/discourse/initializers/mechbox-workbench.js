@@ -3,6 +3,8 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import { mountBoltWorkbench } from "../lib/mechbox-bolt-page";
+import { mountUnitsWorkbench } from "../lib/mechbox-units-page";
+import { mountRssWorkbench } from "../lib/mechbox-rss-page";
 
 let handlersRegistered = false;
 
@@ -28,7 +30,11 @@ function mountGenericWorkbench(panel) {
     return;
   }
 
-  panel.classList.remove("mechbox__workbench-panel--bolt");
+  panel.classList.remove(
+    "mechbox__workbench-panel--bolt",
+    "mechbox__workbench-panel--units",
+    "mechbox__workbench-panel--rss"
+  );
   mount.replaceChildren();
 
   for (const field of parseInputsSchema(panel)) {
@@ -62,8 +68,14 @@ function mountWorkbenchForm(panel) {
     return;
   }
 
-  if (panel.dataset.toolId === "bolt_clamp_load") {
+  const toolId = panel.dataset.toolId;
+
+  if (toolId === "bolt_clamp_load") {
     mountBoltWorkbench(panel);
+  } else if (toolId === "unit_converter") {
+    mountUnitsWorkbench(panel);
+  } else if (toolId === "rss_calculation") {
+    mountRssWorkbench(panel);
   } else {
     mountGenericWorkbench(panel);
   }
@@ -132,6 +144,12 @@ function setResult(panel, result) {
   }
 }
 
+const CUSTOM_TOOL_IDS = new Set([
+  "bolt_clamp_load",
+  "unit_converter",
+  "rss_calculation",
+]);
+
 async function calculateGeneric(event) {
   const button = event.target.closest(".mechbox__calculate-btn");
 
@@ -139,13 +157,17 @@ async function calculateGeneric(event) {
     return;
   }
 
-  if (button.classList.contains("mechbox-bolt__calculate-btn")) {
+  if (
+    button.classList.contains("mechbox-bolt__calculate-btn") ||
+    button.classList.contains("mechbox-units__calculate-btn") ||
+    button.classList.contains("mechbox-rss__calculate-btn")
+  ) {
     return;
   }
 
   const panel = button.closest(".mechbox__workbench-panel");
 
-  if (!panel || panel.dataset.toolId === "bolt_clamp_load") {
+  if (!panel || CUSTOM_TOOL_IDS.has(panel.dataset.toolId)) {
     return;
   }
 

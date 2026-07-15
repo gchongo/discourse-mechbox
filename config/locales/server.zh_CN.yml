@@ -14,6 +14,7 @@ zh_CN:
   mechbox:
     errors:
       unknown_tool: "未知的计算工具。"
+      tool_not_enabled: "计算工具「%{tool_id}」尚未启用。"
       unknown_unit: "未知的单位。"
       incompatible_units: "单位维度不兼容，无法换算。"
       empty_values: "至少需要一个数值。"

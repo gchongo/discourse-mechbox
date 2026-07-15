@@ -36,6 +36,31 @@ zh_CN:
         mech_title: "机械计算工具"
         coming_soon: "即将推出"
         counts: "已接入 %{available} / 目录 %{catalog}"
+      units:
+        dimension_label: "量纲"
+        value: "数值"
+        from_unit: "原单位"
+        to_unit: "目标单位"
+        swap: "交换单位"
+        calculate: "开始换算"
+        results_title: "换算结果"
+        results_empty: "填写左侧参数后点击「开始换算」。"
+        result_note: "长度 / 压力 / 力在同一量纲内换算；转速当前仅支持 rpm。"
+        dimension:
+          length: "长度"
+          pressure: "压力"
+          force: "力"
+          speed: "转速"
+      rss:
+        values: "公差值列表"
+        values_placeholder: "每行一个数值，或用逗号分隔"
+        values_hint: "RSS = √(Σ Tᵢ²)，用于公差叠加估算。"
+        calculate: "开始计算"
+        results_title: "计算结果"
+        results_empty: "填写公差值后点击「开始计算」。"
+        result_rss: "RSS"
+        result_count: "项数"
+        formula: "公式：RSS = √(v₁² + v₂² + … + vₙ²)"
       catalog:
         analysis_type_title: "分析类型"
         analysis_categories:

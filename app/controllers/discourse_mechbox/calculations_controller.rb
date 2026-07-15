@@ -23,14 +23,22 @@ module DiscourseMechbox
     private
 
     def calculation_params
-      params.permit(
-        :tool_id,
-        :formula_template_id,
-        :unit_system,
-        :save_record,
-        :title,
-        inputs: {},
-      )
+      permitted =
+        params.permit(:tool_id, :formula_template_id, :unit_system, :save_record, :title)
+
+      if params[:inputs].present?
+        raw = params[:inputs]
+        permitted[:inputs] =
+          if raw.respond_to?(:to_unsafe_h)
+            raw.to_unsafe_h
+          elsif raw.is_a?(Hash)
+            raw
+          else
+            {}
+          end
+      end
+
+      permitted
     end
   end
 end

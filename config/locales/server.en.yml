@@ -14,6 +14,7 @@ en:
   mechbox:
     errors:
       unknown_tool: "Unknown calculator tool."
+      tool_not_enabled: "Calculator tool '%{tool_id}' is not enabled yet."
       unknown_unit: "Unknown unit."
       incompatible_units: "Units are not compatible for conversion."
       empty_values: "At least one value is required."
