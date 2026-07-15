@@ -318,7 +318,10 @@
     grid-template-columns: 7.5rem minmax(0, 1fr) 4.25rem;
     align-items: center;
     column-gap: 0.75rem;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.45rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 8px;
+    background: var(--primary-very-low);
 
     &.is-mode-hidden {
       display: none !important;
@@ -326,7 +329,7 @@
 
     &--mode {
       align-items: start;
-      margin-bottom: 0.95rem;
+      margin-bottom: 0.65rem;
 
       .mechbox-bolt__radios {
         grid-column: 2 / -1;

@@ -7,3 +7,50 @@
     grid-template-columns: 1fr;
   }
 }
+
+// Bolt workbench: full-bleed on phone — no card chrome / side gutters.
+.mechbox__page:has(.mechbox-bolt) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.mechbox__workbench-panel--bolt {
+  border: 0;
+  border-radius: 0;
+  padding: 0.75rem 0.65rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mechbox-bolt {
+  &__formula-bar,
+  &__warning {
+    border-radius: 8px;
+  }
+
+  &__card {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.65rem 0;
+    background: transparent;
+  }
+
+  &__grid {
+    gap: 1.25rem;
+  }
+
+  &__field {
+    grid-template-columns: 6.5rem minmax(0, 1fr) 3.75rem;
+    column-gap: 0.55rem;
+  }
+
+  &__results {
+    position: static;
+    min-height: 0;
+  }
+
+  &__diagram {
+    border-radius: 8px;
+  }
+}
