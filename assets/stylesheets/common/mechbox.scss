@@ -187,10 +187,31 @@
     grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
   }
 
+  &__home-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--tertiary);
+    line-height: 1;
+
+    .d-icon {
+      width: 1.25em;
+      height: 1.25em;
+    }
+
+    &--sm .d-icon {
+      width: 0.95em;
+      height: 0.95em;
+      opacity: 0.75;
+    }
+  }
+
   &__home-card {
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.65rem;
     min-height: 96px;
     padding: 0.8rem 0.85rem;
     border: 1px solid var(--primary-low);
@@ -202,6 +223,14 @@
       border-color 0.15s ease,
       box-shadow 0.15s ease,
       transform 0.15s ease;
+  }
+
+  &__home-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+    flex: 1;
   }
 
   &__home-card--available {
@@ -257,6 +286,9 @@
     padding: 0.75rem 0.85rem;
 
     h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
       margin: 0 0 0.45rem;
       font-size: var(--font-0);
       color: var(--tertiary);
@@ -281,6 +313,13 @@
       border-bottom: 0;
       padding-bottom: 0;
     }
+  }
+
+  &__home-analysis-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
   }
 
   &__home-analysis-name {

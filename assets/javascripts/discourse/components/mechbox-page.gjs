@@ -2,6 +2,7 @@ import Component from "@glimmer/component";
 import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import { and } from "discourse/truth-helpers";
+import dIcon from "discourse/ui-kit/helpers/d-icon";
 
 export default class MechboxPage extends Component {
   get model() {
@@ -90,38 +91,6 @@ export default class MechboxPage extends Component {
             {{/if}}
           </header>
 
-          {{#if this.home.available_tools.length}}
-            <section class="mechbox__home-section">
-              <header class="mechbox__home-section-head">
-                <h2>{{i18n "mechbox.home.available_title"}}</h2>
-              </header>
-              <div class="mechbox__home-card-grid">
-                {{#each this.home.available_tools as |tool|}}
-                  {{#if (and tool.available this.calculateEnabled)}}
-                    <a
-                      href={{this.toolHref tool.tool_id}}
-                      class="mechbox__home-card mechbox__home-card--available raw-link"
-                    >
-                      <span class="mechbox__home-card-name">{{tool.name}}</span>
-                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
-                      <span class="mechbox__home-card-badge">
-                        {{i18n "mechbox.catalog.status.available"}}
-                      </span>
-                    </a>
-                  {{else}}
-                    <div class="mechbox__home-card mechbox__home-card--planned">
-                      <span class="mechbox__home-card-name">{{tool.name}}</span>
-                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
-                      <span class="mechbox__home-card-badge">
-                        {{i18n "mechbox.catalog.status.planned"}}
-                      </span>
-                    </div>
-                  {{/if}}
-                {{/each}}
-              </div>
-            </section>
-          {{/if}}
-
           <section class="mechbox__home-section">
             <header class="mechbox__home-section-head">
               <h2>{{i18n "mechbox.home.analysis_title"}}</h2>
@@ -129,11 +98,21 @@ export default class MechboxPage extends Component {
             <div class="mechbox__home-analysis-grid">
               {{#each this.home.analysis_groups as |group|}}
                 <div class="mechbox__home-analysis-group">
-                  <h3>{{group.name}}</h3>
+                  <h3>
+                    <span class="mechbox__home-icon" aria-hidden="true">
+                      {{dIcon group.icon}}
+                    </span>
+                    {{group.name}}
+                  </h3>
                   <ul class="mechbox__home-analysis-list">
                     {{#each group.tools as |tool|}}
                       <li>
-                        <span class="mechbox__home-analysis-name">{{tool.name}}</span>
+                        <span class="mechbox__home-analysis-item">
+                          <span class="mechbox__home-icon mechbox__home-icon--sm" aria-hidden="true">
+                            {{dIcon tool.icon}}
+                          </span>
+                          <span class="mechbox__home-analysis-name">{{tool.name}}</span>
+                        </span>
                         <span class="mechbox__home-card-badge">
                           {{i18n "mechbox.home.coming_soon"}}
                         </span>
@@ -156,15 +135,25 @@ export default class MechboxPage extends Component {
                     href={{this.toolHref tool.tool_id}}
                     class="mechbox__home-card mechbox__home-card--available raw-link"
                   >
-                    <span class="mechbox__home-card-name">{{tool.name}}</span>
-                    <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                    <span class="mechbox__home-icon" aria-hidden="true">
+                      {{dIcon tool.icon}}
+                    </span>
+                    <span class="mechbox__home-card-body">
+                      <span class="mechbox__home-card-name">{{tool.name}}</span>
+                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                    </span>
                   </a>
                 {{else}}
                   <div class="mechbox__home-card mechbox__home-card--planned">
-                    <span class="mechbox__home-card-name">{{tool.name}}</span>
-                    <span class="mechbox__home-card-desc">{{tool.description}}</span>
-                    <span class="mechbox__home-card-badge">
-                      {{i18n "mechbox.home.coming_soon"}}
+                    <span class="mechbox__home-icon" aria-hidden="true">
+                      {{dIcon tool.icon}}
+                    </span>
+                    <span class="mechbox__home-card-body">
+                      <span class="mechbox__home-card-name">{{tool.name}}</span>
+                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                      <span class="mechbox__home-card-badge">
+                        {{i18n "mechbox.home.coming_soon"}}
+                      </span>
                     </span>
                   </div>
                 {{/if}}
@@ -187,18 +176,28 @@ export default class MechboxPage extends Component {
                         class="mechbox__home-card mechbox__home-card--available raw-link"
                         data-tool-id={{tool.tool_id}}
                       >
-                        <span class="mechbox__home-card-name">{{tool.name}}</span>
-                        <span class="mechbox__home-card-desc">{{tool.description}}</span>
-                        <span class="mechbox__home-card-badge">
-                          {{i18n "mechbox.catalog.status.available"}}
+                        <span class="mechbox__home-icon" aria-hidden="true">
+                          {{dIcon tool.icon}}
+                        </span>
+                        <span class="mechbox__home-card-body">
+                          <span class="mechbox__home-card-name">{{tool.name}}</span>
+                          <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                          <span class="mechbox__home-card-badge">
+                            {{i18n "mechbox.catalog.status.available"}}
+                          </span>
                         </span>
                       </a>
                     {{else}}
                       <div class="mechbox__home-card mechbox__home-card--planned">
-                        <span class="mechbox__home-card-name">{{tool.name}}</span>
-                        <span class="mechbox__home-card-desc">{{tool.description}}</span>
-                        <span class="mechbox__home-card-badge">
-                          {{i18n "mechbox.home.coming_soon"}}
+                        <span class="mechbox__home-icon" aria-hidden="true">
+                          {{dIcon tool.icon}}
+                        </span>
+                        <span class="mechbox__home-card-body">
+                          <span class="mechbox__home-card-name">{{tool.name}}</span>
+                          <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                          <span class="mechbox__home-card-badge">
+                            {{i18n "mechbox.home.coming_soon"}}
+                          </span>
                         </span>
                       </div>
                     {{/if}}

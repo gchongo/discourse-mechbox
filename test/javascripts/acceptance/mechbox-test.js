@@ -40,27 +40,20 @@ acceptance("MechBox | safe page", function (needs) {
         ],
         design_chains: [],
         home: {
-          available_tools: [
-            {
-              id: "gear_ratio",
-              tool_id: "gear_ratio",
-              name: "Gear ratio",
-              description: "Calculate speed ratio from tooth counts.",
-              available: true,
-            },
-            {
-              id: "bolt_clamp_load",
-              tool_id: "bolt_clamp_load",
-              name: "Bolt preload",
-              description: "Estimate bolt preload from torque.",
-              available: true,
-            },
-          ],
+          available_tools: [],
           analysis_groups: [
             {
               id: "linear_1d",
               name: "1D Linear",
-              tools: [{ id: "gear_gap", name: "Gear backlash", available: false }],
+              icon: "ruler-combined",
+              tools: [
+                {
+                  id: "gear_gap",
+                  name: "Gear backlash",
+                  icon: "gear",
+                  available: false,
+                },
+              ],
             },
           ],
           stat_tools: [
@@ -68,6 +61,7 @@ acceptance("MechBox | safe page", function (needs) {
               id: "tol_convert",
               name: "Tolerance conversion",
               description: "T ↔ σ",
+              icon: "arrows-left-right",
               available: false,
             },
           ],
@@ -81,6 +75,7 @@ acceptance("MechBox | safe page", function (needs) {
                   tool_id: "gear_ratio",
                   name: "Gear ratio",
                   description: "Speed ratio from tooth counts",
+                  icon: "gear",
                   available: true,
                 },
                 {
@@ -88,6 +83,7 @@ acceptance("MechBox | safe page", function (needs) {
                   tool_id: "bolt_clamp_load",
                   name: "Bolt preload",
                   description: "Torque ↔ preload",
+                  icon: "bolt",
                   available: true,
                 },
               ],
@@ -182,6 +178,7 @@ acceptance("MechBox | safe page", function (needs) {
     assert.true(exists(".mechbox__home-section"), "home sections are rendered");
     assert.true(exists(".mechbox__home-card--available"), "available tools are rendered");
     assert.true(exists(".mechbox__home-analysis-grid"), "analysis grid is rendered");
+    assert.true(exists(".mechbox__home-icon"), "tool icons are rendered");
   });
 
   test("opens and calculates on the gear ratio tool page", async function (assert) {
