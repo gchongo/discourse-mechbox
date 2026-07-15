@@ -64,6 +64,9 @@ en:
       key:
         name: "Key connection"
         description: "GB/T 1096 crush and shear check; simple, full, and professional (multi-key / amplitude) modes."
+      bolt_group:
+        name: "Bolt group"
+        description: "Eccentric shear and moment load sharing; simple, vector, and professional (slip / prying) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

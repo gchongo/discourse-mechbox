@@ -15,6 +15,7 @@ module DiscourseMechbox
       rss_calculation
       thread
       key
+      bolt_group
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -174,6 +175,31 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "bolt_group" => {
+        category: "fastening",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "bolt_count", type: "number", required: true },
+          { key: "bolt_circle_radius_mm", type: "number", required: true },
+          { key: "shear_x_n", type: "number", required: false },
+          { key: "shear_y_n", type: "number", required: false },
+          { key: "moment_nmm", type: "number", required: false },
+          { key: "allow_per_bolt_n", type: "number", required: false },
+          { key: "allow_tension_per_bolt_n", type: "number", required: false },
+          { key: "friction_coeff", type: "number", required: false },
+          { key: "clamp_force_per_bolt_n", type: "number", required: false },
+          { key: "axial_tension_n", type: "number", required: false },
+          { key: "prying_arm_mm", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "direct_per_bolt_n", type: "number" },
+          { key: "torsion_per_bolt_n", type: "number" },
+          { key: "max_bolt_force_n", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -191,9 +217,7 @@ module DiscourseMechbox
       "chain" => { category: "transmission", route: "/chain" },
       "clutch" => { category: "transmission", route: "/clutch" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "bolt_group" => { category: "fastening", route: "/bolt-group" },
       "weld" => { category: "fastening", route: "/weld" },
-      "bolt_group" => { category: "fastening", route: "/bolt-group" },
       "spring" => { category: "structural", route: "/spring" },
       "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },

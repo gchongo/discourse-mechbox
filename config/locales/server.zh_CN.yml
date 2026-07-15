@@ -64,6 +64,9 @@ zh_CN:
       key:
         name: "平键连接"
         description: "GB/T 1096 挤压与剪切校核，支持简化、完整与专业（多键/幅值）模式。"
+      bolt_group:
+        name: "螺栓组"
+        description: "偏心剪力与弯矩下的螺栓组载荷分配，支持简化、矢量分解与专业（抗滑/撬力）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

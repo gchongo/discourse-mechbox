@@ -254,6 +254,83 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs).to have_key("fatigue_pass")
   end
 
+  it "runs simple bolt_group estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bolt_group",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             bolt_count: 8,
+             bolt_circle_radius_mm: 60,
+             shear_x_n: 5000,
+             shear_y_n: 2000,
+             moment_nmm: 120_000,
+             allow_per_bolt_n: 8000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["direct_per_bolt_n"]).to be_within(0.1).of(673.145)
+    expect(outputs["torsion_per_bolt_n"]).to be_within(0.1).of(250.0)
+    expect(outputs["max_bolt_force_n"]).to be_within(0.1).of(923.145)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full bolt_group vector decomposition" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bolt_group",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             bolt_count: 8,
+             bolt_circle_radius_mm: 60,
+             shear_x_n: 5000,
+             shear_y_n: 2000,
+             moment_nmm: 120_000,
+             allow_per_bolt_n: 8000,
+             prying_arm_mm: 0,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["bolts"].size).to eq(8)
+    expect(outputs["critical_bolt_index"]).to be_present
+    expect(outputs["max_bolt_force_n"]).to be < 2000
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional bolt_group with slip failure" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bolt_group",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             bolt_count: 4,
+             bolt_circle_radius_mm: 50,
+             shear_x_n: 20_000,
+             shear_y_n: 0,
+             moment_nmm: 0,
+             friction_coeff: 0.2,
+             clamp_force_per_bolt_n: 5000,
+             allow_per_bolt_n: 50_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["friction"]["slip_pass"]).to eq(false)
+    expect(outputs["pass"]).to eq(false)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

@@ -13,6 +13,7 @@ module DiscourseMechbox
       gdt_position
       thread
       key
+      bolt_group
     ].freeze
 
     UNIT_FACTORS = {
@@ -109,6 +110,12 @@ module DiscourseMechbox
     def self.calculate_key(inputs)
       DiscourseMechbox::KeyCalculator.calculate(inputs)
     rescue DiscourseMechbox::KeyCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_bolt_group(inputs)
+      DiscourseMechbox::BoltGroupCalculator.calculate(inputs)
+    rescue DiscourseMechbox::BoltGroupCalculator::Error => error
       raise Error, error.message
     end
 

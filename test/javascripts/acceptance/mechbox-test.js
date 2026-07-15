@@ -118,10 +118,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "key",
                   available: true,
                 },
+                {
+                  id: "bolt_group",
+                  tool_id: "bolt_group",
+                  name: "Bolt group",
+                  description: "Eccentric load sharing",
+                  icon: "table-cells",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 6, catalog: 57 },
+          counts: { available: 7, catalog: 57 },
         },
       });
     });
@@ -156,6 +164,23 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "key_width_mm", type: "number" },
           { key: "key_height_mm", type: "number" },
           { key: "key_length_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/bolt_group", () => {
+      return helper.response(200, {
+        tool_id: "bolt_group",
+        name: "Bolt group",
+        description: "Eccentric shear and moment load sharing.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "bolt_count", type: "number" },
+          { key: "bolt_circle_radius_mm", type: "number" },
+          { key: "shear_x_n", type: "number" },
+          { key: "shear_y_n", type: "number" },
+          { key: "moment_nmm", type: "number" },
         ],
       });
     });
@@ -292,6 +317,22 @@ acceptance("MechBox | safe page", function (needs) {
             crush_stress_mpa: 136.054,
             allow_shear_mpa: 100,
             allow_crush_mpa: 150,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "bolt_group") {
+        return helper.response(200, {
+          tool_id: "bolt_group",
+          outputs: {
+            calc_mode: "simple",
+            direct_per_bolt_n: 673.145,
+            torsion_per_bolt_n: 250,
+            max_bolt_force_n: 923.145,
+            allow_per_bolt_n: 8000,
+            force_pass: true,
             estimate_only: true,
             pass: false,
           },
@@ -474,5 +515,30 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='professional']")
       .doesNotHaveClass("is-mode-hidden", "professional mode shows key count");
+  });
+
+  test("opens and calculates on the bolt group page", async function (assert) {
+    await visit("/mechbox?tool_id=bolt_group");
+
+    await waitFor(".mechbox-bolt-group");
+    assert.dom(".mechbox-bolt-group__grid").exists("two-column grid is rendered");
+    assert
+      .dom(".mechbox-bolt-group__formula-bar")
+      .exists("formula bar is rendered");
+    assert.dom(".mechbox-bolt-group__warning").exists("warning bar is rendered");
+    assert.dom("input[name='bolt_count']").exists("bolt count input is rendered");
+    assert.dom(".mechbox-bolt-group__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='shear_x_n']", "5000");
+    await click(".mechbox-bolt-group__calculate-btn");
+    await waitFor(".mechbox-bolt-group__status");
+
+    assert.dom(".mechbox-bolt-group__status").hasClass("is-attention");
+    assert.dom(".mechbox-bolt-group__results-body").includesText("923");
+
+    await click(".mechbox-bolt-group__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows friction fields");
   });
 });

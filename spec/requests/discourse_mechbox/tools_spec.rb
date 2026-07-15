@@ -16,7 +16,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key]
+    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key bolt_group]
     enabled_ids.each do |tool_id|
       tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
       expect(tool["available"]).to eq(true), "expected #{tool_id} to be available"
@@ -29,6 +29,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(planned_client["available"]).to eq(false)
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("thread")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("key")
+    expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("bolt_group")
     expect(json["design_chains"]).to eq([])
   end
 

@@ -488,7 +488,8 @@
 
 .mechbox-bolt,
 .mechbox-thread,
-.mechbox-key {
+.mechbox-key,
+.mechbox-bolt-group {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -821,6 +822,36 @@
     font-weight: 600;
     margin-bottom: 0.35rem;
     color: var(--primary-high);
+  }
+
+  &__bolt-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0 0.35rem;
+    font-size: var(--font-down-1);
+
+    th,
+    td {
+      padding: 0.35rem 0.4rem;
+      border-bottom: 1px solid var(--primary-low);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      color: var(--primary-medium);
+      font-weight: 600;
+    }
+
+    tr.is-danger td {
+      color: var(--danger);
+      font-weight: 600;
+    }
   }
 
   &__results.is-visible {
