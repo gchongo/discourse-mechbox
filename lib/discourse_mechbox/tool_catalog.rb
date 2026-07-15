@@ -8,7 +8,13 @@ module DiscourseMechbox
     IMPLEMENTATION_DESIGN_CHAIN = "design_chain"
 
     # Builtin calculators enabled one at a time for incremental rollout.
-    ENABLED_BUILTIN_TOOL_IDS = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation].freeze
+    ENABLED_BUILTIN_TOOL_IDS = %w[
+      gear_ratio
+      bolt_clamp_load
+      unit_converter
+      rss_calculation
+      gdt_position
+    ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
     ENABLED_CLIENT_TOOL_IDS = [].freeze
@@ -106,8 +112,15 @@ module DiscourseMechbox
         inputs: [
           { key: "deviation_x_mm", type: "number", required: true },
           { key: "deviation_y_mm", type: "number", required: true },
+          { key: "tolerance_diameter_mm", type: "number", required: false },
         ],
-        outputs: [{ key: "position_diameter_mm", type: "number" }],
+        outputs: [
+          { key: "position_diameter_mm", type: "number" },
+          { key: "tolerance_diameter_mm", type: "number" },
+          { key: "margin_mm", type: "number" },
+          { key: "utilization", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
       },
     }.freeze
 

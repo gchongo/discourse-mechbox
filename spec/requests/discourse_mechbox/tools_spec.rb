@@ -16,18 +16,14 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    gear_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "gear_ratio" }
-    bolt_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "bolt_clamp_load" }
-    unit_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "unit_converter" }
-    rss_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "rss_calculation" }
-    planned_tool = json["builtin_tools"].find { |tool| tool["tool_id"] == "gdt_position" }
+    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation gdt_position]
+    enabled_ids.each do |tool_id|
+      tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
+      expect(tool["available"]).to eq(true), "expected #{tool_id} to be available"
+    end
 
-    expect(gear_tool["available"]).to eq(true)
-    expect(bolt_tool["available"]).to eq(true)
-    expect(unit_tool["available"]).to eq(true)
-    expect(rss_tool["available"]).to eq(true)
-    expect(planned_tool["available"]).to eq(false)
-    expect(json["client_tools"]).to be_an(Array)
+    planned_client = json["client_tools"].find { |tool| tool["tool_id"] == "size_chain" }
+    expect(planned_client["available"]).to eq(false)
     expect(json["design_chains"]).to eq([])
   end
 

@@ -8,11 +8,12 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 4 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation` |
-| ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（含上述已接入） |
+| ✅ 已接入 | 5 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`gdt_position` |
+| ⏳ 首页目录 | 58 | 分析 18 + 统计 7 + 机械 33（含上述已接入） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
-**W1 进度**：`unit_converter` ✅ · `rss_calculation` ✅ · `gdt_position` 待启动
+**W1 完成** ✅：`unit_converter` · `rss_calculation` · `gdt_position`（含可选公差校核）
+**下一步**：W2.1 `thread` 螺纹强度
 
 ---
 

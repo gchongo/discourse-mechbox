@@ -5,6 +5,7 @@ import { i18n } from "discourse-i18n";
 import { mountBoltWorkbench } from "../lib/mechbox-bolt-page";
 import { mountUnitsWorkbench } from "../lib/mechbox-units-page";
 import { mountRssWorkbench } from "../lib/mechbox-rss-page";
+import { mountGdtWorkbench } from "../lib/mechbox-gdt-page";
 
 let handlersRegistered = false;
 
@@ -33,7 +34,8 @@ function mountGenericWorkbench(panel) {
   panel.classList.remove(
     "mechbox__workbench-panel--bolt",
     "mechbox__workbench-panel--units",
-    "mechbox__workbench-panel--rss"
+    "mechbox__workbench-panel--rss",
+    "mechbox__workbench-panel--gdt"
   );
   mount.replaceChildren();
 
@@ -76,6 +78,8 @@ function mountWorkbenchForm(panel) {
     mountUnitsWorkbench(panel);
   } else if (toolId === "rss_calculation") {
     mountRssWorkbench(panel);
+  } else if (toolId === "gdt_position") {
+    mountGdtWorkbench(panel);
   } else {
     mountGenericWorkbench(panel);
   }
@@ -148,6 +152,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "bolt_clamp_load",
   "unit_converter",
   "rss_calculation",
+  "gdt_position",
 ]);
 
 async function calculateGeneric(event) {
@@ -160,7 +165,8 @@ async function calculateGeneric(event) {
   if (
     button.classList.contains("mechbox-bolt__calculate-btn") ||
     button.classList.contains("mechbox-units__calculate-btn") ||
-    button.classList.contains("mechbox-rss__calculate-btn")
+    button.classList.contains("mechbox-rss__calculate-btn") ||
+    button.classList.contains("mechbox-gdt__calculate-btn")
   ) {
     return;
   }

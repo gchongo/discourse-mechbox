@@ -60,7 +60,7 @@ zh_CN:
         description: "支持简化、完整（VDI 2230）与专业（刚度/嵌入/热膨胀）三档预紧力计算。"
       gdt_position:
         name: "GD&T 位置度"
-        description: "计算位置度直径。"
+        description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"
 
     home:
       analysis_groups:
@@ -134,6 +134,9 @@ zh_CN:
         gdt_stack:
           name: "GD&T 公差栈"
           description: "形位公差叠加 / 贡献度"
+        gdt_position:
+          name: "GD&T 位置度"
+          description: "ΔX/ΔY → 位置度直径 · 公差校核"
         unit_converter:
           name: "单位换算"
           description: "MPa/psi · mm/in"

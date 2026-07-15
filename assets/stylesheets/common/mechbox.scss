@@ -330,7 +330,8 @@
 
 .mechbox__workbench-panel--bolt,
 .mechbox__workbench-panel--units,
-.mechbox__workbench-panel--rss {
+.mechbox__workbench-panel--rss,
+.mechbox__workbench-panel--gdt {
   .mechbox__actions,
   .mechbox__error,
   .mechbox__result-title,
@@ -340,7 +341,8 @@
 }
 
 .mechbox-units,
-.mechbox-rss {
+.mechbox-rss,
+.mechbox-gdt {
   &__grid {
     display: grid;
     gap: 1rem;
@@ -433,8 +435,42 @@
 
 @media (max-width: 700px) {
   .mechbox-units__grid,
-  .mechbox-rss__grid {
+  .mechbox-rss__grid,
+  .mechbox-gdt__grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.mechbox-gdt {
+  &__hero-label {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+    display: block;
+  }
+
+  &__hero-value {
+    color: var(--tertiary);
+    font-weight: 700;
+    font-size: var(--font-up-3);
+    font-family: var(--font-family-monospace);
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    font-size: var(--font-down-1);
+    font-weight: 600;
+
+    &.is-pass {
+      background: var(--success-low);
+      color: var(--success);
+    }
+
+    &.is-fail {
+      background: var(--danger-low);
+      color: var(--danger);
+    }
   }
 }
 

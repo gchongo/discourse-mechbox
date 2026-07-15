@@ -103,7 +103,19 @@ module DiscourseMechbox
       deviation_y_mm = numeric_input(inputs, "deviation_y_mm")
       position_diameter_mm = 2.0 * Math.sqrt(deviation_x_mm**2 + deviation_y_mm**2)
 
-      { "position_diameter_mm" => position_diameter_mm }
+      outputs = { "position_diameter_mm" => position_diameter_mm }
+
+      if inputs["tolerance_diameter_mm"].present?
+        tolerance = numeric_input(inputs, "tolerance_diameter_mm")
+        raise Error, I18n.t("mechbox.errors.positive_values_required") if tolerance <= 0
+
+        outputs["tolerance_diameter_mm"] = tolerance
+        outputs["margin_mm"] = tolerance - position_diameter_mm
+        outputs["utilization"] = position_diameter_mm / tolerance
+        outputs["pass"] = position_diameter_mm <= tolerance
+      end
+
+      outputs
     end
 
     def self.numeric_input(inputs, key)
