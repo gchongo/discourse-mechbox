@@ -332,7 +332,8 @@
 .mechbox__workbench-panel--units,
 .mechbox__workbench-panel--rss,
 .mechbox__workbench-panel--gdt,
-.mechbox__workbench-panel--thread {
+.mechbox__workbench-panel--thread,
+.mechbox__workbench-panel--key {
   .mechbox__actions,
   .mechbox__error,
   .mechbox__result-title,
@@ -486,7 +487,8 @@
 }
 
 .mechbox-bolt,
-.mechbox-thread {
+.mechbox-thread,
+.mechbox-key {
   &__modes {
     display: flex;
     flex-wrap: wrap;

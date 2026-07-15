@@ -8,14 +8,15 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 5 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread` |
+| ✅ 已接入 | 6 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
 **W1 完成** ✅：`unit_converter` · `rss_calculation`  
 **产品修正**：`gdt_position` **不作为独立首页工具**。位置度属于「尺寸链编辑器 / 分析类型（GD&T）」与后续 `gdt_stack`；计算核可保留供尺寸链内复用，但不点亮、不上目录。  
 **W2.1 完成** ✅：`thread` 螺纹强度（简化 / 完整 / 专业 VDI）  
-**下一步**：W2.2 `key` 平键连接
+**W2.2 完成** ✅：`key` 平键连接（简化 / 完整推荐键长 / 专业多键与幅值门限）  
+**下一步**：W2.3 `bolt_group` 螺栓组（与已上线螺栓预紧形成紧固件组；计划表原写 weld 在前，按建议顺序优先螺栓组）
 
 ---
 
@@ -55,10 +56,10 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 
 | 序号 | tool_id | 名称 | 来源 | 难度 |
 |------|---------|------|------|------|
-| 2.1 | `thread` | 螺纹强度 | MechBox `/thread` | ★★ |
-| 2.2 | `key` | 平键连接 | `/key` | ★★ |
-| 2.3 | `weld` | 焊缝强度 | `/weld` | ★★ |
-| 2.4 | `bolt_group` | 螺栓组 | `/bolt-group` | ★★☆ |
+| 2.1 | `thread` | 螺纹强度 | MechBox `/thread` | ★★ | ✅ |
+| 2.2 | `key` | 平键连接 | `/key` | ★★ | ✅ |
+| 2.3 | `weld` | 焊缝强度 | `/weld` | ★★ | |
+| 2.4 | `bolt_group` | 螺栓组 | `/bolt-group` | ★★☆ | 建议优先于 weld |
 | 2.5 | `spring` | 弹簧设计 | `/spring` | ★★ |
 | 2.6 | `clutch` | 离合器 | `/clutch` | ★☆ |
 | 2.7 | `belt` | 皮带传动 | `/belt` | ★★ |

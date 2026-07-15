@@ -26,13 +26,15 @@
 
 // Bolt / thread workbench: full-bleed on phone — no card chrome / side gutters.
 .mechbox__page:has(.mechbox-bolt),
-.mechbox__page:has(.mechbox-thread) {
+.mechbox__page:has(.mechbox-thread),
+.mechbox__page:has(.mechbox-key) {
   padding-left: 0;
   padding-right: 0;
 }
 
 .mechbox__workbench-panel--bolt,
-.mechbox__workbench-panel--thread {
+.mechbox__workbench-panel--thread,
+.mechbox__workbench-panel--key {
   border: 0;
   border-radius: 0;
   padding: 0.75rem 0.65rem;
@@ -41,7 +43,8 @@
 }
 
 .mechbox-bolt,
-.mechbox-thread {
+.mechbox-thread,
+.mechbox-key {
   &__formula-bar,
   &__warning {
     border-radius: 8px;

@@ -7,6 +7,7 @@ import { mountUnitsWorkbench } from "../lib/mechbox-units-page";
 import { mountRssWorkbench } from "../lib/mechbox-rss-page";
 import { mountGdtWorkbench } from "../lib/mechbox-gdt-page";
 import { mountThreadWorkbench } from "../lib/mechbox-thread-page";
+import { mountKeyWorkbench } from "../lib/mechbox-key-page";
 
 let handlersRegistered = false;
 
@@ -37,7 +38,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--units",
     "mechbox__workbench-panel--rss",
     "mechbox__workbench-panel--gdt",
-    "mechbox__workbench-panel--thread"
+    "mechbox__workbench-panel--thread",
+    "mechbox__workbench-panel--key"
   );
   mount.replaceChildren();
 
@@ -84,6 +86,8 @@ function mountWorkbenchForm(panel) {
     mountGdtWorkbench(panel);
   } else if (toolId === "thread") {
     mountThreadWorkbench(panel);
+  } else if (toolId === "key") {
+    mountKeyWorkbench(panel);
   } else {
     mountGenericWorkbench(panel);
   }
@@ -158,6 +162,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "rss_calculation",
   "gdt_position",
   "thread",
+  "key",
 ]);
 
 async function calculateGeneric(event) {
@@ -172,7 +177,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-units__calculate-btn") ||
     button.classList.contains("mechbox-rss__calculate-btn") ||
     button.classList.contains("mechbox-gdt__calculate-btn") ||
-    button.classList.contains("mechbox-thread__calculate-btn")
+    button.classList.contains("mechbox-thread__calculate-btn") ||
+    button.classList.contains("mechbox-key__calculate-btn")
   ) {
     return;
   }

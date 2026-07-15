@@ -110,10 +110,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "link",
                   available: true,
                 },
+                {
+                  id: "key",
+                  tool_id: "key",
+                  name: "Key connection",
+                  description: "Crush and shear",
+                  icon: "key",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 5, catalog: 57 },
+          counts: { available: 6, catalog: 57 },
         },
       });
     });
@@ -131,6 +139,23 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "grade", type: "string" },
           { key: "axial_force_n", type: "number" },
           { key: "engaged_length_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/key", () => {
+      return helper.response(200, {
+        tool_id: "key",
+        name: "Key connection",
+        description: "GB/T 1096 crush and shear check.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "torque_nm", type: "number" },
+          { key: "shaft_diameter_mm", type: "number" },
+          { key: "key_width_mm", type: "number" },
+          { key: "key_height_mm", type: "number" },
+          { key: "key_length_mm", type: "number" },
         ],
       });
     });
@@ -248,6 +273,25 @@ acceptance("MechBox | safe page", function (needs) {
             tightening_torque_nm: 40,
             torque_method: "simple_mu_d_f",
             max_allowable_force_n: 23200,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "key") {
+        return helper.response(200, {
+          tool_id: "key",
+          outputs: {
+            calc_mode: "simple",
+            tangential_force_n: 13333.333,
+            key_width_mm: 8,
+            key_height_mm: 7,
+            key_length_mm: 28,
+            shear_stress_mpa: 59.524,
+            crush_stress_mpa: 136.054,
+            allow_shear_mpa: 100,
+            allow_crush_mpa: 150,
             estimate_only: true,
             pass: false,
           },
@@ -407,5 +451,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows nut material");
+  });
+
+  test("opens and calculates on the key connection page", async function (assert) {
+    await visit("/mechbox?tool_id=key");
+
+    await waitFor(".mechbox-key");
+    assert.dom(".mechbox-key__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-key__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-key__warning").exists("warning bar is rendered");
+    assert.dom("input[name='torque_nm']").exists("torque input is rendered");
+    assert.dom(".mechbox-key__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='torque_nm']", "200");
+    await click(".mechbox-key__calculate-btn");
+    await waitFor(".mechbox-key__status");
+
+    assert.dom(".mechbox-key__status").hasClass("is-attention");
+    assert.dom(".mechbox-key__results-body").includesText("59.5");
+
+    await click(".mechbox-key__mode-tab[data-calc-mode='professional']");
+    assert
+      .dom("[data-calc-show='professional']")
+      .doesNotHaveClass("is-mode-hidden", "professional mode shows key count");
   });
 });

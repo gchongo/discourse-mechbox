@@ -61,6 +61,9 @@ en:
       thread:
         name: "Thread strength"
         description: "Tensile/shear stress and engagement check; simple, full, and professional (VDI) modes."
+      key:
+        name: "Key connection"
+        description: "GB/T 1096 crush and shear check; simple, full, and professional (multi-key / amplitude) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

@@ -176,6 +176,84 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["utilization"]).to be > 0
   end
 
+  it "runs simple key crush/shear estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "key",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             torque_nm: 200,
+             shaft_diameter_mm: 30,
+             key_width_mm: 8,
+             key_height_mm: 7,
+             key_length_mm: 28,
+             hub_length_mm: 28,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["tangential_force_n"]).to be_within(0.1).of(13_333.333)
+    expect(outputs["shear_stress_mpa"]).to be_within(0.1).of(59.524)
+    expect(outputs["crush_stress_mpa"]).to be_within(0.1).of(136.054)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full key length recommendation" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "key",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             torque_nm: 200,
+             shaft_diameter_mm: 30,
+             key_width_mm: 8,
+             key_height_mm: 7,
+             key_length_mm: 28,
+             hub_length_mm: 28,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["recommended_length_mm"]).to be_within(0.1).of(25.397)
+    expect(outputs["length_pass"]).to eq(true)
+    expect(outputs["estimate_only"]).to eq(false)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional key with dual keys and amplitude gate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "key",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             torque_nm: 200,
+             shaft_diameter_mm: 30,
+             key_width_mm: 8,
+             key_height_mm: 7,
+             key_length_mm: 28,
+             hub_length_mm: 28,
+             key_count: 2,
+             torque_amplitude_nm: 40,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["key_count"]).to eq(2)
+    expect(outputs["force_per_key_n"]).to be_within(0.1).of(6_666.667)
+    expect(outputs["shear_amplitude_mpa"]).to be > 0
+    expect(outputs).to have_key("fatigue_pass")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

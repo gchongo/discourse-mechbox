@@ -61,6 +61,9 @@ zh_CN:
       thread:
         name: "螺纹强度"
         description: "拉应力 / 剪应力 / 旋合长度校核，支持简化、完整与专业（VDI）模式。"
+      key:
+        name: "平键连接"
+        description: "GB/T 1096 挤压与剪切校核，支持简化、完整与专业（多键/幅值）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

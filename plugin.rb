@@ -71,6 +71,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/formula_evaluator"
   require_relative "lib/discourse_mechbox/bolt_preload_calculator"
   require_relative "lib/discourse_mechbox/thread_calculator"
+  require_relative "lib/discourse_mechbox/key_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"
