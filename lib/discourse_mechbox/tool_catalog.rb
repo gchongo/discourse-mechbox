@@ -13,11 +13,8 @@ module DiscourseMechbox
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
     ENABLED_CLIENT_TOOL_IDS = [].freeze
 
-    # Multi-tool design chains — deferred to the projects module (Phase 5).
-    DESIGN_CHAIN_TOOLS = {
-      "shaft_system_chain" => { category: "design", status: "deferred" },
-      "bolt_connection_chain" => { category: "design", status: "deferred" },
-    }.freeze
+    # Design chains removed from homepage (user request). Kept empty for API compatibility.
+    DESIGN_CHAIN_TOOLS = {}.freeze
 
     CATEGORIES = {
       "general" => { icon: "calculator", order: 0 },

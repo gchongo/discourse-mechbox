@@ -29,6 +29,13 @@ zh_CN:
       skeleton_message: "插件已简化为可启动骨架，业务功能将逐步接入。"
       api_prefix_label: "API 前缀"
       future_interfaces_title: "预留接口"
+      home:
+        available_title: "已接入工具"
+        analysis_title: "分析类型"
+        stat_title: "统计工具"
+        mech_title: "机械计算工具"
+        coming_soon: "即将推出"
+        counts: "已接入 %{available} / 目录 %{catalog}"
       catalog:
         analysis_type_title: "分析类型"
         analysis_categories:

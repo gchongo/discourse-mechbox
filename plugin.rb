@@ -29,6 +29,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/api_capabilities"
   require_relative "lib/discourse_mechbox/database_features"
   require_relative "lib/discourse_mechbox/tool_catalog"
+  require_relative "lib/discourse_mechbox/home_catalog"
   require_relative "lib/discourse_mechbox/user_preferences"
   require_relative "lib/discourse_mechbox/guardian_extension"
   require_relative "lib/discourse_mechbox/formula_evaluator"

@@ -6,6 +6,22 @@
   &__grid {
     grid-template-columns: 1fr;
   }
+
+  &__home-hero {
+    padding: 0.85rem 0.9rem;
+  }
+
+  &__home-section {
+    padding: 0.75rem 0.85rem 0.9rem;
+  }
+
+  &__home-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  &__home-analysis-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 // Bolt workbench: full-bleed on phone — no card chrome / side gutters.

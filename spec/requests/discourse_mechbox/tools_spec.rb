@@ -24,11 +24,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(bolt_tool["available"]).to eq(true)
     expect(planned_tool["available"]).to eq(false)
     expect(json["client_tools"]).to be_an(Array)
-    expect(json["design_chains"].map { |chain| chain["tool_id"] }).to include(
-      "shaft_system_chain",
-      "bolt_connection_chain",
-    )
-    expect(json["design_chains"].first["available"]).to eq(false)
+    expect(json["design_chains"]).to eq([])
   end
 
   it "returns a builtin tool schema" do

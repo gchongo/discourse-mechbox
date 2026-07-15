@@ -12,6 +12,14 @@ export default class MechboxPage extends Component {
     return this.model.selected_tool;
   }
 
+  get home() {
+    return this.model.home || {};
+  }
+
+  get calculateEnabled() {
+    return !!this.model.capabilities?.calculate?.enabled;
+  }
+
   get catalogHref() {
     return getURL("/mechbox");
   }
@@ -65,69 +73,139 @@ export default class MechboxPage extends Component {
           <p>{{i18n "mechbox.tool_not_available"}}</p>
         {{/if}}
       {{else}}
-        <header class="mechbox__header">
-          <h1>{{i18n "mechbox.title"}}</h1>
-          <p class="mechbox__disclaimer">{{i18n "mechbox.disclaimer"}}</p>
-        </header>
-
-        <div class="mechbox__catalog-grid">
-          <section class="mechbox__catalog-card">
-            <h2>{{i18n "mechbox.builtin_tools_title"}}</h2>
-            <p>{{i18n "mechbox.catalog.single_tool_directory_hint"}}</p>
-
-            {{#if this.model.builtin_tools.length}}
-              <ul class="mechbox__tool-list">
-                {{#each this.model.builtin_tools as |tool|}}
-                  <li>
-                    <div>
-                      {{#if (and tool.available this.model.capabilities.calculate.enabled)}}
-                        <a
-                          href={{this.toolHref tool.tool_id}}
-                          class="mechbox__tool-link raw-link"
-                        >
-                          <span class="mechbox__tool-name">{{tool.name}}</span>
-                        </a>
-                      {{else}}
-                        <div class="mechbox__tool-name">{{tool.name}}</div>
-                      {{/if}}
-                      <div class="mechbox__tool-description">
-                        {{tool.description}}
-                      </div>
-                    </div>
-                    <span class="mechbox__tool-badge">
-                      {{#if (and tool.available this.model.capabilities.calculate.enabled)}}
-                        {{i18n "mechbox.catalog.status.available"}}
-                      {{else}}
-                        {{i18n "mechbox.catalog.status.planned"}}
-                      {{/if}}
-                    </span>
-                  </li>
-                {{/each}}
-              </ul>
-            {{else}}
-              <p>{{i18n "mechbox.no_builtin_tools"}}</p>
+        <div class="mechbox__home">
+          <header class="mechbox__home-hero">
+            <div>
+              <h1>{{i18n "mechbox.title"}}</h1>
+              <p class="mechbox__disclaimer">{{i18n "mechbox.disclaimer"}}</p>
+            </div>
+            {{#if this.home.counts}}
+              <p class="mechbox__home-counts">
+                {{i18n
+                  "mechbox.home.counts"
+                  available=this.home.counts.available
+                  catalog=this.home.counts.catalog
+                }}
+              </p>
             {{/if}}
+          </header>
+
+          {{#if this.home.available_tools.length}}
+            <section class="mechbox__home-section">
+              <header class="mechbox__home-section-head">
+                <h2>{{i18n "mechbox.home.available_title"}}</h2>
+              </header>
+              <div class="mechbox__home-card-grid">
+                {{#each this.home.available_tools as |tool|}}
+                  {{#if (and tool.available this.calculateEnabled)}}
+                    <a
+                      href={{this.toolHref tool.tool_id}}
+                      class="mechbox__home-card mechbox__home-card--available raw-link"
+                    >
+                      <span class="mechbox__home-card-name">{{tool.name}}</span>
+                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                      <span class="mechbox__home-card-badge">
+                        {{i18n "mechbox.catalog.status.available"}}
+                      </span>
+                    </a>
+                  {{else}}
+                    <div class="mechbox__home-card mechbox__home-card--planned">
+                      <span class="mechbox__home-card-name">{{tool.name}}</span>
+                      <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                      <span class="mechbox__home-card-badge">
+                        {{i18n "mechbox.catalog.status.planned"}}
+                      </span>
+                    </div>
+                  {{/if}}
+                {{/each}}
+              </div>
+            </section>
+          {{/if}}
+
+          <section class="mechbox__home-section">
+            <header class="mechbox__home-section-head">
+              <h2>{{i18n "mechbox.home.analysis_title"}}</h2>
+            </header>
+            <div class="mechbox__home-analysis-grid">
+              {{#each this.home.analysis_groups as |group|}}
+                <div class="mechbox__home-analysis-group">
+                  <h3>{{group.name}}</h3>
+                  <ul class="mechbox__home-analysis-list">
+                    {{#each group.tools as |tool|}}
+                      <li>
+                        <span class="mechbox__home-analysis-name">{{tool.name}}</span>
+                        <span class="mechbox__home-card-badge">
+                          {{i18n "mechbox.home.coming_soon"}}
+                        </span>
+                      </li>
+                    {{/each}}
+                  </ul>
+                </div>
+              {{/each}}
+            </div>
           </section>
 
-          <section class="mechbox__catalog-card mechbox__catalog-card--deferred">
-            <h2>{{i18n "mechbox.catalog.analysis_type_title"}}</h2>
-            <p>{{i18n "mechbox.catalog.multi_chain_archive_note"}}</p>
-
-            <ul class="mechbox__tool-list">
-              {{#each this.model.design_chains as |chain|}}
-                <li>
-                  <div>
-                    <div class="mechbox__tool-name">{{chain.name}}</div>
-                    <div class="mechbox__tool-description">
-                      {{chain.description}}
-                    </div>
+          <section class="mechbox__home-section">
+            <header class="mechbox__home-section-head">
+              <h2>{{i18n "mechbox.home.stat_title"}}</h2>
+            </header>
+            <div class="mechbox__home-card-grid">
+              {{#each this.home.stat_tools as |tool|}}
+                {{#if (and tool.available tool.tool_id this.calculateEnabled)}}
+                  <a
+                    href={{this.toolHref tool.tool_id}}
+                    class="mechbox__home-card mechbox__home-card--available raw-link"
+                  >
+                    <span class="mechbox__home-card-name">{{tool.name}}</span>
+                    <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                  </a>
+                {{else}}
+                  <div class="mechbox__home-card mechbox__home-card--planned">
+                    <span class="mechbox__home-card-name">{{tool.name}}</span>
+                    <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                    <span class="mechbox__home-card-badge">
+                      {{i18n "mechbox.home.coming_soon"}}
+                    </span>
                   </div>
-                  <span class="mechbox__tool-badge">
-                    {{i18n "mechbox.catalog.status.deferred"}}
-                  </span>
-                </li>
+                {{/if}}
               {{/each}}
-            </ul>
+            </div>
+          </section>
+
+          <section class="mechbox__home-section">
+            <header class="mechbox__home-section-head">
+              <h2>{{i18n "mechbox.home.mech_title"}}</h2>
+            </header>
+            {{#each this.home.mech_groups as |group|}}
+              <div class="mechbox__home-tool-block">
+                <h3 class="mechbox__home-tool-block-label">{{group.name}}</h3>
+                <div class="mechbox__home-card-grid">
+                  {{#each group.tools as |tool|}}
+                    {{#if (and tool.available tool.tool_id this.calculateEnabled)}}
+                      <a
+                        href={{this.toolHref tool.tool_id}}
+                        class="mechbox__home-card mechbox__home-card--available raw-link"
+                        data-tool-id={{tool.tool_id}}
+                      >
+                        <span class="mechbox__home-card-name">{{tool.name}}</span>
+                        <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                        <span class="mechbox__home-card-badge">
+                          {{i18n "mechbox.catalog.status.available"}}
+                        </span>
+                      </a>
+                    {{else}}
+                      <div class="mechbox__home-card mechbox__home-card--planned">
+                        <span class="mechbox__home-card-name">{{tool.name}}</span>
+                        <span class="mechbox__home-card-desc">{{tool.description}}</span>
+                        <span class="mechbox__home-card-badge">
+                          {{i18n "mechbox.home.coming_soon"}}
+                        </span>
+                      </div>
+                    {{/if}}
+                  {{/each}}
+                </div>
+              </div>
+            {{/each}}
           </section>
         </div>
       {{/if}}

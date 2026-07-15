@@ -29,6 +29,13 @@ en:
       skeleton_message: "The plugin now runs in a minimal skeleton and business features will be added incrementally."
       api_prefix_label: "API prefix"
       future_interfaces_title: "Future interfaces"
+      home:
+        available_title: "Available tools"
+        analysis_title: "Analysis types"
+        stat_title: "Statistical tools"
+        mech_title: "Mechanical tools"
+        coming_soon: "Coming soon"
+        counts: "Available %{available} / catalog %{catalog}"
       catalog:
         analysis_type_title: "Analysis types"
         analysis_categories:

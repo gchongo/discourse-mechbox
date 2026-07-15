@@ -38,13 +38,63 @@ acceptance("MechBox | safe page", function (needs) {
             available: false,
           },
         ],
-        design_chains: [
-          {
-            tool_id: "shaft_system_chain",
-            name: "Shaft system chain",
-            description: "Shaft, bearing, and key linkage.",
-          },
-        ],
+        design_chains: [],
+        home: {
+          available_tools: [
+            {
+              id: "gear_ratio",
+              tool_id: "gear_ratio",
+              name: "Gear ratio",
+              description: "Calculate speed ratio from tooth counts.",
+              available: true,
+            },
+            {
+              id: "bolt_clamp_load",
+              tool_id: "bolt_clamp_load",
+              name: "Bolt preload",
+              description: "Estimate bolt preload from torque.",
+              available: true,
+            },
+          ],
+          analysis_groups: [
+            {
+              id: "linear_1d",
+              name: "1D Linear",
+              tools: [{ id: "gear_gap", name: "Gear backlash", available: false }],
+            },
+          ],
+          stat_tools: [
+            {
+              id: "tol_convert",
+              name: "Tolerance conversion",
+              description: "T ↔ σ",
+              available: false,
+            },
+          ],
+          mech_groups: [
+            {
+              id: "chain",
+              name: "Dimension chain and strength",
+              tools: [
+                {
+                  id: "gear_ratio",
+                  tool_id: "gear_ratio",
+                  name: "Gear ratio",
+                  description: "Speed ratio from tooth counts",
+                  available: true,
+                },
+                {
+                  id: "bolt_clamp_load",
+                  tool_id: "bolt_clamp_load",
+                  name: "Bolt preload",
+                  description: "Torque ↔ preload",
+                  available: true,
+                },
+              ],
+            },
+          ],
+          counts: { available: 2, catalog: 57 },
+        },
       });
     });
 
@@ -128,13 +178,15 @@ acceptance("MechBox | safe page", function (needs) {
     await visit("/mechbox");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
-    assert.true(exists(".mechbox__catalog-grid"), "catalog is rendered");
-    assert.true(exists(".mechbox__tool-list li"), "tools are rendered");
+    assert.true(exists(".mechbox__home"), "home is rendered");
+    assert.true(exists(".mechbox__home-section"), "home sections are rendered");
+    assert.true(exists(".mechbox__home-card--available"), "available tools are rendered");
+    assert.true(exists(".mechbox__home-analysis-grid"), "analysis grid is rendered");
   });
 
   test("opens and calculates on the gear ratio tool page", async function (assert) {
     await visit("/mechbox");
-    await click(".mechbox__tool-link[href*='gear_ratio']");
+    await click(".mechbox__home-card--available[href*='gear_ratio']");
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
@@ -201,7 +253,7 @@ acceptance("MechBox | safe page", function (needs) {
 
     await click(".mechbox__back-link");
 
-    assert.true(exists(".mechbox__catalog-grid"), "catalog is rendered again");
+    assert.true(exists(".mechbox__home"), "home is rendered again");
     assert.false(exists(".mechbox__workbench-panel"), "workbench is hidden");
   });
 });
