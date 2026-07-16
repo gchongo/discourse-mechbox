@@ -17,6 +17,7 @@ import { mountChainWorkbench } from "../lib/mechbox-chain-page";
 import { mountTolConvertWorkbench } from "../lib/mechbox-tol-convert-page";
 import { mountSigmaAnalysisWorkbench } from "../lib/mechbox-sigma-page";
 import { mountFitWorkbench } from "../lib/mechbox-fit-page";
+import { mountDistributionChartWorkbench } from "../lib/mechbox-distribution-page";
 
 let handlersRegistered = false;
 
@@ -57,7 +58,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--chain",
     "mechbox__workbench-panel--tol-convert",
     "mechbox__workbench-panel--sigma",
-    "mechbox__workbench-panel--fit"
+    "mechbox__workbench-panel--fit",
+    "mechbox__workbench-panel--distribution"
   );
   mount.replaceChildren();
 
@@ -149,6 +151,10 @@ function mountWorkbenchForm(panel) {
     void mountSigmaAnalysisWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "fit") {
     void mountFitWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "distribution_chart") {
+    void mountDistributionChartWorkbench(panel).then(() =>
+      markWorkbenchMounted(panel, toolId)
+    );
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -242,6 +248,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "tol_convert",
   "sigma_analysis",
   "fit",
+  "distribution_chart",
 ]);
 
 async function calculateGeneric(event) {
@@ -266,7 +273,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-chain__calculate-btn") ||
     button.classList.contains("mechbox-tol-convert__calculate-btn") ||
     button.classList.contains("mechbox-sigma__calculate-btn") ||
-    button.classList.contains("mechbox-fit__calculate-btn")
+    button.classList.contains("mechbox-fit__calculate-btn") ||
+    button.classList.contains("mechbox-distribution__calculate-btn")
   ) {
     return;
   }

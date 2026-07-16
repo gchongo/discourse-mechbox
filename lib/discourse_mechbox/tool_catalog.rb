@@ -24,6 +24,7 @@ module DiscourseMechbox
       tol_convert
       sigma_analysis
       fit
+      distribution_chart
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -380,6 +381,26 @@ module DiscourseMechbox
           { key: "fit_type", type: "string" },
           { key: "max_clearance", type: "number" },
           { key: "min_clearance", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "distribution_chart" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "tolerance", type: "number", required: true },
+          { key: "distribution", type: "string", required: false },
+          { key: "mean", type: "number", required: false },
+          { key: "sigma", type: "number", required: false },
+          { key: "k_factor", type: "number", required: false },
+          { key: "lsl", type: "number", required: false },
+          { key: "usl", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "sigma", type: "number" },
+          { key: "peak_density", type: "number" },
           { key: "pass", type: "boolean" },
         ],
       },

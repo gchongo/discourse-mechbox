@@ -36,7 +36,8 @@
 .mechbox__page:has(.mechbox-chain),
 .mechbox__page:has(.mechbox-tol-convert),
 .mechbox__page:has(.mechbox-sigma),
-.mechbox__page:has(.mechbox-fit) {
+.mechbox__page:has(.mechbox-fit),
+.mechbox__page:has(.mechbox-distribution) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -65,7 +66,8 @@
 .mechbox-chain,
 .mechbox-tol-convert,
 .mechbox-sigma,
-.mechbox-fit {
+.mechbox-fit,
+.mechbox-distribution {
   &__formula-bar {
     border-radius: 8px;
   }

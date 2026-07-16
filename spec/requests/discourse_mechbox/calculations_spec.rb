@@ -886,6 +886,70 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs).to have_key("min_clearance_hot")
   end
 
+  it "runs simple distribution_chart for normal PDF" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "distribution_chart",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             tolerance: 0.25,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["distribution"]).to eq("normal")
+    expect(outputs["k_factor"]).to eq(6.0)
+    expect(outputs["sigma"]).to be_within(0.0001).of(0.25 / 6.0)
+    expect(outputs["peak_density"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(true)
+  end
+
+  it "runs full distribution_chart with curve points" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "distribution_chart",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             tolerance: 0.25,
+             distribution: "triangular",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["distribution"]).to eq("triangular")
+    expect(outputs["curve_points"]).to be_an(Array)
+    expect(outputs["curve_points"].size).to eq(22)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional distribution_chart with yield" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "distribution_chart",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             tolerance: 0.25,
+             distribution: "normal",
+             mean: 0,
+             lsl: -0.125,
+             usl: 0.125,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["pass_rate"]).to be > 0.99
+    expect(outputs).to have_key("dppm")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

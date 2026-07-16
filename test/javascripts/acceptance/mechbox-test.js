@@ -81,6 +81,14 @@ acceptance("MechBox | safe page", function (needs) {
               icon: "chart-line",
               available: true,
             },
+            {
+              id: "distribution_chart",
+              tool_id: "distribution_chart",
+              name: "Distribution chart",
+              description: "PDF samples",
+              icon: "chart-pie",
+              available: true,
+            },
           ],
           mech_groups: [
             {
@@ -186,7 +194,7 @@ acceptance("MechBox | safe page", function (needs) {
               ],
             },
           ],
-          counts: { available: 15, catalog: 57 },
+          counts: { available: 16, catalog: 57 },
         },
       });
     });
@@ -364,6 +372,20 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "nominal_mm", type: "number" },
           { key: "hole_code", type: "string" },
           { key: "shaft_code", type: "string" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/distribution_chart", () => {
+      return helper.response(200, {
+        tool_id: "distribution_chart",
+        name: "Distribution chart",
+        description: "PDF peak density and samples.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "tolerance", type: "number" },
+          { key: "distribution", type: "string" },
         ],
       });
     });
@@ -663,6 +685,23 @@ acceptance("MechBox | safe page", function (needs) {
             min_clearance: 0.007,
             hole: { min_size: 25.0, max_size: 25.021 },
             shaft: { min_size: 24.98, max_size: 24.993 },
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "distribution_chart") {
+        return helper.response(200, {
+          tool_id: "distribution_chart",
+          outputs: {
+            calc_mode: "simple",
+            distribution: "normal",
+            tolerance: 0.25,
+            k_factor: 6,
+            sigma: 0.0417,
+            peak_density: 9.57,
+            coverage: 0.9973,
             estimate_only: true,
             pass: false,
           },
@@ -1066,5 +1105,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='professional']")
       .doesNotHaveClass("is-mode-hidden", "professional mode shows delta T");
+  });
+
+  test("opens and calculates on the distribution chart page", async function (assert) {
+    await visit("/mechbox?tool_id=distribution_chart");
+
+    await waitFor(".mechbox-distribution");
+    assert.dom(".mechbox-distribution__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-distribution__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='tolerance']").exists("tolerance input is rendered");
+    assert.dom(".mechbox-distribution__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='tolerance']", "0.3");
+    await click(".mechbox-distribution__calculate-btn");
+    await waitFor(".mechbox-distribution__status");
+
+    assert.dom(".mechbox-distribution__status").hasClass("is-attention");
+    assert.dom(".mechbox-distribution__results-body").includesText("0.0417");
+
+    await click(".mechbox-distribution__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows distribution select");
   });
 });

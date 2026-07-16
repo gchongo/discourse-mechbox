@@ -91,6 +91,9 @@ zh_CN:
       fit:
         name: "ISO 286 配合"
         description: "轴孔公差带极限尺寸与间隙/过盈，支持简化、完整（品质指数）与专业（温差热修正）模式。"
+      distribution_chart:
+        name: "分布曲线"
+        description: "按公差与分布类型计算 PDF 峰密度、σ 与采样点（先出数，图表后续），支持简化、完整与专业（规格合格率）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"
@@ -142,7 +145,7 @@ zh_CN:
           description: "C / Cpk / 合格率"
         distribution_chart:
           name: "分布曲线"
-          description: "Plotly PDF 图"
+          description: "PDF 峰密度 / 采样点"
         monte_carlo:
           name: "Monte Carlo"
           description: "随机模拟 · 龙卷风图"

@@ -54,7 +54,7 @@ module DiscourseMechbox
       { id: "tol_convert", tool_id: "tol_convert", icon: "arrows-left-right" },
       { id: "rss_calculation", tool_id: "rss_calculation", icon: "chart-column" },
       { id: "sigma_analysis", tool_id: "sigma_analysis", icon: "chart-line" },
-      { id: "distribution_chart", icon: "chart-pie" },
+      { id: "distribution_chart", tool_id: "distribution_chart", icon: "chart-pie" },
       { id: "monte_carlo", tool_id: "monte_carlo", icon: "chart-simple" },
       { id: "quality", icon: "clipboard-list" },
       { id: "analytics", icon: "chart-area" },

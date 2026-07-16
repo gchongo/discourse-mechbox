@@ -414,7 +414,8 @@ export async function mountFitWorkbench(panel) {
     "mechbox__workbench-panel--chain",
     "mechbox__workbench-panel--tol-convert",
     "mechbox__workbench-panel--sigma",
-    "mechbox__workbench-panel--fit"
+    "mechbox__workbench-panel--fit",
+    "mechbox__workbench-panel--distribution"
   );
   panel.classList.add("mechbox__workbench-panel--fit");
 

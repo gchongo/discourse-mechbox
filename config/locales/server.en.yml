@@ -91,6 +91,9 @@ en:
       fit:
         name: "ISO 286 fit"
         description: "Hole/shaft tolerance limits and clearance/interference; simple, full (fit quality), and professional (thermal) modes."
+      distribution_chart:
+        name: "Distribution chart"
+        description: "PDF peak density, sigma, and sample points from tolerance and distribution (numbers first, chart later); simple, full, and professional (spec yield) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."
@@ -142,7 +145,7 @@ en:
           description: "C / Cpk / pass rate"
         distribution_chart:
           name: "Distribution curve"
-          description: "Plotly PDF charts"
+          description: "PDF peak / sample points"
         monte_carlo:
           name: "Monte Carlo"
           description: "Random simulation · tornado plot"

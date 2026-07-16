@@ -22,6 +22,7 @@ module DiscourseMechbox
       tol_convert
       sigma_analysis
       fit
+      distribution_chart
     ].freeze
 
     UNIT_FACTORS = {
@@ -172,6 +173,12 @@ module DiscourseMechbox
     def self.calculate_fit(inputs)
       DiscourseMechbox::FitCalculator.calculate(inputs)
     rescue DiscourseMechbox::FitCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_distribution_chart(inputs)
+      DiscourseMechbox::DistributionChartCalculator.calculate(inputs)
+    rescue DiscourseMechbox::DistributionChartCalculator::Error => error
       raise Error, error.message
     end
 
