@@ -77,36 +77,70 @@ function mountGenericWorkbench(panel) {
   panel.dataset.mounted = "true";
 }
 
+function resetWorkbenchIfToolChanged(panel) {
+  const toolId = panel.dataset.toolId || "";
+  if (panel.dataset.mounted !== "true") {
+    return;
+  }
+
+  const mountedToolId = panel.dataset.mountedToolId;
+  if (mountedToolId && mountedToolId === toolId) {
+    return;
+  }
+  if (!mountedToolId) {
+    return;
+  }
+
+  panel.dataset.mounted = "false";
+  delete panel.dataset.mountedToolId;
+  panel.querySelector(".mechbox__form-mount")?.replaceChildren();
+}
+
 function mountWorkbenchForm(panel) {
-  if (!panel || panel.dataset.mounted === "true") {
+  if (!panel) {
+    return;
+  }
+
+  resetWorkbenchIfToolChanged(panel);
+
+  if (panel.dataset.mounted === "true") {
     return;
   }
 
   const toolId = panel.dataset.toolId;
 
   if (toolId === "bolt_clamp_load") {
-    mountBoltWorkbench(panel);
+    void mountBoltWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "unit_converter") {
-    mountUnitsWorkbench(panel);
+    void mountUnitsWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "rss_calculation") {
-    mountRssWorkbench(panel);
+    void mountRssWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "gdt_position") {
-    mountGdtWorkbench(panel);
+    void mountGdtWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "thread") {
-    mountThreadWorkbench(panel);
+    void mountThreadWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "key") {
-    mountKeyWorkbench(panel);
+    void mountKeyWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "bolt_group") {
-    mountBoltGroupWorkbench(panel);
+    void mountBoltGroupWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "weld") {
-    mountWeldWorkbench(panel);
+    void mountWeldWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "spring") {
-    mountSpringWorkbench(panel);
+    void mountSpringWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "clutch") {
-    mountClutchWorkbench(panel);
+    void mountClutchWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
+    markWorkbenchMounted(panel, toolId);
   }
+}
+
+function markWorkbenchMounted(panel, toolId) {
+  if (!panel || panel.dataset.toolId !== toolId) {
+    return;
+  }
+  panel.dataset.mounted = "true";
+  panel.dataset.mountedToolId = toolId;
 }
 
 function mountAllWorkbenchForms() {
