@@ -455,6 +455,80 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["estimate_only"]).to eq(false)
   end
 
+  it "runs simple clutch torque estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "clutch",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             friction_coeff: 0.15,
+             force_n: 5000,
+             radius_mm: 80,
+             surfaces: 2,
+             rpm: 1500,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["torque_nm"]).to be_within(0.1).of(120.0)
+    expect(outputs["power_kw"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full clutch with contact pressure" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "clutch",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             friction_coeff: 0.15,
+             force_n: 5000,
+             inner_diameter_mm: 100,
+             outer_diameter_mm: 160,
+             surfaces: 2,
+             rpm: 1500,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["effective_radius_mm"]).to be_within(0.1).of(66.15)
+    expect(outputs["contact_pressure_mpa"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional clutch with derated torque check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "clutch",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             friction_coeff: 0.15,
+             force_n: 5000,
+             inner_diameter_mm: 100,
+             outer_diameter_mm: 160,
+             surfaces: 2,
+             rpm: 1500,
+             required_torque_nm: 100,
+             thermal_fade: 0.9,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["derated_torque_nm"]).to be > 0
+    expect(outputs["centrifugal_force_n"]).to be > 0
+    expect(outputs["pass"]).to eq(false)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

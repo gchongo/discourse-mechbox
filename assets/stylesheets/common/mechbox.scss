@@ -491,7 +491,8 @@
 .mechbox-key,
 .mechbox-bolt-group,
 .mechbox-weld,
-.mechbox-spring {
+.mechbox-spring,
+.mechbox-clutch {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -658,6 +659,17 @@
   &__control {
     display: block;
     min-width: 0;
+
+    &--pair {
+      display: flex;
+      gap: 0.35rem;
+
+      .mechbox__inputs {
+        width: auto;
+        min-width: 0;
+        flex: 1;
+      }
+    }
   }
 
   &__input,

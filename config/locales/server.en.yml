@@ -73,6 +73,9 @@ en:
       spring:
         name: "Spring design"
         description: "Helical compression spring rate and shear check; simple, full, and professional (fatigue) modes."
+      clutch:
+        name: "Clutch"
+        description: "Friction clutch torque and clamp force; simple, full (effective radius / pressure), and professional (centrifugal / thermal fade) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

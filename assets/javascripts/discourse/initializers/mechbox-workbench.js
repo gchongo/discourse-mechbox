@@ -11,6 +11,7 @@ import { mountKeyWorkbench } from "../lib/mechbox-key-page";
 import { mountBoltGroupWorkbench } from "../lib/mechbox-bolt-group-page";
 import { mountWeldWorkbench } from "../lib/mechbox-weld-page";
 import { mountSpringWorkbench } from "../lib/mechbox-spring-page";
+import { mountClutchWorkbench } from "../lib/mechbox-clutch-page";
 
 let handlersRegistered = false;
 
@@ -45,7 +46,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--key",
     "mechbox__workbench-panel--bolt-group",
     "mechbox__workbench-panel--weld",
-    "mechbox__workbench-panel--spring"
+    "mechbox__workbench-panel--spring",
+    "mechbox__workbench-panel--clutch"
   );
   mount.replaceChildren();
 
@@ -100,6 +102,8 @@ function mountWorkbenchForm(panel) {
     mountWeldWorkbench(panel);
   } else if (toolId === "spring") {
     mountSpringWorkbench(panel);
+  } else if (toolId === "clutch") {
+    mountClutchWorkbench(panel);
   } else {
     mountGenericWorkbench(panel);
   }
@@ -178,6 +182,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "bolt_group",
   "weld",
   "spring",
+  "clutch",
 ]);
 
 async function calculateGeneric(event) {
@@ -196,7 +201,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-key__calculate-btn") ||
     button.classList.contains("mechbox-bolt-group__calculate-btn") ||
     button.classList.contains("mechbox-weld__calculate-btn") ||
-    button.classList.contains("mechbox-spring__calculate-btn")
+    button.classList.contains("mechbox-spring__calculate-btn") ||
+    button.classList.contains("mechbox-clutch__calculate-btn")
   ) {
     return;
   }

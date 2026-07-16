@@ -18,6 +18,7 @@ module DiscourseMechbox
       bolt_group
       weld
       spring
+      clutch
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -254,6 +255,28 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "clutch" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "friction_coeff", type: "number", required: false },
+          { key: "force_n", type: "number", required: false },
+          { key: "radius_mm", type: "number", required: false },
+          { key: "inner_diameter_mm", type: "number", required: false },
+          { key: "outer_diameter_mm", type: "number", required: false },
+          { key: "surfaces", type: "number", required: false },
+          { key: "rpm", type: "number", required: false },
+          { key: "required_torque_nm", type: "number", required: false },
+          { key: "thermal_fade", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "torque_nm", type: "number" },
+          { key: "power_kw", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -269,7 +292,6 @@ module DiscourseMechbox
       "shaft" => { category: "transmission", route: "/shaft" },
       "belt" => { category: "transmission", route: "/belt" },
       "chain" => { category: "transmission", route: "/chain" },
-      "clutch" => { category: "transmission", route: "/clutch" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },

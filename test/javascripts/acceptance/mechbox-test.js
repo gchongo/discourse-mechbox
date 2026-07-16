@@ -142,10 +142,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "rotate",
                   available: true,
                 },
+                {
+                  id: "clutch",
+                  tool_id: "clutch",
+                  name: "Clutch",
+                  description: "Friction torque",
+                  icon: "share-nodes",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 9, catalog: 57 },
+          counts: { available: 10, catalog: 57 },
         },
       });
     });
@@ -429,6 +437,21 @@ acceptance("MechBox | safe page", function (needs) {
         });
       }
 
+      if (body.tool_id === "clutch") {
+        return helper.response(200, {
+          tool_id: "clutch",
+          outputs: {
+            calc_mode: "simple",
+            torque_nm: 120,
+            power_kw: 18.85,
+            clamp_force_n: 5000,
+            effective_radius_mm: 80,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
       return helper.response(200, {
         tool_id: "gear_ratio",
         outputs: {
@@ -684,5 +707,30 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows free length");
+  });
+
+  test("opens and calculates on the clutch torque page", async function (assert) {
+    await visit("/mechbox?tool_id=clutch");
+
+    await waitFor(".mechbox-clutch");
+    assert.dom(".mechbox-clutch__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-clutch__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert
+      .dom("input[name='friction_coeff']")
+      .exists("friction coefficient input is rendered");
+    assert.dom(".mechbox-clutch__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='force_n']", "6000");
+    await click(".mechbox-clutch__calculate-btn");
+    await waitFor(".mechbox-clutch__status");
+
+    assert.dom(".mechbox-clutch__status").hasClass("is-attention");
+    assert.dom(".mechbox-clutch__results-body").includesText("120");
+
+    await click(".mechbox-clutch__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows inner/outer diameters");
   });
 });
