@@ -67,10 +67,11 @@ acceptance("MechBox | safe page", function (needs) {
             },
             {
               id: "tol_convert",
+              tool_id: "tol_convert",
               name: "Tolerance conversion",
               description: "T ↔ σ",
               icon: "arrows-left-right",
-              available: false,
+              available: true,
             },
           ],
           mech_groups: [
@@ -169,7 +170,7 @@ acceptance("MechBox | safe page", function (needs) {
               ],
             },
           ],
-          counts: { available: 12, catalog: 57 },
+          counts: { available: 13, catalog: 57 },
         },
       });
     });
@@ -301,6 +302,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "driven_teeth", type: "number" },
           { key: "center_distance_mm", type: "number" },
           { key: "power_kw", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/tol_convert", () => {
+      return helper.response(200, {
+        tool_id: "tol_convert",
+        name: "Tolerance conversion",
+        description: "T ↔ σ conversion.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "direction", type: "string" },
+          { key: "value", type: "number" },
+          { key: "distribution", type: "string" },
         ],
       });
     });
@@ -545,6 +561,24 @@ acceptance("MechBox | safe page", function (needs) {
             chain_speed_mps: 3.62,
             chain_tension_n: 2115,
             driven_rpm: 240,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "tol_convert") {
+        return helper.response(200, {
+          tool_id: "tol_convert",
+          outputs: {
+            calc_mode: "simple",
+            direction: "t2s",
+            distribution: "normal",
+            k_factor: 6,
+            value: 0.25,
+            input_tolerance: 0.25,
+            output_sigma: 0.0417,
+            result: 0.0417,
             estimate_only: true,
             pass: false,
           },
@@ -879,5 +913,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows allow tension");
+  });
+
+  test("opens and calculates on the tolerance conversion page", async function (assert) {
+    await visit("/mechbox?tool_id=tol_convert");
+
+    await waitFor(".mechbox-tol-convert");
+    assert.dom(".mechbox-tol-convert__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-tol-convert__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='value']").exists("value input is rendered");
+    assert.dom(".mechbox-tol-convert__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='value']", "0.3");
+    await click(".mechbox-tol-convert__calculate-btn");
+    await waitFor(".mechbox-tol-convert__status");
+
+    assert.dom(".mechbox-tol-convert__status").hasClass("is-attention");
+    assert.dom(".mechbox-tol-convert__results-body").includesText("0.0417");
+
+    await click(".mechbox-tol-convert__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows distribution");
   });
 });

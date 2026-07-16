@@ -494,7 +494,8 @@
 .mechbox-spring,
 .mechbox-clutch,
 .mechbox-belt,
-.mechbox-chain {
+.mechbox-chain,
+.mechbox-tol-convert {
   &__modes {
     display: flex;
     flex-wrap: wrap;

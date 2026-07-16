@@ -21,6 +21,7 @@ module DiscourseMechbox
       clutch
       belt
       chain
+      tol_convert
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -321,6 +322,23 @@ module DiscourseMechbox
           { key: "calc_mode", type: "string" },
           { key: "ratio", type: "number" },
           { key: "chain_length_mm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "tol_convert" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "direction", type: "string", required: true },
+          { key: "value", type: "number", required: true },
+          { key: "distribution", type: "string", required: false },
+          { key: "k_factor", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "result", type: "number" },
+          { key: "k_factor", type: "number" },
           { key: "pass", type: "boolean" },
         ],
       },

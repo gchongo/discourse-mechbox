@@ -51,7 +51,7 @@ module DiscourseMechbox
     ].freeze
 
     STAT_TOOLS = [
-      { id: "tol_convert", icon: "arrows-left-right" },
+      { id: "tol_convert", tool_id: "tol_convert", icon: "arrows-left-right" },
       { id: "rss_calculation", tool_id: "rss_calculation", icon: "chart-column" },
       { id: "sigma_analysis", icon: "chart-line" },
       { id: "distribution_chart", icon: "chart-pie" },

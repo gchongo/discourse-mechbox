@@ -33,7 +33,8 @@
 .mechbox__page:has(.mechbox-spring),
 .mechbox__page:has(.mechbox-clutch),
 .mechbox__page:has(.mechbox-belt),
-.mechbox__page:has(.mechbox-chain) {
+.mechbox__page:has(.mechbox-chain),
+.mechbox__page:has(.mechbox-tol-convert) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -59,7 +60,8 @@
 .mechbox-spring,
 .mechbox-clutch,
 .mechbox-belt,
-.mechbox-chain {
+.mechbox-chain,
+.mechbox-tol-convert {
   &__formula-bar {
     border-radius: 8px;
   }

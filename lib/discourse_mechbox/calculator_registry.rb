@@ -19,6 +19,7 @@ module DiscourseMechbox
       clutch
       belt
       chain
+      tol_convert
     ].freeze
 
     UNIT_FACTORS = {
@@ -151,6 +152,12 @@ module DiscourseMechbox
     def self.calculate_chain(inputs)
       DiscourseMechbox::ChainCalculator.calculate(inputs)
     rescue DiscourseMechbox::ChainCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_tol_convert(inputs)
+      DiscourseMechbox::TolConvertCalculator.calculate(inputs)
+    rescue DiscourseMechbox::TolConvertCalculator::Error => error
       raise Error, error.message
     end
 

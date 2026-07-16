@@ -82,6 +82,9 @@ en:
       chain:
         name: "Chain drive"
         description: "Roller chain pitch, length, ratio, and tension; simple, full (speed / tension check), and professional (strands / life) modes."
+      tol_convert:
+        name: "Tolerance conversion"
+        description: "Convert between tolerance T and sigma σ using distribution factor K; simple, full (distributions), and professional (custom K) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

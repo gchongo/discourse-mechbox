@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 12 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain` |
+| ✅ 已接入 | 13 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -22,7 +22,8 @@
 **W2.6 完成** ✅：`clutch` 离合器（简化摩擦扭矩 / 完整有效半径比压 / 专业离心热衰减）  
 **W2.7 完成** ✅：`belt` 皮带传动（简化长度张力 / 完整包角带速 / 专业工况寿命）  
 **W2.8 完成** ✅：`chain` 链传动（简化链长张力 / 完整链速许用 / 专业多排寿命）  
-**下一步**：W3.1 `tol_convert` 公差转换
+**W3.1 完成** ✅：`tol_convert` 公差转换（T↔σ；简化正态 / 完整多分布 / 专业自定义 K）  
+**下一步**：W3.2 `sigma_analysis` 西格玛 / Cpk
 
 ---
 
@@ -79,7 +80,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 
 | 序号 | tool_id | 名称 | 难度 | 备注 |
 |------|---------|------|------|------|
-| 3.1 | `tol_convert` | 公差转换 T↔σ | ★★ | 可服务端 |
+| 3.1 | `tol_convert` | 公差转换 T↔σ | ★★ | ✅ |
 | 3.2 | `sigma_analysis` | 西格玛 / Cpk | ★★ | 可服务端 |
 | 3.3 | `fit` | ISO 286 配合 | ★★★ | 依赖公差带表数据 |
 | 3.4 | `distribution_chart` | 分布曲线 | ★★★ | 先无图出数，后加图 |

@@ -689,6 +689,71 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["estimated_life_hours"]).to be > 0
   end
 
+  it "runs simple tol_convert T to sigma with normal K=6" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "tol_convert",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             direction: "t2s",
+             value: 0.25,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["direction"]).to eq("t2s")
+    expect(outputs["distribution"]).to eq("normal")
+    expect(outputs["output_sigma"]).to be_within(0.0001).of(0.25 / 6.0)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full tol_convert sigma to tolerance with triangular K" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "tol_convert",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             direction: "s2t",
+             distribution: "triangular",
+             value: 0.05,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["output_tolerance"]).to be_within(0.0001).of(0.05 * 4.24)
+    expect(outputs["coverage"]).to eq(0.95)
+    expect(outputs["estimate_only"]).to eq(false)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional tol_convert with custom K" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "tol_convert",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             direction: "t2s",
+             distribution: "normal",
+             value: 0.3,
+             k_factor: 5.0,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["k_factor"]).to eq(5.0)
+    expect(outputs["output_sigma"]).to be_within(0.0001).of(0.06)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
