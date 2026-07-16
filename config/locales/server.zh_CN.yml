@@ -85,6 +85,12 @@ zh_CN:
       tol_convert:
         name: "公差转换"
         description: "按分布系数 K 在公差 T 与标准差 σ 之间换算，支持简化、完整（多分布）与专业（自定义 K）模式。"
+      sigma_analysis:
+        name: "西格玛分析"
+        description: "过程能力 C / Cpk、合格率与短程西格玛水平，支持简化、完整（门槛校核）与专业（样本估计/长期修正）模式。"
+      fit:
+        name: "ISO 286 配合"
+        description: "轴孔公差带极限尺寸与间隙/过盈，支持简化、完整（品质指数）与专业（温差热修正）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

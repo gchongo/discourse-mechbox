@@ -79,6 +79,8 @@ after_initialize do
   require_relative "lib/discourse_mechbox/belt_calculator"
   require_relative "lib/discourse_mechbox/chain_calculator"
   require_relative "lib/discourse_mechbox/tol_convert_calculator"
+  require_relative "lib/discourse_mechbox/sigma_analysis_calculator"
+  require_relative "lib/discourse_mechbox/fit_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"

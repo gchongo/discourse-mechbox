@@ -22,6 +22,8 @@ module DiscourseMechbox
       belt
       chain
       tol_convert
+      sigma_analysis
+      fit
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -342,6 +344,45 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "sigma_analysis" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "lsl", type: "number", required: true },
+          { key: "usl", type: "number", required: true },
+          { key: "mean", type: "number", required: true },
+          { key: "sigma", type: "number", required: true },
+          { key: "min_cpk", type: "number", required: false },
+          { key: "sample_values", type: "string", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "c", type: "number" },
+          { key: "cpk", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "fit" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "nominal_mm", type: "number", required: true },
+          { key: "hole_code", type: "string", required: true },
+          { key: "shaft_code", type: "string", required: true },
+          { key: "delta_t", type: "number", required: false },
+          { key: "alpha_hole", type: "number", required: false },
+          { key: "alpha_shaft", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "fit_type", type: "string" },
+          { key: "max_clearance", type: "number" },
+          { key: "min_clearance", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -363,7 +404,6 @@ module DiscourseMechbox
       "cylinder" => { category: "structural", route: "/cylinder" },
       "thermal_expansion" => { category: "materials", route: "/thermal-expansion" },
       "interference_fit" => { category: "materials", route: "/interference-fit" },
-      "fit" => { category: "materials", route: "/fit" },
       "materials" => { category: "materials", route: "/materials" },
       "material_selection" => { category: "materials", route: "/material-selection" },
       "units" => { category: "general", route: "/units" },

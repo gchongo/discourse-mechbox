@@ -85,6 +85,12 @@ en:
       tol_convert:
         name: "Tolerance conversion"
         description: "Convert between tolerance T and sigma σ using distribution factor K; simple, full (distributions), and professional (custom K) modes."
+      sigma_analysis:
+        name: "Sigma analysis"
+        description: "Process capability C / Cpk, yield rate, and short-term sigma level; simple, full (gate checks), and professional (sample / long-term) modes."
+      fit:
+        name: "ISO 286 fit"
+        description: "Hole/shaft tolerance limits and clearance/interference; simple, full (fit quality), and professional (thermal) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

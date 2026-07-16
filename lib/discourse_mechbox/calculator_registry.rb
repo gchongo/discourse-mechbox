@@ -20,6 +20,8 @@ module DiscourseMechbox
       belt
       chain
       tol_convert
+      sigma_analysis
+      fit
     ].freeze
 
     UNIT_FACTORS = {
@@ -158,6 +160,18 @@ module DiscourseMechbox
     def self.calculate_tol_convert(inputs)
       DiscourseMechbox::TolConvertCalculator.calculate(inputs)
     rescue DiscourseMechbox::TolConvertCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_sigma_analysis(inputs)
+      DiscourseMechbox::SigmaAnalysisCalculator.calculate(inputs)
+    rescue DiscourseMechbox::SigmaAnalysisCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_fit(inputs)
+      DiscourseMechbox::FitCalculator.calculate(inputs)
+    rescue DiscourseMechbox::FitCalculator::Error => error
       raise Error, error.message
     end
 

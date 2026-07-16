@@ -15,6 +15,8 @@ import { mountClutchWorkbench } from "../lib/mechbox-clutch-page";
 import { mountBeltWorkbench } from "../lib/mechbox-belt-page";
 import { mountChainWorkbench } from "../lib/mechbox-chain-page";
 import { mountTolConvertWorkbench } from "../lib/mechbox-tol-convert-page";
+import { mountSigmaAnalysisWorkbench } from "../lib/mechbox-sigma-page";
+import { mountFitWorkbench } from "../lib/mechbox-fit-page";
 
 let handlersRegistered = false;
 
@@ -53,7 +55,9 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--clutch",
     "mechbox__workbench-panel--belt",
     "mechbox__workbench-panel--chain",
-    "mechbox__workbench-panel--tol-convert"
+    "mechbox__workbench-panel--tol-convert",
+    "mechbox__workbench-panel--sigma",
+    "mechbox__workbench-panel--fit"
   );
   mount.replaceChildren();
 
@@ -141,6 +145,10 @@ function mountWorkbenchForm(panel) {
     void mountChainWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "tol_convert") {
     void mountTolConvertWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "sigma_analysis") {
+    void mountSigmaAnalysisWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "fit") {
+    void mountFitWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -232,6 +240,8 @@ const CUSTOM_TOOL_IDS = new Set([
   "belt",
   "chain",
   "tol_convert",
+  "sigma_analysis",
+  "fit",
 ]);
 
 async function calculateGeneric(event) {
@@ -254,7 +264,9 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-clutch__calculate-btn") ||
     button.classList.contains("mechbox-belt__calculate-btn") ||
     button.classList.contains("mechbox-chain__calculate-btn") ||
-    button.classList.contains("mechbox-tol-convert__calculate-btn")
+    button.classList.contains("mechbox-tol-convert__calculate-btn") ||
+    button.classList.contains("mechbox-sigma__calculate-btn") ||
+    button.classList.contains("mechbox-fit__calculate-btn")
   ) {
     return;
   }

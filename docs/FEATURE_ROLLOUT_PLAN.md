@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 13 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert` |
+| ✅ 已接入 | 15 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -23,7 +23,9 @@
 **W2.7 完成** ✅：`belt` 皮带传动（简化长度张力 / 完整包角带速 / 专业工况寿命）  
 **W2.8 完成** ✅：`chain` 链传动（简化链长张力 / 完整链速许用 / 专业多排寿命）  
 **W3.1 完成** ✅：`tol_convert` 公差转换（T↔σ；简化正态 / 完整多分布 / 专业自定义 K）  
-**下一步**：W3.2 `sigma_analysis` 西格玛 / Cpk
+**W3.2 完成** ✅：`sigma_analysis` 西格玛 / Cpk（简化 C·Cpk / 完整门槛 / 专业样本与长期 σ）  
+**W3.3 完成** ✅：`fit` ISO 286 配合（简化间隙 / 完整品质指数 / 专业热修正）  
+**下一步**：W3.4 `distribution_chart` 分布曲线
 
 ---
 
@@ -81,8 +83,8 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 序号 | tool_id | 名称 | 难度 | 备注 |
 |------|---------|------|------|------|
 | 3.1 | `tol_convert` | 公差转换 T↔σ | ★★ | ✅ |
-| 3.2 | `sigma_analysis` | 西格玛 / Cpk | ★★ | 可服务端 |
-| 3.3 | `fit` | ISO 286 配合 | ★★★ | 依赖公差带表数据 |
+| 3.2 | `sigma_analysis` | 西格玛 / Cpk | ★★ | ✅ |
+| 3.3 | `fit` | ISO 286 配合 | ★★★ | ✅ |
 | 3.4 | `distribution_chart` | 分布曲线 | ★★★ | 先无图出数，后加图 |
 
 `rss_calculation` 已在 W1，统计区可显示为已可用。

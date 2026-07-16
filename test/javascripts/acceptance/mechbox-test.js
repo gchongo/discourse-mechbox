@@ -73,6 +73,14 @@ acceptance("MechBox | safe page", function (needs) {
               icon: "arrows-left-right",
               available: true,
             },
+            {
+              id: "sigma_analysis",
+              tool_id: "sigma_analysis",
+              name: "Sigma analysis",
+              description: "C / Cpk",
+              icon: "chart-line",
+              available: true,
+            },
           ],
           mech_groups: [
             {
@@ -167,10 +175,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "link",
                   available: true,
                 },
+                {
+                  id: "fit",
+                  tool_id: "fit",
+                  name: "ISO 286 fit",
+                  description: "Hole/shaft fit",
+                  icon: "scale-balanced",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 13, catalog: 57 },
+          counts: { available: 15, catalog: 57 },
         },
       });
     });
@@ -317,6 +333,37 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "direction", type: "string" },
           { key: "value", type: "number" },
           { key: "distribution", type: "string" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/sigma_analysis", () => {
+      return helper.response(200, {
+        tool_id: "sigma_analysis",
+        name: "Sigma analysis",
+        description: "Process capability C / Cpk.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "lsl", type: "number" },
+          { key: "usl", type: "number" },
+          { key: "mean", type: "number" },
+          { key: "sigma", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/fit", () => {
+      return helper.response(200, {
+        tool_id: "fit",
+        name: "ISO 286 fit",
+        description: "Hole/shaft fit.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "nominal_mm", type: "number" },
+          { key: "hole_code", type: "string" },
+          { key: "shaft_code", type: "string" },
         ],
       });
     });
@@ -579,6 +626,43 @@ acceptance("MechBox | safe page", function (needs) {
             input_tolerance: 0.25,
             output_sigma: 0.0417,
             result: 0.0417,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "sigma_analysis") {
+        return helper.response(200, {
+          tool_id: "sigma_analysis",
+          outputs: {
+            calc_mode: "simple",
+            lsl: 9.875,
+            usl: 10.125,
+            mean: 10,
+            sigma: 0.042,
+            c: 0.99,
+            cpk: 0.99,
+            sigma_level: 2.98,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "fit") {
+        return helper.response(200, {
+          tool_id: "fit",
+          outputs: {
+            calc_mode: "simple",
+            nominal_mm: 25,
+            hole_code: "H7",
+            shaft_code: "g6",
+            fit_type: "clearance",
+            max_clearance: 0.041,
+            min_clearance: 0.007,
+            hole: { min_size: 25.0, max_size: 25.021 },
+            shaft: { min_size: 24.98, max_size: 24.993 },
             estimate_only: true,
             pass: false,
           },
@@ -936,5 +1020,51 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows distribution");
+  });
+
+  test("opens and calculates on the sigma analysis page", async function (assert) {
+    await visit("/mechbox?tool_id=sigma_analysis");
+
+    await waitFor(".mechbox-sigma");
+    assert.dom(".mechbox-sigma__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-sigma__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='lsl']").exists("lsl input is rendered");
+    assert.dom(".mechbox-sigma__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='sigma']", "0.05");
+    await click(".mechbox-sigma__calculate-btn");
+    await waitFor(".mechbox-sigma__status");
+
+    assert.dom(".mechbox-sigma__status").hasClass("is-attention");
+    assert.dom(".mechbox-sigma__results-body").includesText("0.99");
+
+    await click(".mechbox-sigma__mode-tab[data-calc-mode='professional']");
+    assert
+      .dom("[data-calc-show='professional']")
+      .doesNotHaveClass("is-mode-hidden", "professional mode shows sample field");
+  });
+
+  test("opens and calculates on the ISO 286 fit page", async function (assert) {
+    await visit("/mechbox?tool_id=fit");
+
+    await waitFor(".mechbox-fit");
+    assert.dom(".mechbox-fit__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-fit__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='nominal_mm']").exists("nominal input is rendered");
+    assert.dom(".mechbox-fit__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='nominal_mm']", "30");
+    await click(".mechbox-fit__calculate-btn");
+    await waitFor(".mechbox-fit__status");
+
+    assert.dom(".mechbox-fit__status").hasClass("is-attention");
+    assert.dom(".mechbox-fit__results-body").includesText("41");
+
+    await click(".mechbox-fit__mode-tab[data-calc-mode='professional']");
+    assert
+      .dom("[data-calc-show='professional']")
+      .doesNotHaveClass("is-mode-hidden", "professional mode shows delta T");
   });
 });

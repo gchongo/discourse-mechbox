@@ -495,7 +495,9 @@
 .mechbox-clutch,
 .mechbox-belt,
 .mechbox-chain,
-.mechbox-tol-convert {
+.mechbox-tol-convert,
+.mechbox-sigma,
+.mechbox-fit {
   &__modes {
     display: flex;
     flex-wrap: wrap;

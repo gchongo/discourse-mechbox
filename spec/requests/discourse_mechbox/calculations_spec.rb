@@ -754,6 +754,138 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["output_sigma"]).to be_within(0.0001).of(0.06)
   end
 
+  it "runs simple sigma_analysis for C and Cpk" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sigma_analysis",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             lsl: 9.875,
+             usl: 10.125,
+             mean: 10.0,
+             sigma: 0.042,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["c"]).to be_within(0.01).of(0.99)
+    expect(outputs["cpk"]).to be_within(0.01).of(0.99)
+    expect(outputs["sigma_level"]).to be_within(0.05).of(2.98)
+  end
+
+  it "runs full sigma_analysis with pass rate and gates" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sigma_analysis",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             lsl: 9.875,
+             usl: 10.125,
+             mean: 10.0,
+             sigma: 0.042,
+             min_cpk: 1.33,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["pass_rate"]).to be > 0.99
+    expect(outputs).to have_key("dppm")
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs professional sigma_analysis with sample estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sigma_analysis",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             lsl: 9.875,
+             usl: 10.125,
+             mean: 10.0,
+             sigma: 0.042,
+             sample_values: "10.0, 10.01, 9.99, 10.02, 9.98",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["sample_count"]).to eq(5)
+    expect(outputs["long_term_sigma_level"]).to be < outputs["sigma_level"]
+  end
+
+  it "runs simple fit for H7/g6 clearance" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             nominal_mm: 25,
+             hole_code: "H7",
+             shaft_code: "g6",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["fit_type"]).to eq("clearance")
+    expect(outputs["min_clearance"]).to be > 0
+    expect(outputs["max_clearance"]).to be > outputs["min_clearance"]
+    expect(outputs["estimate_only"]).to eq(true)
+  end
+
+  it "runs full fit with fit quality" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             nominal_mm: 25,
+             hole_code: "H7",
+             shaft_code: "g6",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["pass"]).to eq(true)
+    expect(outputs["fit_quality"]).to be_a(Numeric)
+    expect(outputs["mean_clearance"]).to be > 0
+  end
+
+  it "runs professional fit with thermal shift" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             nominal_mm: 25,
+             hole_code: "H7",
+             shaft_code: "g6",
+             delta_t: 50,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["delta_t"]).to eq(50.0)
+    expect(outputs["thermal_shift"]).to eq(0.0)
+    expect(outputs).to have_key("min_clearance_hot")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
