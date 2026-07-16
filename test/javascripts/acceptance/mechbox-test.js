@@ -158,10 +158,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "minus",
                   available: true,
                 },
+                {
+                  id: "chain",
+                  tool_id: "chain",
+                  name: "Chain drive",
+                  description: "Pitch and tension",
+                  icon: "link",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 11, catalog: 57 },
+          counts: { available: 12, catalog: 57 },
         },
       });
     });
@@ -245,6 +253,54 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "mean_diameter_mm", type: "number" },
           { key: "active_coils", type: "number" },
           { key: "load_n", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/clutch", () => {
+      return helper.response(200, {
+        tool_id: "clutch",
+        name: "Clutch",
+        description: "Friction clutch torque.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "friction_coeff", type: "number" },
+          { key: "force_n", type: "number" },
+          { key: "radius_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/belt", () => {
+      return helper.response(200, {
+        tool_id: "belt",
+        name: "Belt drive",
+        description: "Open belt length and tension.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "driver_diameter_mm", type: "number" },
+          { key: "driven_diameter_mm", type: "number" },
+          { key: "center_distance_mm", type: "number" },
+          { key: "power_kw", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/chain", () => {
+      return helper.response(200, {
+        tool_id: "chain",
+        name: "Chain drive",
+        description: "Roller chain pitch and tension.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "pitch_mm", type: "number" },
+          { key: "driver_teeth", type: "number" },
+          { key: "driven_teeth", type: "number" },
+          { key: "center_distance_mm", type: "number" },
+          { key: "power_kw", type: "number" },
         ],
       });
     });
@@ -472,6 +528,23 @@ acceptance("MechBox | safe page", function (needs) {
             tight_side_force_n: 1041,
             slack_side_force_n: 406,
             driven_rpm: 580,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "chain") {
+        return helper.response(200, {
+          tool_id: "chain",
+          outputs: {
+            calc_mode: "simple",
+            ratio: 3,
+            chain_length_mm: 1635,
+            links: 103,
+            chain_speed_mps: 3.62,
+            chain_tension_n: 2115,
+            driven_rpm: 240,
             estimate_only: true,
             pass: false,
           },
@@ -783,5 +856,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows power per belt");
+  });
+
+  test("opens and calculates on the chain drive page", async function (assert) {
+    await visit("/mechbox?tool_id=chain");
+
+    await waitFor(".mechbox-chain");
+    assert.dom(".mechbox-chain__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-chain__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='pitch_mm']").exists("pitch input is rendered");
+    assert.dom(".mechbox-chain__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='power_kw']", "8");
+    await click(".mechbox-chain__calculate-btn");
+    await waitFor(".mechbox-chain__status");
+
+    assert.dom(".mechbox-chain__status").hasClass("is-attention");
+    assert.dom(".mechbox-chain__results-body").includesText("3");
+
+    await click(".mechbox-chain__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows allow tension");
   });
 });

@@ -18,6 +18,7 @@ module DiscourseMechbox
       spring
       clutch
       belt
+      chain
     ].freeze
 
     UNIT_FACTORS = {
@@ -144,6 +145,12 @@ module DiscourseMechbox
     def self.calculate_belt(inputs)
       DiscourseMechbox::BeltCalculator.calculate(inputs)
     rescue DiscourseMechbox::BeltCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_chain(inputs)
+      DiscourseMechbox::ChainCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ChainCalculator::Error => error
       raise Error, error.message
     end
 

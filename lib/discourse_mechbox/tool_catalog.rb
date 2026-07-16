@@ -20,6 +20,7 @@ module DiscourseMechbox
       spring
       clutch
       belt
+      chain
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -300,6 +301,29 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "chain" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "pitch_mm", type: "number", required: true },
+          { key: "driver_teeth", type: "number", required: true },
+          { key: "driven_teeth", type: "number", required: true },
+          { key: "center_distance_mm", type: "number", required: true },
+          { key: "rpm", type: "number", required: false },
+          { key: "power_kw", type: "number", required: false },
+          { key: "allow_tension_n", type: "number", required: false },
+          { key: "max_chain_speed_mps", type: "number", required: false },
+          { key: "service_factor", type: "number", required: false },
+          { key: "strands", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "ratio", type: "number" },
+          { key: "chain_length_mm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -313,7 +337,6 @@ module DiscourseMechbox
       "gear" => { category: "transmission", route: "/gear" },
       "bearing" => { category: "transmission", route: "/bearing" },
       "shaft" => { category: "transmission", route: "/shaft" },
-      "chain" => { category: "transmission", route: "/chain" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },

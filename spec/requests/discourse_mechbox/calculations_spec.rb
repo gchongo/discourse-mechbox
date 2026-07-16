@@ -607,6 +607,88 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["estimated_life_hours"]).to be > 0
   end
 
+  it "runs simple chain length and tension estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "chain",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             pitch_mm: 15.875,
+             driver_teeth: 19,
+             driven_teeth: 57,
+             center_distance_mm: 500,
+             rpm: 720,
+             power_kw: 7.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["ratio"]).to be_within(0.01).of(3.0)
+    expect(outputs["chain_length_mm"]).to be_within(1.0).of(1635.125)
+    expect(outputs["links"]).to eq(103)
+    expect(outputs["chain_tension_n"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full chain with speed and tension checks" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "chain",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             pitch_mm: 15.875,
+             driver_teeth: 19,
+             driven_teeth: 57,
+             center_distance_mm: 500,
+             rpm: 720,
+             power_kw: 7.5,
+             allow_tension_n: 20_000,
+             max_chain_speed_mps: 15,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["speed_pass"]).to eq(true)
+    expect(outputs["tension_pass"]).to eq(true)
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional chain with strands and life estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "chain",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             pitch_mm: 15.875,
+             driver_teeth: 19,
+             driven_teeth: 57,
+             center_distance_mm: 500,
+             rpm: 720,
+             power_kw: 7.5,
+             allow_tension_n: 20_000,
+             max_chain_speed_mps: 15,
+             service_factor: 1.3,
+             strands: 2,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["service_factor"]).to eq(1.3)
+    expect(outputs["strands"]).to eq(2)
+    expect(outputs["tension_per_strand_n"]).to be > 0
+    expect(outputs["estimated_life_hours"]).to be > 0
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

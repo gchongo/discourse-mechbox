@@ -493,7 +493,8 @@
 .mechbox-weld,
 .mechbox-spring,
 .mechbox-clutch,
-.mechbox-belt {
+.mechbox-belt,
+.mechbox-chain {
   &__modes {
     display: flex;
     flex-wrap: wrap;

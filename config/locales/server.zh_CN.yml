@@ -79,6 +79,9 @@ zh_CN:
       belt:
         name: "皮带传动"
         description: "开口皮带长度、传动比与 Euler 张力估算，支持简化、完整（几何包角/带速）与专业（工况系数/寿命）模式。"
+      chain:
+        name: "链传动"
+        description: "滚子链节距、链长、传动比与张力估算，支持简化、完整（链速/张力校核）与专业（多排/寿命）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

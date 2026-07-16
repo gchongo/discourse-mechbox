@@ -79,6 +79,9 @@ en:
       belt:
         name: "Belt drive"
         description: "Open belt length, ratio, and Euler tension; simple, full (wrap angle / speed), and professional (service factor / life) modes."
+      chain:
+        name: "Chain drive"
+        description: "Roller chain pitch, length, ratio, and tension; simple, full (speed / tension check), and professional (strands / life) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."
