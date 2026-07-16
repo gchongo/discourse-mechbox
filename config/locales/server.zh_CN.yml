@@ -76,6 +76,9 @@ zh_CN:
       clutch:
         name: "离合器"
         description: "摩擦离合器传递扭矩与压紧力，支持简化、完整（有效半径/比压）与专业（离心/热衰减）模式。"
+      belt:
+        name: "皮带传动"
+        description: "开口皮带长度、传动比与 Euler 张力估算，支持简化、完整（几何包角/带速）与专业（工况系数/寿命）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"
@@ -208,7 +211,7 @@ zh_CN:
           description: "摩擦扭矩"
         belt:
           name: "皮带传动"
-          description: "链长 / 张力"
+          description: "皮带长度 / 张力"
         chain:
           name: "链传动"
           description: "节距 / 链张力"

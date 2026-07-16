@@ -529,6 +529,84 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["pass"]).to eq(false)
   end
 
+  it "runs simple belt length and tension estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "belt",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             driver_diameter_mm: 120,
+             driven_diameter_mm: 300,
+             center_distance_mm: 500,
+             rpm: 1450,
+             power_kw: 5.5,
+             wrap_angle_deg: 180,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["ratio"]).to be_within(0.01).of(2.5)
+    expect(outputs["belt_length_mm"]).to be_within(1.0).of(1675.9)
+    expect(outputs["tight_side_force_n"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full belt with geometric wrap angle and speed check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "belt",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             driver_diameter_mm: 120,
+             driven_diameter_mm: 300,
+             center_distance_mm: 500,
+             rpm: 1450,
+             power_kw: 5.5,
+             power_per_belt_kw: 2.5,
+             max_belt_speed_mps: 30,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["wrap_angle_deg"]).to be > 120
+    expect(outputs["belt_count"]).to be >= 1
+    expect(outputs["speed_pass"]).to eq(true)
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional belt with service factor and flex check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "belt",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             driver_diameter_mm: 120,
+             driven_diameter_mm: 300,
+             center_distance_mm: 500,
+             rpm: 1450,
+             power_kw: 5.5,
+             power_per_belt_kw: 2.5,
+             max_belt_speed_mps: 30,
+             service_factor: 1.2,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["service_factor"]).to eq(1.2)
+    expect(outputs["flex_stress_n_per_mm2"]).to be > 0
+    expect(outputs["estimated_life_hours"]).to be > 0
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

@@ -76,6 +76,9 @@ en:
       clutch:
         name: "Clutch"
         description: "Friction clutch torque and clamp force; simple, full (effective radius / pressure), and professional (centrifugal / thermal fade) modes."
+      belt:
+        name: "Belt drive"
+        description: "Open belt length, ratio, and Euler tension; simple, full (wrap angle / speed), and professional (service factor / life) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

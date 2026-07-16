@@ -76,6 +76,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/weld_calculator"
   require_relative "lib/discourse_mechbox/spring_calculator"
   require_relative "lib/discourse_mechbox/clutch_calculator"
+  require_relative "lib/discourse_mechbox/belt_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"

@@ -19,6 +19,7 @@ module DiscourseMechbox
       weld
       spring
       clutch
+      belt
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -277,6 +278,28 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "belt" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "driver_diameter_mm", type: "number", required: true },
+          { key: "driven_diameter_mm", type: "number", required: true },
+          { key: "center_distance_mm", type: "number", required: true },
+          { key: "rpm", type: "number", required: false },
+          { key: "power_kw", type: "number", required: false },
+          { key: "wrap_angle_deg", type: "number", required: false },
+          { key: "power_per_belt_kw", type: "number", required: false },
+          { key: "max_belt_speed_mps", type: "number", required: false },
+          { key: "service_factor", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "ratio", type: "number" },
+          { key: "belt_length_mm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -290,7 +313,6 @@ module DiscourseMechbox
       "gear" => { category: "transmission", route: "/gear" },
       "bearing" => { category: "transmission", route: "/bearing" },
       "shaft" => { category: "transmission", route: "/shaft" },
-      "belt" => { category: "transmission", route: "/belt" },
       "chain" => { category: "transmission", route: "/chain" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "beam" => { category: "structural", route: "/beam" },

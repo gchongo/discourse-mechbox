@@ -150,10 +150,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "share-nodes",
                   available: true,
                 },
+                {
+                  id: "belt",
+                  tool_id: "belt",
+                  name: "Belt drive",
+                  description: "Length and tension",
+                  icon: "minus",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 10, catalog: 57 },
+          counts: { available: 11, catalog: 57 },
         },
       });
     });
@@ -452,6 +460,24 @@ acceptance("MechBox | safe page", function (needs) {
         });
       }
 
+      if (body.tool_id === "belt") {
+        return helper.response(200, {
+          tool_id: "belt",
+          outputs: {
+            calc_mode: "simple",
+            ratio: 2.5,
+            belt_length_mm: 1676,
+            belt_speed_mps: 9.11,
+            wrap_angle_deg: 180,
+            tight_side_force_n: 1041,
+            slack_side_force_n: 406,
+            driven_rpm: 580,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
       return helper.response(200, {
         tool_id: "gear_ratio",
         outputs: {
@@ -732,5 +758,30 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows inner/outer diameters");
+  });
+
+  test("opens and calculates on the belt drive page", async function (assert) {
+    await visit("/mechbox?tool_id=belt");
+
+    await waitFor(".mechbox-belt");
+    assert.dom(".mechbox-belt__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-belt__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert
+      .dom("input[name='driver_diameter_mm']")
+      .exists("driver diameter input is rendered");
+    assert.dom(".mechbox-belt__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='power_kw']", "6");
+    await click(".mechbox-belt__calculate-btn");
+    await waitFor(".mechbox-belt__status");
+
+    assert.dom(".mechbox-belt__status").hasClass("is-attention");
+    assert.dom(".mechbox-belt__results-body").includesText("2.5");
+
+    await click(".mechbox-belt__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows power per belt");
   });
 });

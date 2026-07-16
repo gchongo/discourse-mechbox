@@ -31,7 +31,8 @@
 .mechbox__page:has(.mechbox-bolt-group),
 .mechbox__page:has(.mechbox-weld),
 .mechbox__page:has(.mechbox-spring),
-.mechbox__page:has(.mechbox-clutch) {
+.mechbox__page:has(.mechbox-clutch),
+.mechbox__page:has(.mechbox-belt) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -55,7 +56,8 @@
 .mechbox-bolt-group,
 .mechbox-weld,
 .mechbox-spring,
-.mechbox-clutch {
+.mechbox-clutch,
+.mechbox-belt {
   &__formula-bar {
     border-radius: 8px;
   }
