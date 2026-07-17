@@ -19,6 +19,7 @@ import { mountSigmaAnalysisWorkbench } from "../lib/mechbox-sigma-page";
 import { mountFitWorkbench } from "../lib/mechbox-fit-page";
 import { mountDistributionChartWorkbench } from "../lib/mechbox-distribution-page";
 import { mountThermalExpansionWorkbench } from "../lib/mechbox-thermal-page";
+import { mountInterferenceFitWorkbench } from "../lib/mechbox-interference-page";
 
 let handlersRegistered = false;
 
@@ -61,7 +62,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--sigma",
     "mechbox__workbench-panel--fit",
     "mechbox__workbench-panel--distribution",
-    "mechbox__workbench-panel--thermal"
+    "mechbox__workbench-panel--thermal",
+    "mechbox__workbench-panel--interference"
   );
   mount.replaceChildren();
 
@@ -161,6 +163,10 @@ function mountWorkbenchForm(panel) {
     void mountThermalExpansionWorkbench(panel).then(() =>
       markWorkbenchMounted(panel, toolId)
     );
+  } else if (toolId === "interference_fit") {
+    void mountInterferenceFitWorkbench(panel).then(() =>
+      markWorkbenchMounted(panel, toolId)
+    );
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -256,6 +262,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "fit",
   "distribution_chart",
   "thermal_expansion",
+  "interference_fit",
 ]);
 
 async function calculateGeneric(event) {
@@ -282,7 +289,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-sigma__calculate-btn") ||
     button.classList.contains("mechbox-fit__calculate-btn") ||
     button.classList.contains("mechbox-distribution__calculate-btn") ||
-    button.classList.contains("mechbox-thermal__calculate-btn")
+    button.classList.contains("mechbox-thermal__calculate-btn") ||
+    button.classList.contains("mechbox-interference__calculate-btn")
   ) {
     return;
   }

@@ -499,7 +499,8 @@
 .mechbox-sigma,
 .mechbox-fit,
 .mechbox-distribution,
-.mechbox-thermal {
+.mechbox-thermal,
+.mechbox-interference {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -687,6 +688,21 @@
     height: 2.15rem;
     margin: 0;
     border-radius: 6px;
+  }
+
+  &__readonly {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.15rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--tertiary);
+  }
+
+  &__recommend {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: var(--font-down-1);
   }
 
   &__unit {

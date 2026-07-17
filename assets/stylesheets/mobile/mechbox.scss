@@ -38,7 +38,8 @@
 .mechbox__page:has(.mechbox-sigma),
 .mechbox__page:has(.mechbox-fit),
 .mechbox__page:has(.mechbox-distribution),
-.mechbox__page:has(.mechbox-thermal) {
+.mechbox__page:has(.mechbox-thermal),
+.mechbox__page:has(.mechbox-interference) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -69,7 +70,8 @@
 .mechbox-sigma,
 .mechbox-fit,
 .mechbox-distribution,
-.mechbox-thermal {
+.mechbox-thermal,
+.mechbox-interference {
   &__formula-bar {
     border-radius: 8px;
   }

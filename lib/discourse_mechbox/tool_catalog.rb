@@ -26,6 +26,7 @@ module DiscourseMechbox
       fit
       distribution_chart
       thermal_expansion
+      interference_fit
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -428,6 +429,27 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "interference_fit" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "shaft_diameter_mm", type: "number", required: true },
+          { key: "hole_diameter_mm", type: "number", required: true },
+          { key: "hub_outer_diameter_mm", type: "number", required: true },
+          { key: "fit_length_mm", type: "number", required: false },
+          { key: "friction", type: "number", required: false },
+          { key: "shaft_inner_diameter_mm", type: "number", required: false },
+          { key: "delta_t", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "pressure", type: "number" },
+          { key: "press_force", type: "number" },
+          { key: "torque_capacity_nm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -447,7 +469,6 @@ module DiscourseMechbox
       "structural" => { category: "structural", route: "/structural" },
       "sheet_metal" => { category: "structural", route: "/sheet-metal" },
       "cylinder" => { category: "structural", route: "/cylinder" },
-      "interference_fit" => { category: "materials", route: "/interference-fit" },
       "materials" => { category: "materials", route: "/materials" },
       "material_selection" => { category: "materials", route: "/material-selection" },
       "units" => { category: "general", route: "/units" },

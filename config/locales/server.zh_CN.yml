@@ -97,6 +97,9 @@ zh_CN:
       thermal_expansion:
         name: "热膨胀"
         description: "线膨胀 ΔL 与配合间隙/过盈温变，支持简化（线膨胀）、完整（配合变化）与专业（α(T) 修正、装配/工况两段）模式。"
+      interference_fit:
+        name: "过盈配合"
+        description: "压配合接触压力、压装力与传递扭矩（Lame），支持简化、完整（空心轴/环向应力门限）与专业（温差修正过盈）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

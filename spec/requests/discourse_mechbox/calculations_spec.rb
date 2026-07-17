@@ -1023,6 +1023,80 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs).to have_key("recommended_max_delta_t")
   end
 
+  it "runs simple interference_fit for contact pressure" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "interference_fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             shaft_diameter_mm: 50,
+             hole_diameter_mm: 49.975,
+             hub_outer_diameter_mm: 90,
+             fit_length_mm: 40,
+             friction: 0.12,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["interference"]).to be_within(0.0001).of(0.025)
+    expect(outputs["pressure"]).to be > 0
+    expect(outputs["press_force"]).to be > 0
+    expect(outputs["torque_capacity_nm"]).to be > 0
+    expect(outputs["estimate_only"]).to eq(true)
+  end
+
+  it "runs full interference_fit with hoop stress gates" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "interference_fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             shaft_diameter_mm: 50,
+             hole_diameter_mm: 49.975,
+             hub_outer_diameter_mm: 90,
+             fit_length_mm: 40,
+             shaft_allow_hoop_mpa: 350,
+             hub_allow_hoop_mpa: 350,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["hoop_pass"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+    expect(outputs["hollow_shaft"]).to eq(false)
+  end
+
+  it "runs professional interference_fit with thermal correction" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "interference_fit",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             shaft_diameter_mm: 50,
+             hole_diameter_mm: 49.975,
+             hub_outer_diameter_mm: 90,
+             fit_length_mm: 40,
+             delta_t: 20,
+             shaft_alpha_micro: 11.5,
+             hole_alpha_micro: 11.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["thermal"]).to be_present
+    expect(outputs["thermal"]["interference_change"]).to be_within(0.0001).of(0.0)
+    expect(outputs["pass"]).to eq(true)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

@@ -97,6 +97,9 @@ en:
       thermal_expansion:
         name: "Thermal expansion"
         description: "Linear growth ΔL and fit clearance/interference under temperature; simple (linear), full (fit change), and professional (α(T), assembly/service two-stage) modes."
+      interference_fit:
+        name: "Interference fit"
+        description: "Press-fit contact pressure, press force and torque capacity (Lame); simple, full (hollow shaft / hoop gates), and professional (thermal interference) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

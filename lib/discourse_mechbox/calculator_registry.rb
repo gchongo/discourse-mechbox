@@ -24,6 +24,7 @@ module DiscourseMechbox
       fit
       distribution_chart
       thermal_expansion
+      interference_fit
     ].freeze
 
     UNIT_FACTORS = {
@@ -186,6 +187,12 @@ module DiscourseMechbox
     def self.calculate_thermal_expansion(inputs)
       DiscourseMechbox::ThermalExpansionCalculator.calculate(inputs)
     rescue DiscourseMechbox::ThermalExpansionCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_interference_fit(inputs)
+      DiscourseMechbox::InterferenceFitCalculator.calculate(inputs)
+    rescue DiscourseMechbox::InterferenceFitCalculator::Error => error
       raise Error, error.message
     end
 

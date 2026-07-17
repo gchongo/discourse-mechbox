@@ -199,10 +199,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "sun",
                   available: true,
                 },
+                {
+                  id: "interference_fit",
+                  tool_id: "interference_fit",
+                  name: "Interference fit",
+                  description: "Press-fit pressure",
+                  icon: "coins",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 17, catalog: 57 },
+          counts: { available: 18, catalog: 57 },
         },
       });
     });
@@ -409,6 +417,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "material", type: "string" },
           { key: "length_mm", type: "number" },
           { key: "delta_t", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/interference_fit", () => {
+      return helper.response(200, {
+        tool_id: "interference_fit",
+        name: "Interference fit",
+        description: "Press-fit contact pressure.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "shaft_diameter_mm", type: "number" },
+          { key: "hole_diameter_mm", type: "number" },
+          { key: "hub_outer_diameter_mm", type: "number" },
         ],
       });
     });
@@ -742,6 +765,24 @@ acceptance("MechBox | safe page", function (needs) {
             operating_temp: 120,
             alpha1_micro: 11.5,
             linear_expansion: 0.115,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "interference_fit") {
+        return helper.response(200, {
+          tool_id: "interference_fit",
+          outputs: {
+            calc_mode: "simple",
+            interference: 0.025,
+            pressure: 42.5,
+            hoop_hub: 85.0,
+            hoop_shaft: 42.5,
+            press_force: 85000,
+            torque_capacity_nm: 200.5,
+            min_hub_wall: 20.01,
             estimate_only: true,
             pass: false,
           },
@@ -1191,5 +1232,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows shaft/hole diameters");
+  });
+
+  test("opens and calculates on the interference fit page", async function (assert) {
+    await visit("/mechbox?tool_id=interference_fit");
+
+    await waitFor(".mechbox-interference");
+    assert.dom(".mechbox-interference__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-interference__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='shaft_diameter_mm']").exists("shaft input is rendered");
+    assert.dom(".mechbox-interference__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='fit_length_mm']", "45");
+    await click(".mechbox-interference__calculate-btn");
+    await waitFor(".mechbox-interference__status");
+
+    assert.dom(".mechbox-interference__status").hasClass("is-attention");
+    assert.dom(".mechbox-interference__results-body").includesText("42.5");
+
+    await click(".mechbox-interference__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows shaft inner diameter");
   });
 });

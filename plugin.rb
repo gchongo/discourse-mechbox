@@ -83,6 +83,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/fit_calculator"
   require_relative "lib/discourse_mechbox/distribution_chart_calculator"
   require_relative "lib/discourse_mechbox/thermal_expansion_calculator"
+  require_relative "lib/discourse_mechbox/interference_fit_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"
