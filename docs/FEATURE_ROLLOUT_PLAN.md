@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 18 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit` |
+| ✅ 已接入 | 19 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -28,7 +28,8 @@
 **W3.4 完成** ✅：`distribution_chart` 分布曲线（简化正态 PDF / 完整采样表 / 专业合格率；暂无 Plotly）  
 **W4.1 完成** ✅：`thermal_expansion` 热膨胀（简化线膨胀 / 完整配合变化 / 专业 α(T)+装配/工况两段）  
 **W4.2 完成** ✅：`interference_fit` 过盈配合（简化接触压 / 完整空心轴与环向门限 / 专业温差修正）  
-**下一步**：W4.3 `bearing` 轴承寿命（ISO 281）
+**W4.3 完成** ✅：`bearing` 轴承寿命（简化 L10 / 完整 X·Y 查表与 a₁·aISO / 专业 a₂·极限转速）  
+**下一步**：W4.4 `shaft` 轴强度
 
 ---
 
@@ -100,7 +101,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 |------|---------|------|------|------|
 | 4.1 | `thermal_expansion` | 热膨胀 | ★★ | ✅ |
 | 4.2 | `interference_fit` | 过盈配合 | ★★★ | ✅ Lame 接触压 |
-| 4.3 | `bearing` | 轴承寿命 | ★★★ | ISO 281 查表 |
+| 4.3 | `bearing` | 轴承寿命 | ★★★ | ✅ ISO 281 |
 | 4.4 | `shaft` | 轴强度 | ★★★ | |
 | 4.5 | `gear` | 齿轮强度 | ★★★★ | ISO 6336 / AGMA；可先简化 Lewis |
 | 4.6 | `fatigue` | 疲劳寿命 | ★★★★ | S-N + Miner |

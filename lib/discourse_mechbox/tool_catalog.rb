@@ -27,6 +27,7 @@ module DiscourseMechbox
       distribution_chart
       thermal_expansion
       interference_fit
+      bearing
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -450,6 +451,27 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "bearing" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "dynamic_load_n", type: "number", required: true },
+          { key: "radial_load_n", type: "number", required: true },
+          { key: "axial_load_n", type: "number", required: false },
+          { key: "rpm", type: "number", required: true },
+          { key: "target_hours", type: "number", required: false },
+          { key: "series_id", type: "string", required: false },
+          { key: "static_load_n", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "equivalent_load", type: "number" },
+          { key: "l10_million_rev", type: "number" },
+          { key: "life_hours", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -461,7 +483,6 @@ module DiscourseMechbox
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
       "gear" => { category: "transmission", route: "/gear" },
-      "bearing" => { category: "transmission", route: "/bearing" },
       "shaft" => { category: "transmission", route: "/shaft" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "beam" => { category: "structural", route: "/beam" },

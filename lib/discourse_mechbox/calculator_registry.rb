@@ -25,6 +25,7 @@ module DiscourseMechbox
       distribution_chart
       thermal_expansion
       interference_fit
+      bearing
     ].freeze
 
     UNIT_FACTORS = {
@@ -193,6 +194,12 @@ module DiscourseMechbox
     def self.calculate_interference_fit(inputs)
       DiscourseMechbox::InterferenceFitCalculator.calculate(inputs)
     rescue DiscourseMechbox::InterferenceFitCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_bearing(inputs)
+      DiscourseMechbox::BearingCalculator.calculate(inputs)
+    rescue DiscourseMechbox::BearingCalculator::Error => error
       raise Error, error.message
     end
 

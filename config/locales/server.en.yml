@@ -100,6 +100,9 @@ en:
       interference_fit:
         name: "Interference fit"
         description: "Press-fit contact pressure, press force and torque capacity (Lame); simple, full (hollow shaft / hoop gates), and professional (thermal interference) modes."
+      bearing:
+        name: "Bearing life"
+        description: "ISO 281 equivalent load and L10/Lnm life; simple, full (X/Y lookup / reliability), and professional (temperature / limiting speed) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

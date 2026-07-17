@@ -207,10 +207,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "coins",
                   available: true,
                 },
+                {
+                  id: "bearing",
+                  tool_id: "bearing",
+                  name: "Bearing life",
+                  description: "ISO 281 L10",
+                  icon: "circle-question",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 18, catalog: 57 },
+          counts: { available: 19, catalog: 57 },
         },
       });
     });
@@ -432,6 +440,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "shaft_diameter_mm", type: "number" },
           { key: "hole_diameter_mm", type: "number" },
           { key: "hub_outer_diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/bearing", () => {
+      return helper.response(200, {
+        tool_id: "bearing",
+        name: "Bearing life",
+        description: "ISO 281 L10 life.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "dynamic_load_n", type: "number" },
+          { key: "radial_load_n", type: "number" },
+          { key: "rpm", type: "number" },
         ],
       });
     });
@@ -783,6 +806,22 @@ acceptance("MechBox | safe page", function (needs) {
             press_force: 85000,
             torque_capacity_nm: 200.5,
             min_hub_wall: 20.01,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "bearing") {
+        return helper.response(200, {
+          tool_id: "bearing",
+          outputs: {
+            calc_mode: "simple",
+            equivalent_load: 5000,
+            x: 1,
+            y: 0,
+            l10_million_rev: 343,
+            life_hours: 3811,
             estimate_only: true,
             pass: false,
           },
@@ -1255,5 +1294,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows shaft inner diameter");
+  });
+
+  test("opens and calculates on the bearing life page", async function (assert) {
+    await visit("/mechbox?tool_id=bearing");
+
+    await waitFor(".mechbox-bearing");
+    assert.dom(".mechbox-bearing__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-bearing__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='dynamic_load_n']").exists("dynamic load input is rendered");
+    assert.dom(".mechbox-bearing__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='rpm']", "1800");
+    await click(".mechbox-bearing__calculate-btn");
+    await waitFor(".mechbox-bearing__status");
+
+    assert.dom(".mechbox-bearing__status").hasClass("is-attention");
+    assert.dom(".mechbox-bearing__results-body").includesText("343");
+
+    await click(".mechbox-bearing__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows static load");
   });
 });

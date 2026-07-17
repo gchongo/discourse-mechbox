@@ -1097,6 +1097,94 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["pass"]).to eq(true)
   end
 
+  it "runs simple bearing L10 life" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bearing",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             bearing_type: "ball",
+             dynamic_load_n: 35_000,
+             radial_load_n: 5_000,
+             axial_load_n: 0,
+             x: 1,
+             y: 0,
+             rpm: 1_500,
+             target_hours: 10_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["equivalent_load"]).to be_within(0.1).of(5_000)
+    expect(outputs["l10_million_rev"]).to be_within(0.1).of(343.0)
+    expect(outputs["estimate_only"]).to eq(true)
+  end
+
+  it "runs full bearing with auto X/Y lookup" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bearing",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             auto_lookup: true,
+             series_id: "deep-groove-medium",
+             dynamic_load_n: 35_000,
+             static_load_n: 18_000,
+             radial_load_n: 5_000,
+             axial_load_n: 1_000,
+             rpm: 1_500,
+             target_hours: 3_000,
+             reliability: 90,
+             life_condition: "standard",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["x"]).to eq(1.0)
+    expect(outputs["y"]).to eq(0.0)
+    expect(outputs["static_safety_factor"]).to be > 1
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional bearing with temperature factor" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "bearing",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             auto_lookup: false,
+             bearing_type: "ball",
+             dynamic_load_n: 35_000,
+             static_load_n: 18_000,
+             radial_load_n: 5_000,
+             axial_load_n: 1_000,
+             x: 1,
+             y: 1.6,
+             rpm: 1_500,
+             reliability: 95,
+             life_condition: "standard",
+             operating_temp_c: 200,
+             limiting_speed_rpm: 8_000,
+             target_hours: 1_000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["reliability_factor"]).to eq(0.64)
+    expect(outputs["temperature_factor"]).to eq(0.75)
+    expect(outputs["radial_stiffness"]).to be > 0
+    expect(outputs["speed_pass"]).to eq(true)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
