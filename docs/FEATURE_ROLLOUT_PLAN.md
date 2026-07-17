@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 16 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart` |
+| ✅ 已接入 | 17 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -26,7 +26,8 @@
 **W3.2 完成** ✅：`sigma_analysis` 西格玛 / Cpk（简化 C·Cpk / 完整门槛 / 专业样本与长期 σ）  
 **W3.3 完成** ✅：`fit` ISO 286 配合（简化间隙 / 完整品质指数 / 专业热修正）  
 **W3.4 完成** ✅：`distribution_chart` 分布曲线（简化正态 PDF / 完整采样表 / 专业合格率；暂无 Plotly）  
-**下一步**：W4.1 `thermal_expansion` 热膨胀
+**W4.1 完成** ✅：`thermal_expansion` 热膨胀（简化线膨胀 / 完整配合变化 / 专业 α(T)+装配/工况两段）  
+**下一步**：W4.2 `interference_fit` 过盈配合（DIN 7190）
 
 ---
 
@@ -96,7 +97,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 
 | 序号 | tool_id | 名称 | 难度 | 备注 |
 |------|---------|------|------|------|
-| 4.1 | `thermal_expansion` | 热膨胀 | ★★ | |
+| 4.1 | `thermal_expansion` | 热膨胀 | ★★ | ✅ |
 | 4.2 | `interference_fit` | 过盈配合 | ★★★ | DIN 7190 |
 | 4.3 | `bearing` | 轴承寿命 | ★★★ | ISO 281 查表 |
 | 4.4 | `shaft` | 轴强度 | ★★★ | |

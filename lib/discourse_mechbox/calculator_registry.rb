@@ -23,6 +23,7 @@ module DiscourseMechbox
       sigma_analysis
       fit
       distribution_chart
+      thermal_expansion
     ].freeze
 
     UNIT_FACTORS = {
@@ -179,6 +180,12 @@ module DiscourseMechbox
     def self.calculate_distribution_chart(inputs)
       DiscourseMechbox::DistributionChartCalculator.calculate(inputs)
     rescue DiscourseMechbox::DistributionChartCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_thermal_expansion(inputs)
+      DiscourseMechbox::ThermalExpansionCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ThermalExpansionCalculator::Error => error
       raise Error, error.message
     end
 

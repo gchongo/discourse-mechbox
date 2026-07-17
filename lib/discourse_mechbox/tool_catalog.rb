@@ -25,6 +25,7 @@ module DiscourseMechbox
       sigma_analysis
       fit
       distribution_chart
+      thermal_expansion
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -404,6 +405,29 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "thermal_expansion" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "material", type: "string", required: false },
+          { key: "length_mm", type: "number", required: true },
+          { key: "delta_t", type: "number", required: true },
+          { key: "alpha_micro", type: "number", required: false },
+          { key: "material2", type: "string", required: false },
+          { key: "alpha2_micro", type: "number", required: false },
+          { key: "shaft_diameter_mm", type: "number", required: false },
+          { key: "hole_diameter_mm", type: "number", required: false },
+          { key: "assembly_delta_t", type: "number", required: false },
+          { key: "service_delta_t", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "linear_expansion", type: "number" },
+          { key: "operating_temp", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -423,7 +447,6 @@ module DiscourseMechbox
       "structural" => { category: "structural", route: "/structural" },
       "sheet_metal" => { category: "structural", route: "/sheet-metal" },
       "cylinder" => { category: "structural", route: "/cylinder" },
-      "thermal_expansion" => { category: "materials", route: "/thermal-expansion" },
       "interference_fit" => { category: "materials", route: "/interference-fit" },
       "materials" => { category: "materials", route: "/materials" },
       "material_selection" => { category: "materials", route: "/material-selection" },

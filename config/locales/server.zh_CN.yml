@@ -94,6 +94,9 @@ zh_CN:
       distribution_chart:
         name: "分布曲线"
         description: "按公差与分布类型计算 PDF 峰密度、σ 与采样点（先出数，图表后续），支持简化、完整与专业（规格合格率）模式。"
+      thermal_expansion:
+        name: "热膨胀"
+        description: "线膨胀 ΔL 与配合间隙/过盈温变，支持简化（线膨胀）、完整（配合变化）与专业（α(T) 修正、装配/工况两段）模式。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

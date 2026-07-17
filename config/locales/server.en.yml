@@ -94,6 +94,9 @@ en:
       distribution_chart:
         name: "Distribution chart"
         description: "PDF peak density, sigma, and sample points from tolerance and distribution (numbers first, chart later); simple, full, and professional (spec yield) modes."
+      thermal_expansion:
+        name: "Thermal expansion"
+        description: "Linear growth ΔL and fit clearance/interference under temperature; simple (linear), full (fit change), and professional (α(T), assembly/service two-stage) modes."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

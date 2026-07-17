@@ -191,10 +191,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "scale-balanced",
                   available: true,
                 },
+                {
+                  id: "thermal_expansion",
+                  tool_id: "thermal_expansion",
+                  name: "Thermal expansion",
+                  description: "Linear growth and fit",
+                  icon: "sun",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 16, catalog: 57 },
+          counts: { available: 17, catalog: 57 },
         },
       });
     });
@@ -386,6 +394,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "tolerance", type: "number" },
           { key: "distribution", type: "string" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/thermal_expansion", () => {
+      return helper.response(200, {
+        tool_id: "thermal_expansion",
+        name: "Thermal expansion",
+        description: "Linear growth and fit change.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "material", type: "string" },
+          { key: "length_mm", type: "number" },
+          { key: "delta_t", type: "number" },
         ],
       });
     });
@@ -702,6 +725,23 @@ acceptance("MechBox | safe page", function (needs) {
             sigma: 0.0417,
             peak_density: 9.57,
             coverage: 0.9973,
+            estimate_only: true,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "thermal_expansion") {
+        return helper.response(200, {
+          tool_id: "thermal_expansion",
+          outputs: {
+            calc_mode: "simple",
+            material: "steel",
+            length_mm: 100,
+            delta_t: 100,
+            operating_temp: 120,
+            alpha1_micro: 11.5,
+            linear_expansion: 0.115,
             estimate_only: true,
             pass: false,
           },
@@ -1128,5 +1168,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows distribution select");
+  });
+
+  test("opens and calculates on the thermal expansion page", async function (assert) {
+    await visit("/mechbox?tool_id=thermal_expansion");
+
+    await waitFor(".mechbox-thermal");
+    assert.dom(".mechbox-thermal__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-thermal__formula-bar").exists("formula bar is rendered");
+    assert.dom(".mechbox-formula-hint").exists("inline formula hint is rendered");
+    assert.dom("input[name='length_mm']").exists("length input is rendered");
+    assert.dom(".mechbox-thermal__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='delta_t']", "120");
+    await click(".mechbox-thermal__calculate-btn");
+    await waitFor(".mechbox-thermal__status");
+
+    assert.dom(".mechbox-thermal__status").hasClass("is-attention");
+    assert.dom(".mechbox-thermal__results-body").includesText("0.115");
+
+    await click(".mechbox-thermal__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows shaft/hole diameters");
   });
 });

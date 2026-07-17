@@ -37,7 +37,8 @@
 .mechbox__page:has(.mechbox-tol-convert),
 .mechbox__page:has(.mechbox-sigma),
 .mechbox__page:has(.mechbox-fit),
-.mechbox__page:has(.mechbox-distribution) {
+.mechbox__page:has(.mechbox-distribution),
+.mechbox__page:has(.mechbox-thermal) {
   padding-left: 0;
   padding-right: 0;
 }
@@ -67,7 +68,8 @@
 .mechbox-tol-convert,
 .mechbox-sigma,
 .mechbox-fit,
-.mechbox-distribution {
+.mechbox-distribution,
+.mechbox-thermal {
   &__formula-bar {
     border-radius: 8px;
   }

@@ -950,6 +950,79 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs).to have_key("dppm")
   end
 
+  it "runs simple thermal_expansion linear growth" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thermal_expansion",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             material: "steel",
+             length_mm: 100,
+             delta_t: 100,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    # 11.5e-6 * 100 * 100 = 0.115 mm
+    expect(outputs["linear_expansion"]).to be_within(0.0001).of(0.115)
+    expect(outputs["operating_temp"]).to eq(120.0)
+    expect(outputs["estimate_only"]).to eq(true)
+  end
+
+  it "runs full thermal_expansion with fit change" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thermal_expansion",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             material: "steel",
+             material2: "steel",
+             length_mm: 100,
+             delta_t: 100,
+             shaft_diameter_mm: 50,
+             hole_diameter_mm: 49.975,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["fit"]).to be_present
+    expect(outputs["fit"]["initial_interference"]).to be_within(0.0001).of(0.025)
+    expect(outputs).to have_key("pass")
+  end
+
+  it "runs professional thermal_expansion with two-stage fit" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thermal_expansion",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             material: "aluminum",
+             material2: "steel",
+             length_mm: 100,
+             delta_t: 150,
+             shaft_diameter_mm: 50,
+             hole_diameter_mm: 49.975,
+             assembly_delta_t: 80,
+             service_delta_t: 150,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["assembly_fit"]).to be_present
+    expect(outputs["service_fit"]).to be_present
+    expect(outputs).to have_key("interference_margin")
+    expect(outputs).to have_key("recommended_max_delta_t")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
