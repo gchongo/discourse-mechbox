@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 25 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder` |
+| ✅ 已接入 | 27 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -35,8 +35,10 @@
 **W4.7 完成** ✅：`beam` 梁挠度（简化估算 / 完整利用率 / 专业 Kd·Kt；疲劳未放行）  
 **W4.8 完成** ✅：`sheet_metal` 钣金展开（K 因子 / BD；完整法兰 / 专业回弹）  
 **W4.10 完成** ✅：`cylinder` 液压/气缸（简化推力速度 / 完整外载屈曲 / 专业动载循环）  
-**说明**：`structural` 计算核保留但未点亮；`o_ring` 尚无 Ruby 核与 catalog。  
-**下一步**：W4.9 `o_ring`（移植 MechBox 计算核 + catalog + 专用页）
+**W4.9 完成** ✅：`o_ring` O 型圈（压缩填充 / 挤出温度 / 许用压力速度；公式对齐 MechBox）  
+**W4.15 完成** ✅：`structural` 结构/流体（管路 Darcy / 薄板屈曲 / 模态；公式对齐 MechBox）  
+**说明**：W4 服务端强度主线计算核工具已全部点亮；材料库/选型/热处理/制造/螺纹表仍待。  
+**下一步**：W4.11 `materials` 或 W5 `size_chain`（按产品优先级）
 
 ---
 
@@ -114,13 +116,13 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 4.6 | `fatigue` | 疲劳寿命 | ★★★★ | ✅ Basquin + Miner + Goodman |
 | 4.7 | `beam` | 梁挠度 | ★★★ | ✅ 简/全/专；疲劳未放行 |
 | 4.8 | `sheet_metal` | 钣金展开 | ★★ | ✅ K 因子 / BD + 法兰 / 回弹 |
-| 4.9 | `o_ring` | O 型圈 | ★★ | 需补 catalog id |
+| 4.9 | `o_ring` | O 型圈 | ★★ | ✅ Parker/ISO3601 简化；对齐 MechBox |
 | 4.10 | `cylinder` | 液压/气缸 | ★★ | ✅ 简/全/专；液压+气动 |
 | 4.11 | `materials` | 材料库 | ★★ | 只读查表可先 |
 | 4.12 | `material_selection` | 材料选型 | ★★★ | |
 | 4.13 | `heat_treatment` | 热处理硬度 | ★★★ | |
 | 4.14 | `manufacturing` | 制造工艺 | ★★ | |
-| 4.15 | `structural` | 结构/流体 | ★★★ | 计算核已有，未点亮；可拆子工具 |
+| 4.15 | `structural` | 结构/流体 | ★★★ | ✅ 管路 / 薄板屈曲 / 模态 |
 | 4.16 | `thread_table` | 螺纹标准表 | ★★★ | 规格库；需补 catalog |
 
 ---

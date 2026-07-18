@@ -28,6 +28,8 @@ import { mountFatigueWorkbench } from "../lib/mechbox-fatigue-page";
 import { mountBeamWorkbench } from "../lib/mechbox-beam-page";
 import { mountSheetMetalWorkbench } from "../lib/mechbox-sheet-metal-page";
 import { mountCylinderWorkbench } from "../lib/mechbox-cylinder-page";
+import { mountORingWorkbench } from "../lib/mechbox-o-ring-page";
+import { mountStructuralWorkbench } from "../lib/mechbox-structural-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -78,7 +80,9 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--fatigue",
     "mechbox__workbench-panel--beam",
     "mechbox__workbench-panel--sheet-metal",
-    "mechbox__workbench-panel--cylinder"
+    "mechbox__workbench-panel--cylinder",
+    "mechbox__workbench-panel--o-ring",
+    "mechbox__workbench-panel--structural"
   );
   mount.replaceChildren();
 
@@ -198,6 +202,10 @@ function mountWorkbenchForm(panel) {
     void mountSheetMetalWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "cylinder") {
     void mountCylinderWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "o_ring") {
+    void mountORingWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "structural") {
+    void mountStructuralWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -302,6 +310,8 @@ const CUSTOM_TOOL_IDS = new Set([
   "beam",
   "sheet_metal",
   "cylinder",
+  "o_ring",
+  "structural",
 ]);
 
 async function calculateGeneric(event) {
@@ -337,7 +347,9 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-fatigue__calculate-btn") ||
     button.classList.contains("mechbox-beam__calculate-btn") ||
     button.classList.contains("mechbox-sheet-metal__calculate-btn") ||
-    button.classList.contains("mechbox-cylinder__calculate-btn")
+    button.classList.contains("mechbox-cylinder__calculate-btn") ||
+    button.classList.contains("mechbox-o-ring__calculate-btn") ||
+    button.classList.contains("mechbox-structural__calculate-btn")
   ) {
     return;
   }

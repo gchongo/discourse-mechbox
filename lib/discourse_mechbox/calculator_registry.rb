@@ -33,6 +33,7 @@ module DiscourseMechbox
       structural
       sheet_metal
       cylinder
+      o_ring
     ].freeze
 
     UNIT_FACTORS = {
@@ -249,6 +250,12 @@ module DiscourseMechbox
     def self.calculate_cylinder(inputs)
       DiscourseMechbox::CylinderCalculator.calculate(inputs)
     rescue DiscourseMechbox::CylinderCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_o_ring(inputs)
+      DiscourseMechbox::ORingCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ORingCalculator::Error => error
       raise Error, error.message
     end
 

@@ -86,7 +86,7 @@ module DiscourseMechbox
         tools: [
           { id: "beam", tool_id: "beam", icon: "minus" },
           { id: "sheet_metal", tool_id: "sheet_metal", icon: "crop" },
-          { id: "o_ring", icon: "circle-check" },
+          { id: "o_ring", tool_id: "o_ring", icon: "circle-check" },
           { id: "shaft", tool_id: "shaft", icon: "arrows-up-down" },
           { id: "key", tool_id: "key", icon: "key" },
           { id: "weld", tool_id: "weld", icon: "medal" },
@@ -95,7 +95,7 @@ module DiscourseMechbox
           { id: "clutch", tool_id: "clutch", icon: "share-nodes" },
           { id: "belt", tool_id: "belt", icon: "minus" },
           { id: "chain", tool_id: "chain", icon: "link" },
-          { id: "structural", icon: "gauge" },
+          { id: "structural", tool_id: "structural", icon: "gauge" },
         ],
       },
       {

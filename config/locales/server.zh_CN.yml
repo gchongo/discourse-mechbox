@@ -124,6 +124,9 @@ zh_CN:
       cylinder:
         name: "液压/气动缸"
         description: "按 MPa-mm-N 单位计算缸面积、推力、流量速度、载荷余量与活塞杆屈曲校核。"
+      o_ring:
+        name: "O 型圈密封"
+        description: "Parker / ISO 3601 简化沟槽校核：压缩率、填充率、挤出间隙与材料温度。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

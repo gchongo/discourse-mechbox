@@ -34,6 +34,8 @@ module DiscourseMechbox
       beam
       sheet_metal
       cylinder
+      o_ring
+      structural
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -686,6 +688,33 @@ module DiscourseMechbox
           { key: "retract_force_n", type: "number" },
           { key: "extend_velocity_mm_s", type: "number" },
           { key: "buckling_load_n", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "o_ring" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "cross_section_mm", type: "number", required: true },
+          { key: "groove_diameter_mm", type: "number", required: true },
+          { key: "groove_width_mm", type: "number", required: true },
+          { key: "compression_percent", type: "number", required: true },
+          { key: "stretch_percent", type: "number", required: false },
+          { key: "pressure_mpa", type: "number", required: false },
+          { key: "extrusion_gap_mm", type: "number", required: false },
+          { key: "material", type: "string", required: false },
+          { key: "operating_temp_c", type: "number", required: false },
+          { key: "stroke_speed_m_s", type: "number", required: false },
+          { key: "thermal_expansion", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "groove_depth_mm", type: "number" },
+          { key: "compression_mm", type: "number" },
+          { key: "fill_percent", type: "number" },
+          { key: "width_ok", type: "boolean" },
+          { key: "extrusion_pass", type: "boolean" },
+          { key: "max_allow_pressure_mpa", type: "number" },
           { key: "pass", type: "boolean" },
         ],
       },

@@ -508,7 +508,9 @@
 .mechbox-fatigue,
 .mechbox-beam,
 .mechbox-sheet-metal,
-.mechbox-cylinder {
+.mechbox-cylinder,
+.mechbox-o-ring,
+.mechbox-structural {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -1009,6 +1011,20 @@
 
   &__checkbox {
     margin: 0;
+  }
+
+  &__presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.65rem;
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+  }
+
+  &__recommend {
+    margin-bottom: 0.75rem;
   }
 }
 

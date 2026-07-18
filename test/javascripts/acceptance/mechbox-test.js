@@ -263,10 +263,26 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "gauge",
                   available: true,
                 },
+                {
+                  id: "o_ring",
+                  tool_id: "o_ring",
+                  name: "O-ring seal",
+                  description: "Compression / fill",
+                  icon: "circle-check",
+                  available: true,
+                },
+                {
+                  id: "structural",
+                  tool_id: "structural",
+                  name: "Structural / fluid",
+                  description: "Pipe / plate / modal",
+                  icon: "gauge",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 25, catalog: 57 },
+          counts: { available: 27, catalog: 57 },
         },
       });
     });
@@ -592,6 +608,34 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "bore_diameter_mm", type: "number" },
           { key: "pressure_mpa", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/o_ring", () => {
+      return helper.response(200, {
+        tool_id: "o_ring",
+        name: "O-ring seal",
+        description: "Compression / fill.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "cross_section_mm", type: "number" },
+          { key: "groove_diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/structural", () => {
+      return helper.response(200, {
+        tool_id: "structural",
+        name: "Structural / fluid",
+        description: "Pipe / plate / modal.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "analysis_type", type: "string" },
+          { key: "diameter_mm", type: "number" },
         ],
       });
     });
@@ -1063,6 +1107,42 @@ acceptance("MechBox | safe page", function (needs) {
             retract_velocity_mm_s: 202.1,
             estimate_only: true,
             pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "o_ring") {
+        return helper.response(200, {
+          tool_id: "o_ring",
+          outputs: {
+            calc_mode: "simple",
+            groove_depth_mm: 2.824,
+            compression_mm: 0.706,
+            compression_percent: 20,
+            fill_percent: 72.199,
+            compression_ok: true,
+            width_ok: true,
+            fill_ok: true,
+            free_id_mm: 18.5,
+            installed_id_mm: 18.87,
+            recommended_width_mm: 4.942,
+            notes_key: "static",
+            pass: true,
+          },
+        });
+      }
+
+      if (body.tool_id === "structural") {
+        return helper.response(200, {
+          tool_id: "structural",
+          outputs: {
+            calc_mode: "simple",
+            analysis_type: "pipe_flow",
+            velocity_mps: 0.679,
+            reynolds: 16909,
+            pressure_drop_kpa: 2.816,
+            total_pressure_drop_kpa: 2.816,
+            flow_regime: "turbulent",
           },
         });
       }
@@ -1714,5 +1794,50 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows external load");
+  });
+
+  test("opens and calculates on the o-ring seal page", async function (assert) {
+    await visit("/mechbox?tool_id=o_ring");
+
+    await waitFor(".mechbox-o-ring");
+    assert.dom(".mechbox-o-ring__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-o-ring__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='cross_section_mm']").exists("cross section input is rendered");
+    assert.dom("input[name='groove_diameter_mm']").exists("groove diameter is rendered");
+    assert.dom(".mechbox-o-ring__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='compression_percent']", "20");
+    await click(".mechbox-o-ring__calculate-btn");
+    await waitFor(".mechbox-o-ring__status");
+
+    assert.dom(".mechbox-o-ring__status").hasClass("is-pass");
+    assert.dom(".mechbox-o-ring__results-body").includesText("72.2");
+
+    await click(".mechbox-o-ring__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows extrusion gap");
+  });
+
+  test("opens and calculates on the structural page", async function (assert) {
+    await visit("/mechbox?tool_id=structural");
+
+    await waitFor(".mechbox-structural");
+    assert.dom(".mechbox-structural__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-structural__formula-bar").exists("formula bar is rendered");
+    assert.dom("select[name='analysis_type']").exists("analysis type is rendered");
+    assert.dom("input[name='diameter_mm']").exists("pipe diameter is rendered");
+    assert.dom(".mechbox-structural__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='flow_rate_lpm']", "20");
+    await click(".mechbox-structural__calculate-btn");
+    await waitFor(".mechbox-structural__status");
+
+    assert.dom(".mechbox-structural__results-body").includesText("2.82");
+
+    await click(".mechbox-structural__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows local loss");
   });
 });

@@ -124,6 +124,9 @@ en:
       cylinder:
         name: "Hydraulic / pneumatic cylinder"
         description: "Cylinder area, force, flow velocity, load margin, and rod buckling checks using MPa-mm-N units."
+      o_ring:
+        name: "O-ring seal"
+        description: "Parker / ISO 3601 simplified gland check: compression, fill, extrusion gap, and material temperature."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

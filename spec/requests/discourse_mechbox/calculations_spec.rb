@@ -1654,6 +1654,161 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["cushion_force_n"]).to be_present
   end
 
+  it "runs simple o_ring gland check matching MechBox defaults" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "o_ring",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             cross_section_mm: 3.53,
+             groove_diameter_mm: 18.5,
+             groove_width_mm: 4.8,
+             compression_percent: 20,
+             stretch_percent: 2,
+             pressure_mpa: 0,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["groove_depth_mm"]).to be_within(0.001).of(2.824)
+    expect(outputs["compression_mm"]).to be_within(0.001).of(0.706)
+    expect(outputs["fill_percent"]).to be_within(0.05).of(72.199)
+    expect(outputs["width_ok"]).to eq(true)
+    expect(outputs["fill_ok"]).to eq(true)
+    expect(outputs["compression_ok"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+    expect(outputs["free_id_mm"]).to be_within(0.001).of(18.5)
+    expect(outputs["installed_id_mm"]).to be_within(0.001).of(18.87)
+  end
+
+  it "runs full o_ring extrusion and temperature checks" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "o_ring",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             cross_section_mm: 3.53,
+             groove_diameter_mm: 18.5,
+             groove_width_mm: 4.8,
+             compression_percent: 20,
+             pressure_mpa: 5,
+             extrusion_gap_mm: 0.1,
+             material: "nbr",
+             operating_temp_c: 25,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["max_extrusion_gap_mm"]).to be_within(0.001).of(0.21)
+    expect(outputs["extrusion_pass"]).to eq(true)
+    expect(outputs["temp_pass"]).to eq(true)
+    expect(outputs["material"]).to eq("nbr")
+  end
+
+  it "runs professional o_ring pressure limit from extrusion gap" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "o_ring",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             cross_section_mm: 3.53,
+             groove_diameter_mm: 18.5,
+             groove_width_mm: 4.8,
+             compression_percent: 20,
+             pressure_mpa: 20,
+             extrusion_gap_mm: 0.15,
+             stroke_speed_m_s: 0.2,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["max_allow_pressure_mpa"]).to be_within(0.01).of(58.333)
+    expect(outputs["pressure_pass"]).to eq(true)
+    expect(outputs["speed_pass"]).to eq(true)
+  end
+
+  it "runs simple structural pipe Darcy-Weisbach drop" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "structural",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             analysis_type: "pipe_flow",
+             diameter_mm: 25,
+             length_m: 10,
+             flow_rate_lpm: 20,
+             density_kg_m3: 998,
+             dynamic_viscosity_pa_s: 1.002e-3,
+             roughness_mm: 0.045,
+             local_loss_k: 5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["analysis_type"]).to eq("pipe_flow")
+    expect(outputs["length_m"]).to eq(10)
+    expect(outputs["velocity_mps"]).to be_within(0.001).of(0.679)
+    expect(outputs["pressure_drop_kpa"]).to be_within(0.05).of(2.816)
+    expect(outputs["total_pressure_drop_kpa"]).to eq(outputs["pressure_drop_kpa"])
+    expect(outputs["local_loss_k"]).to eq(0.0)
+  end
+
+  it "runs simple structural plate buckling" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "structural",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             analysis_type: "plate_buckling",
+             edge_condition: "ssss",
+             thickness_mm: 2,
+             width_mm: 200,
+             length_mm: 400,
+             applied_stress_mpa: 50,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["analysis_type"]).to eq("plate_buckling")
+    expect(outputs["buckling_coefficient"]).to be_within(0.001).of(4.4)
+    expect(outputs["critical_stress_mpa"]).to be_within(0.1).of(83.512)
+    expect(outputs["safety_factor"]).to be_within(0.01).of(1.67)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs simple structural SDOF modal frequency" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "structural",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             analysis_type: "modal",
+             case_id: "sdof",
+             stiffness_n_m: 10_000,
+             mass_kg: 10,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["analysis_type"]).to eq("modal")
+    expect(outputs["modal"]["fn_hz"]).to be_within(0.02).of(5.033)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
