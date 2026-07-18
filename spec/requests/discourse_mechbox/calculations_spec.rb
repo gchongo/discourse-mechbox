@@ -1809,6 +1809,74 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["modal"]["fn_hz"]).to be_within(0.02).of(5.033)
   end
 
+  it "runs simple manufacturing machining allowance" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "manufacturing",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             analysis_type: "machining",
+             nominal_diameter_mm: 50,
+             length_mm: 100,
+             tolerance_grade: "medium",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["analysis_type"]).to eq("machining")
+    expect(outputs["operations"]).to eq(%w[rough finish])
+    expect(outputs["end_face_allowance_mm"]).to eq(1.0)
+    expect(outputs["total_radial_allowance_mm"]).to be_within(0.001).of(2.2)
+    expect(outputs["recommended_stock_diameter_mm"]).to be_within(0.001).of(54.4)
+    expect(outputs["recommended_stock_length_mm"]).to be_within(0.001).of(102.0)
+    expect(outputs["details"].length).to eq(2)
+  end
+
+  it "runs full manufacturing machining with grinding" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "manufacturing",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             analysis_type: "machining",
+             nominal_diameter_mm: 50,
+             length_mm: 100,
+             tolerance_grade: "medium",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["operations"]).to eq(%w[rough semi finish])
+    expect(outputs["grinding_allowance_mm"]).to be_within(0.001).of(0.2)
+    expect(outputs["end_face_allowance_mm"]).to eq(2.0)
+  end
+
+  it "runs simple manufacturing casting draft angle" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "manufacturing",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             analysis_type: "casting",
+             cast_material: "sand_iron",
+             surface_type: "external",
+             depth_mm: 80,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["analysis_type"]).to eq("casting")
+    expect(outputs["draft_angle_deg"]).to be_within(0.01).of(1.679)
+    expect(outputs["total_width_increase_mm"]).to be_within(0.05).of(4.69)
+    expect(outputs["pass"]).to eq(true)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

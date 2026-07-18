@@ -34,6 +34,7 @@ module DiscourseMechbox
       sheet_metal
       cylinder
       o_ring
+      manufacturing
     ].freeze
 
     UNIT_FACTORS = {
@@ -256,6 +257,12 @@ module DiscourseMechbox
     def self.calculate_o_ring(inputs)
       DiscourseMechbox::ORingCalculator.calculate(inputs)
     rescue DiscourseMechbox::ORingCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_manufacturing(inputs)
+      DiscourseMechbox::ManufacturingCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ManufacturingCalculator::Error => error
       raise Error, error.message
     end
 

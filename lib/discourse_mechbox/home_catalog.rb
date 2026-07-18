@@ -103,7 +103,7 @@ module DiscourseMechbox
         tools: [
           { id: "material_selection", tool_id: "material_selection", icon: "book" },
           { id: "heat_treatment", icon: "sun" },
-          { id: "manufacturing", icon: "screwdriver-wrench" },
+          { id: "manufacturing", tool_id: "manufacturing", icon: "screwdriver-wrench" },
           { id: "cylinder", tool_id: "cylinder", icon: "gauge" },
           { id: "materials", tool_id: "materials", icon: "book-open" },
         ],

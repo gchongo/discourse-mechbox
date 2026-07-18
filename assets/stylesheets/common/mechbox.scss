@@ -510,7 +510,8 @@
 .mechbox-sheet-metal,
 .mechbox-cylinder,
 .mechbox-o-ring,
-.mechbox-structural {
+.mechbox-structural,
+.mechbox-manufacturing {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -944,7 +945,8 @@
     }
   }
 
-  &__hint.is-mode-hidden {
+  &__hint.is-mode-hidden,
+  &__hint.is-analysis-hidden {
     display: none !important;
   }
 

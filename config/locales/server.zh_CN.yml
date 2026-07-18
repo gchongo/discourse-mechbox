@@ -127,6 +127,9 @@ zh_CN:
       o_ring:
         name: "O 型圈密封"
         description: "Parker / ISO 3601 简化沟槽校核：压缩率、填充率、挤出间隙与材料温度。"
+      manufacturing:
+        name: "制造工艺"
+        description: "机加工余量（直径段查表）与铸造拔模角估算；长度单位 mm，拔模角单位 °。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

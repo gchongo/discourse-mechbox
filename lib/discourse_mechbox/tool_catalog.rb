@@ -36,6 +36,7 @@ module DiscourseMechbox
       cylinder
       o_ring
       structural
+      manufacturing
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -715,6 +716,33 @@ module DiscourseMechbox
           { key: "width_ok", type: "boolean" },
           { key: "extrusion_pass", type: "boolean" },
           { key: "max_allow_pressure_mpa", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "manufacturing" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "analysis_type", type: "string", required: true },
+          { key: "nominal_diameter_mm", type: "number", required: false },
+          { key: "length_mm", type: "number", required: false },
+          { key: "tolerance_grade", type: "string", required: false },
+          { key: "operations_json", type: "string", required: false },
+          { key: "removal_rate_mm3_min", type: "number", required: false },
+          { key: "cast_material", type: "string", required: false },
+          { key: "surface_type", type: "string", required: false },
+          { key: "depth_mm", type: "number", required: false },
+          { key: "rough_surface", type: "boolean", required: false },
+          { key: "imperfection_factor", type: "number", required: false },
+          { key: "actual_draft_angle_deg", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "analysis_type", type: "string" },
+          { key: "recommended_stock_diameter_mm", type: "number" },
+          { key: "total_radial_allowance_mm", type: "number" },
+          { key: "draft_angle_deg", type: "number" },
+          { key: "total_width_increase_mm", type: "number" },
           { key: "pass", type: "boolean" },
         ],
       },

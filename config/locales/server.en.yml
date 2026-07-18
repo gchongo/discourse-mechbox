@@ -127,6 +127,9 @@ en:
       o_ring:
         name: "O-ring seal"
         description: "Parker / ISO 3601 simplified gland check: compression, fill, extrusion gap, and material temperature."
+      manufacturing:
+        name: "Manufacturing"
+        description: "Machining stock allowance (banded diameter table) and casting draft-angle estimate; lengths in mm, draft in degrees."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

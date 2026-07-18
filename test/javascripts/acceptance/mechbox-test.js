@@ -279,10 +279,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "gauge",
                   available: true,
                 },
+                {
+                  id: "manufacturing",
+                  tool_id: "manufacturing",
+                  name: "Manufacturing",
+                  description: "Machining / casting",
+                  icon: "screwdriver-wrench",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 27, catalog: 57 },
+          counts: { available: 28, catalog: 57 },
         },
       });
     });
@@ -636,6 +644,20 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "analysis_type", type: "string" },
           { key: "diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/manufacturing", () => {
+      return helper.response(200, {
+        tool_id: "manufacturing",
+        name: "Manufacturing",
+        description: "Machining / casting.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "analysis_type", type: "string" },
+          { key: "nominal_diameter_mm", type: "number" },
         ],
       });
     });
@@ -1143,6 +1165,26 @@ acceptance("MechBox | safe page", function (needs) {
             pressure_drop_kpa: 2.816,
             total_pressure_drop_kpa: 2.816,
             flow_regime: "turbulent",
+          },
+        });
+      }
+
+      if (body.tool_id === "manufacturing") {
+        return helper.response(200, {
+          tool_id: "manufacturing",
+          outputs: {
+            calc_mode: "simple",
+            analysis_type: "machining",
+            total_radial_allowance_mm: 2.2,
+            recommended_stock_diameter_mm: 54.4,
+            recommended_stock_length_mm: 122,
+            end_face_allowance_mm: 1,
+            material_removal_volume_mm3: 45000,
+            operations: ["rough", "finish"],
+            details: [
+              { operation: "rough", radial_allowance_mm: 2.0 },
+              { operation: "finish", radial_allowance_mm: 0.2 },
+            ],
           },
         });
       }
@@ -1839,5 +1881,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows local loss");
+  });
+
+  test("opens and calculates on the manufacturing page", async function (assert) {
+    await visit("/mechbox?tool_id=manufacturing");
+
+    await waitFor(".mechbox-manufacturing");
+    assert.dom(".mechbox-manufacturing__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-manufacturing__formula-bar").exists("formula bar is rendered");
+    assert
+      .dom("input[name='nominal_diameter_mm']")
+      .exists("nominal diameter is rendered");
+    assert.dom(".mechbox-manufacturing__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='nominal_diameter_mm']", "50");
+    await click(".mechbox-manufacturing__calculate-btn");
+    await waitFor(".mechbox-manufacturing__status");
+
+    assert.dom(".mechbox-manufacturing__results-body").includesText("54.4");
+
+    await click(".mechbox-manufacturing__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows operations");
   });
 });
