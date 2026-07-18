@@ -123,6 +123,7 @@ module DiscourseMechbox
         "span_ratio" => span_ratio.nil? ? nil : round(span_ratio, 6),
         "slenderness_warning" => slenderness_warning,
         "pass" => stress_pass && deflection_pass,
+        "estimate_only" => calc_mode == "simple",
       }
 
       if uniform_load_case?(case_id)

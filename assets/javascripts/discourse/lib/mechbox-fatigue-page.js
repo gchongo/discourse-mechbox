@@ -431,7 +431,9 @@ export async function mountFatigueWorkbench(panel) {
     "mechbox__workbench-panel--shaft",
     "mechbox__workbench-panel--gear-ratio",
     "mechbox__workbench-panel--gear",
-    "mechbox__workbench-panel--fatigue"
+    "mechbox__workbench-panel--fatigue",
+    "mechbox__workbench-panel--beam",
+    "mechbox__workbench-panel--sheet-metal"
   );
   panel.classList.add("mechbox__workbench-panel--fatigue");
 

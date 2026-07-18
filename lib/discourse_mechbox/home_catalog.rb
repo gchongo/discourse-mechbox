@@ -84,8 +84,8 @@ module DiscourseMechbox
       {
         id: "drive",
         tools: [
-          { id: "beam", icon: "minus" },
-          { id: "sheet_metal", icon: "crop" },
+          { id: "beam", tool_id: "beam", icon: "minus" },
+          { id: "sheet_metal", tool_id: "sheet_metal", icon: "crop" },
           { id: "o_ring", icon: "circle-check" },
           { id: "shaft", tool_id: "shaft", icon: "arrows-up-down" },
           { id: "key", tool_id: "key", icon: "key" },

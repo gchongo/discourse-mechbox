@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 22 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue` |
+| ✅ 已接入 | 24 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -32,8 +32,10 @@
 **W4.4 完成** ✅：`shaft` 轴强度（扭转 / 弯扭合成；简化实心 / 完整空心与转角 / 专业 Kt 峰值；疲劳未放行）  
 **W4.5 完成** ✅：`gear` 齿轮强度（简化 Lewis / 完整 ISO 6336 简化 / 专业 ISO↔AGMA）  
 **W4.6 完成** ✅：`fatigue` 疲劳寿命（简化 Basquin / 完整 Miner / 专业 Goodman·Se′）  
-**说明**：Codex 曾越序写入 `beam` / `structural` / `sheet_metal` / `cylinder` 计算核与通用标准页；已回退启用与标准页，计算核保留但未点亮。  
-**下一步**：W4.7 `beam` 梁挠度（计算核已有，补专用页后点亮）
+**W4.7 完成** ✅：`beam` 梁挠度（简化估算 / 完整利用率 / 专业 Kd·Kt；疲劳未放行）  
+**W4.8 完成** ✅：`sheet_metal` 钣金展开（K 因子 / BD；完整法兰 / 专业回弹）  
+**说明**：`structural` / `cylinder` 计算核保留但未点亮。  
+**下一步**：W4.9 `o_ring`（需补 catalog id）或按表继续 `cylinder`
 
 ---
 
@@ -109,8 +111,8 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 4.4 | `shaft` | 轴强度 | ★★★ | ✅ 扭转+弯扭；疲劳未放行 |
 | 4.5 | `gear` | 齿轮强度 | ★★★★ | ✅ Lewis / ISO 6336 简化 / AGMA 对照 |
 | 4.6 | `fatigue` | 疲劳寿命 | ★★★★ | ✅ Basquin + Miner + Goodman |
-| 4.7 | `beam` | 梁挠度 | ★★★ | 计算核已有，未点亮 |
-| 4.8 | `sheet_metal` | 钣金展开 | ★★ | 计算核已有，未点亮 |
+| 4.7 | `beam` | 梁挠度 | ★★★ | ✅ 简/全/专；疲劳未放行 |
+| 4.8 | `sheet_metal` | 钣金展开 | ★★ | ✅ K 因子 / BD + 法兰 / 回弹 |
 | 4.9 | `o_ring` | O 型圈 | ★★ | 需补 catalog id |
 | 4.10 | `cylinder` | 液压/气缸 | ★★ | 计算核已有，未点亮 |
 | 4.11 | `materials` | 材料库 | ★★ | 只读查表可先 |

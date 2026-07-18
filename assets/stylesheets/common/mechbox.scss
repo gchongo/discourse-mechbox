@@ -505,7 +505,9 @@
 .mechbox-shaft,
 .mechbox-gear-ratio,
 .mechbox-gear,
-.mechbox-fatigue {
+.mechbox-fatigue,
+.mechbox-beam,
+.mechbox-sheet-metal {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -641,7 +643,10 @@
     background: var(--primary-very-low);
 
     &.is-mode-hidden,
-    &.is-analysis-hidden {
+    &.is-analysis-hidden,
+    &.is-case-hidden,
+    &.is-section-hidden,
+    &.is-method-hidden {
       display: none !important;
     }
 
@@ -937,6 +942,58 @@
 
   &__hint.is-mode-hidden {
     display: none !important;
+  }
+
+  &__k-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    min-width: 0;
+
+    .mechbox__inputs {
+      flex: 1 1 5rem;
+      min-width: 0;
+    }
+  }
+
+  &__segments {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin: 0.35rem 0 0.65rem;
+  }
+
+  &__segment-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    background: var(--secondary);
+
+    .mechbox__inputs {
+      width: auto;
+      min-width: 5.5rem;
+    }
+  }
+
+  &__segment-field {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+
+    .mechbox__inputs {
+      width: 5.5rem;
+    }
+  }
+
+  &__seg-add {
+    margin-bottom: 0.75rem;
   }
 }
 

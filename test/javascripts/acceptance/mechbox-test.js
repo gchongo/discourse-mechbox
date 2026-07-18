@@ -239,10 +239,26 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "chart-line",
                   available: true,
                 },
+                {
+                  id: "beam",
+                  tool_id: "beam",
+                  name: "Beam deflection",
+                  description: "Euler-Bernoulli",
+                  icon: "minus",
+                  available: true,
+                },
+                {
+                  id: "sheet_metal",
+                  tool_id: "sheet_metal",
+                  name: "Sheet metal unfold",
+                  description: "K-factor / BD",
+                  icon: "crop",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 22, catalog: 57 },
+          counts: { available: 24, catalog: 57 },
         },
       });
     });
@@ -523,6 +539,37 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "material", type: "string" },
           { key: "stress_amplitude_mpa", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/beam", () => {
+      return helper.response(200, {
+        tool_id: "beam",
+        name: "Beam deflection",
+        description: "Euler-Bernoulli.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "case_id", type: "string" },
+          { key: "section_type", type: "string" },
+          { key: "span_length_mm", type: "number" },
+          { key: "load_n", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/sheet_metal", () => {
+      return helper.response(200, {
+        tool_id: "sheet_metal",
+        name: "Sheet metal unfold",
+        description: "K-factor / BD.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "method", type: "string" },
+          { key: "thickness_mm", type: "number" },
+          { key: "segments_json", type: "string" },
         ],
       });
     });
@@ -940,6 +987,43 @@ acceptance("MechBox | safe page", function (needs) {
             endurance_limit_mpa: 280,
             estimate_only: true,
             pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "beam") {
+        return helper.response(200, {
+          tool_id: "beam",
+          outputs: {
+            calc_mode: "simple",
+            moment_nmm: 250000,
+            stress_mpa: 94.314,
+            deflection_mm: 0.635882,
+            inertia_mm4: 39760.8,
+            section_modulus_mm3: 2650.72,
+            estimate_only: true,
+            stress_pass: true,
+            deflection_pass: false,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "sheet_metal") {
+        return helper.response(200, {
+          tool_id: "sheet_metal",
+          outputs: {
+            calc_mode: "simple",
+            method: "k_factor",
+            flat_length_mm: 103.134,
+            bend_count: 1,
+            estimate_only: true,
+            pass: false,
+            details: [
+              { index: 0, type: "straight", contribution_mm: 50 },
+              { index: 1, type: "bend", contribution_mm: 3.134 },
+              { index: 2, type: "straight", contribution_mm: 50 },
+            ],
           },
         });
       }
@@ -1522,5 +1606,51 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows load spectrum");
+  });
+
+  test("opens and calculates on the beam deflection page", async function (assert) {
+    await visit("/mechbox?tool_id=beam");
+
+    await waitFor(".mechbox-beam");
+    assert.dom(".mechbox-beam__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-beam__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='span_length_mm']").exists("span input is rendered");
+    assert.dom("input[name='load_n']").exists("point load input is rendered");
+    assert.dom(".mechbox-beam__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='load_n']", "2000");
+    await click(".mechbox-beam__calculate-btn");
+    await waitFor(".mechbox-beam__status");
+
+    assert.dom(".mechbox-beam__status").hasClass("is-attention");
+    assert.dom(".mechbox-beam__results-body").includesText("94.31");
+
+    await click(".mechbox-beam__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows allowable fields");
+  });
+
+  test("opens and calculates on the sheet metal unfold page", async function (assert) {
+    await visit("/mechbox?tool_id=sheet_metal");
+
+    await waitFor(".mechbox-sheet-metal");
+    assert.dom(".mechbox-sheet-metal__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-sheet-metal__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='thickness_mm']").exists("thickness input is rendered");
+    assert.dom(".mechbox-sheet-metal__segments").exists("segment list is rendered");
+    assert.dom(".mechbox-sheet-metal__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='thickness_mm']", "1.5");
+    await click(".mechbox-sheet-metal__calculate-btn");
+    await waitFor(".mechbox-sheet-metal__status");
+
+    assert.dom(".mechbox-sheet-metal__status").hasClass("is-attention");
+    assert.dom(".mechbox-sheet-metal__results-body").includesText("103.13");
+
+    await click(".mechbox-sheet-metal__mode-tab[data-calc-mode='professional']");
+    assert
+      .dom("[data-calc-show='professional']")
+      .doesNotHaveClass("is-mode-hidden", "professional mode shows springback");
   });
 });

@@ -16,7 +16,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key bolt_group weld spring clutch belt chain tol_convert sigma_analysis fit distribution_chart thermal_expansion interference_fit bearing shaft gear fatigue]
+    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key bolt_group weld spring clutch belt chain tol_convert sigma_analysis fit distribution_chart thermal_expansion interference_fit bearing shaft gear fatigue beam sheet_metal]
     enabled_ids.each do |tool_id|
       tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
       expect(tool["available"]).to eq(true), "expected #{tool_id} to be available"
@@ -25,7 +25,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     gdt_tool = json["builtin_tools"].find { |t| t["tool_id"] == "gdt_position" }
     expect(gdt_tool["available"]).to eq(false)
 
-    %w[beam structural sheet_metal cylinder].each do |tool_id|
+    %w[structural cylinder].each do |tool_id|
       tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
       expect(tool["available"]).to eq(false), "expected #{tool_id} to stay parked"
     end
@@ -134,15 +134,53 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     )
   end
 
-  it "returns parked beam schema as unavailable" do
+  it "returns a beam tool schema" do
     get "/mechbox/api/tools/beam"
 
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
     expect(json["tool_id"]).to eq("beam")
-    expect(json["available"]).to eq(false)
+    expect(json["available"]).to eq(true)
     expect(json["implementation"]).to eq("server_builtin")
+    expect(json["inputs"].map { |input| input["key"] }).to include(
+      "case_id",
+      "section_type",
+      "span_length_mm",
+      "load_n",
+      "line_load_n_per_mm",
+      "dynamic_factor",
+    )
+    expect(json["outputs"].map { |output| output["key"] }).to include(
+      "moment_nmm",
+      "stress_mpa",
+      "deflection_mm",
+      "pass",
+    )
+  end
+
+  it "returns a sheet_metal tool schema" do
+    get "/mechbox/api/tools/sheet_metal"
+
+    expect(response).to have_http_status(:ok)
+    json = response.parsed_body
+
+    expect(json["tool_id"]).to eq("sheet_metal")
+    expect(json["available"]).to eq(true)
+    expect(json["implementation"]).to eq("server_builtin")
+    expect(json["inputs"].map { |input| input["key"] }).to include(
+      "method",
+      "thickness_mm",
+      "bend_radius_mm",
+      "k_factor",
+      "segments_json",
+      "outer_sum_mm",
+    )
+    expect(json["outputs"].map { |output| output["key"] }).to include(
+      "flat_length_mm",
+      "bend_count",
+      "pass",
+    )
   end
 
   it "returns a bolt preload tool schema" do

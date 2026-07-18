@@ -1415,25 +1415,7 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["miner"]["details"].first["effective_stress_mpa"]).to be > 250
   end
 
-  it "keeps parked beam calculator available via registry only" do
-    outputs = DiscourseMechbox::CalculatorRegistry.calculate(
-      tool_id: "beam",
-      inputs: {
-        calc_mode: "simple",
-        material_id: "q235",
-        case_id: "simply_center",
-        section_type: "solid_round",
-        diameter_mm: 30,
-        span_length_mm: 500,
-        load_n: 2000,
-      },
-    )
-
-    expect(outputs["stress_mpa"]).to be_within(0.001).of(94.314)
-    expect(outputs["pass"]).to eq(false)
-  end
-
-  it "rejects parked beam through calculate API" do
+  it "runs simple beam stress and deflection estimate" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "beam",
@@ -1449,7 +1431,146 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
            },
          }
 
-    expect(response).to have_http_status(:unprocessable_entity)
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["stress_mpa"]).to be_within(0.001).of(94.314)
+    expect(outputs["deflection_mm"]).to be_within(0.001).of(0.635882)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["deflection_pass"]).to eq(false)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full beam utilization checks" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "beam",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             material_id: "q235",
+             case_id: "simply_center",
+             section_type: "solid_round",
+             diameter_mm: 30,
+             span_length_mm: 500,
+             load_n: 2000,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["stress_utilization"]).to be_present
+    expect(outputs["deflection_utilization"]).to be_present
+    expect(outputs["min_section_modulus_stress_mm3"]).to be_present
+    expect(outputs["estimate_only"]).to eq(false)
+  end
+
+  it "runs professional beam with dynamic factor and Kt" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "beam",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             material_id: "q235",
+             case_id: "simply_center",
+             section_type: "solid_round",
+             diameter_mm: 30,
+             span_length_mm: 500,
+             load_n: 2000,
+             dynamic_factor: 1.2,
+             stress_concentration: 1.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["dynamic_factor"]).to eq(1.2)
+    expect(outputs["stress_concentration"]).to eq(1.5)
+    expect(outputs["stress_mpa"]).to be > 94.314
+    expect(outputs["fatigue_available"]).to eq(false)
+  end
+
+  it "runs simple sheet_metal K-factor unfold" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sheet_metal",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             method: "k_factor",
+             thickness_mm: 1.5,
+             bend_radius_mm: 1.5,
+             k_factor: 0.33,
+             segments_json: [
+               { type: "straight", length: 50 },
+               { type: "bend", angle: 90 },
+               { type: "straight", length: 50 },
+             ].to_json,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["bend_count"]).to eq(1)
+    expect(outputs["flat_length_mm"]).to be_within(0.01).of(103.134)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full sheet_metal flange check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sheet_metal",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             method: "k_factor",
+             thickness_mm: 1.5,
+             segments_json: [
+               { type: "straight", length: 50 },
+               { type: "bend", angle: 90 },
+               { type: "straight", length: 50 },
+             ].to_json,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["min_flange_rule_mm"]).to be_within(0.01).of(6.0)
+    expect(outputs["flange_pass"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional sheet_metal with springback" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "sheet_metal",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             method: "k_factor",
+             thickness_mm: 1.5,
+             bend_radius_mm: 1.5,
+             springback_deg: 0.5,
+             segments_json: [
+               { type: "straight", length: 50 },
+               { type: "bend", angle: 90 },
+               { type: "straight", length: 50 },
+             ].to_json,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["compensated_flat_length_mm"]).to be > outputs["flat_length_mm"]
+    expect(outputs["radius_pass"]).to eq(true)
+    expect(outputs["springback_estimate_only"]).to eq(true)
   end
 
   it "returns 422 for invalid gear_ratio inputs" do
