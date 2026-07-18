@@ -6,7 +6,7 @@ module DiscourseMechbox
     class Error < StandardError
     end
 
-    MAX_ROWS = 200
+    PAGE_SIZE = 25
 
     def self.calculate(inputs)
       new(inputs).calculate
@@ -17,27 +17,28 @@ module DiscourseMechbox
     end
 
     def calculate
-      calc_mode = normalize_mode(@inputs["calc_mode"] || @inputs["calcMode"])
       query = @inputs["query"].to_s
       system = @inputs["system"].to_s
       sub_series = (@inputs["sub_series"] || @inputs["subSeries"]).to_s
+      priority = @inputs["priority"].to_s
       diameter_min = optional_number("diameter_min", aliases: %w[diameterMin])
       diameter_max = optional_number("diameter_max", aliases: %w[diameterMax])
       row_id = (@inputs["row_id"] || @inputs["rowId"]).to_s.presence
+      page = positive_integer("page") || 1
 
       if row_id
         row = ThreadStandardsLibrary.find(row_id)
         raise Error, I18n.t("mechbox.errors.invalid_input", field: "row_id") if row.nil?
 
         return {
-          "calc_mode" => calc_mode,
           "row" => row,
           "rows" => [row],
           "systems" => ThreadStandardsLibrary.systems,
           "count" => 1,
           "matched_count" => 1,
           "total_count" => ThreadStandardsLibrary.total_count,
-          "truncated" => false,
+          "page" => 1,
+          "page_count" => 1,
         }
       end
 
@@ -46,17 +47,19 @@ module DiscourseMechbox
           query: query,
           system: system.presence,
           sub_series: sub_series.presence,
+          priority: priority.presence,
           diameter_min: diameter_min,
           diameter_max: diameter_max,
         )
-      limit = calc_mode == "simple" ? 50 : MAX_ROWS
-      rows = matched.first(limit)
+      page_count = [(matched.size.to_f / PAGE_SIZE).ceil, 1].max
+      page = [page, page_count].min
+      rows = matched.slice((page - 1) * PAGE_SIZE, PAGE_SIZE) || []
 
       {
-        "calc_mode" => calc_mode,
         "query" => query,
         "system" => system.presence,
         "sub_series" => sub_series.presence,
+        "priority" => priority.presence,
         "diameter_min" => diameter_min,
         "diameter_max" => diameter_max,
         "rows" => rows,
@@ -64,20 +67,12 @@ module DiscourseMechbox
         "count" => rows.size,
         "matched_count" => matched.size,
         "total_count" => ThreadStandardsLibrary.total_count,
-        "truncated" => matched.size > rows.size,
+        "page" => page,
+        "page_count" => page_count,
       }
     end
 
     private
-
-    def normalize_mode(raw)
-      mode = raw.to_s.presence || "simple"
-      return "simple" if mode == "simple"
-      return "full" if mode == "complete" || mode == "full"
-      return "professional" if mode == "professional" || mode == "pro"
-
-      raise Error, I18n.t("mechbox.errors.invalid_input", field: "calc_mode")
-    end
 
     def optional_number(key, aliases: [])
       raw = @inputs[key]
@@ -85,6 +80,18 @@ module DiscourseMechbox
       return nil if raw.nil? || raw == ""
 
       Float(raw)
+    rescue ArgumentError, TypeError
+      raise Error, I18n.t("mechbox.errors.invalid_input", field: key)
+    end
+
+    def positive_integer(key)
+      raw = @inputs[key]
+      return nil if raw.nil? || raw == ""
+
+      value = Integer(raw)
+      raise Error, I18n.t("mechbox.errors.invalid_input", field: key) if value < 1
+
+      value
     rescue ArgumentError, TypeError
       raise Error, I18n.t("mechbox.errors.invalid_input", field: key)
     end

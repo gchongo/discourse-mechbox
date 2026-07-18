@@ -29,16 +29,18 @@ module DiscourseMechbox
       all.find { |r| r["id"] == id.to_s }
     end
 
-    def search(query: nil, system: nil, sub_series: nil, diameter_min: nil, diameter_max: nil)
+    def search(query: nil, system: nil, sub_series: nil, priority: nil, diameter_min: nil, diameter_max: nil)
       q = query.to_s.strip.downcase
       sys = system.to_s.strip
       sub = sub_series.to_s.strip
+      pri = priority.to_s.strip
       dmin = diameter_min.nil? ? nil : Float(diameter_min)
       dmax = diameter_max.nil? ? nil : Float(diameter_max)
 
       all.select do |r|
         next false if sys.present? && r["system"] != sys
         next false if sub.present? && r["subSeries"].to_s != sub
+        next false if pri.present? && pri != "all" && r["priority"].to_s != pri
         next false if dmin && r["nominal"].to_f < dmin
         next false if dmax && r["nominal"].to_f > dmax
         next true if q.blank?

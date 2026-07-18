@@ -1956,15 +1956,15 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["recommendations"].length).to eq(5)
   end
 
-  it "looks up thread_table metric M10 rows" do
+  it "looks up and filters thread_table metric M10 rows" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "thread_table",
            save_record: false,
            inputs: {
-             calc_mode: "full",
              system: "metric",
              query: "M10",
+             priority: 1,
            },
          }
 
@@ -1975,6 +1975,9 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["rows"].first["designation"]).to include("M10")
     expect(outputs["rows"].first["system"]).to eq("metric")
     expect(outputs["rows"].first["pitch"]).to be_a(Numeric)
+    expect(outputs["rows"]).to all(include("priority" => 1))
+    expect(outputs["page"]).to eq(1)
+    expect(outputs["page_count"]).to be >= 1
     expect(outputs["systems"].map { |s| s["id"] }).to include("metric", "unc")
   end
 

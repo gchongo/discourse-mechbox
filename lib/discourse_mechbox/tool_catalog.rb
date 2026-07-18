@@ -822,13 +822,14 @@ module DiscourseMechbox
         category: "fastening",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
         inputs: [
-          { key: "calc_mode", type: "string", required: false },
           { key: "system", type: "string", required: false },
           { key: "query", type: "string", required: false },
           { key: "sub_series", type: "string", required: false },
+          { key: "priority", type: "integer", required: false },
           { key: "diameter_min", type: "number", required: false },
           { key: "diameter_max", type: "number", required: false },
           { key: "row_id", type: "string", required: false },
+          { key: "page", type: "integer", required: false },
         ],
         outputs: [
           { key: "rows", type: "array" },
@@ -836,7 +837,8 @@ module DiscourseMechbox
           { key: "count", type: "number" },
           { key: "matched_count", type: "number" },
           { key: "total_count", type: "number" },
-          { key: "truncated", type: "boolean" },
+          { key: "page", type: "integer" },
+          { key: "page_count", type: "integer" },
         ],
       },
     }.freeze
