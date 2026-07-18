@@ -148,11 +148,15 @@ function mountWorkbenchForm(panel) {
 
   resetWorkbenchIfToolChanged(panel);
 
-  if (panel.dataset.mounted === "true") {
+  if (panel.dataset.mounted === "true" || panel.dataset.mounted === "mounting") {
     return;
   }
 
   const toolId = panel.dataset.toolId;
+  // Custom workbenches mount asynchronously. Mark them before their DOM writes
+  // trigger the global MutationObserver, otherwise every mutation can start a
+  // duplicate mount (and duplicate initial calculate request).
+  panel.dataset.mounted = "mounting";
 
   if (toolId === "gear_ratio") {
     void mountGearRatioWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
