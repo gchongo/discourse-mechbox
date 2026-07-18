@@ -109,6 +109,12 @@ zh_CN:
       structural:
         name: "结构/流体"
         description: "管路 Darcy-Weisbach 压降、薄板弹性屈曲与一阶模态频率前置校核，所有输入显式区分工程单位。"
+      sheet_metal:
+        name: "钣金展开"
+        description: "使用 K 因子折弯补偿或折弯扣除估算展开长度；长度单位为 mm，折弯角单位为度。"
+      cylinder:
+        name: "液压/气动缸"
+        description: "按 MPa-mm-N 单位计算缸面积、推力、流量速度、载荷余量与活塞杆屈曲校核。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

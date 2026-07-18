@@ -30,6 +30,8 @@ module DiscourseMechbox
       bearing
       beam
       structural
+      sheet_metal
+      cylinder
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -551,6 +553,56 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "sheet_metal" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "method", type: "string", required: false },
+          { key: "thickness_mm", type: "number", required: true },
+          { key: "bend_radius_mm", type: "number", required: false },
+          { key: "k_factor", type: "number", required: false },
+          { key: "outer_sum_mm", type: "number", required: false },
+          { key: "springback_deg", type: "number", required: false },
+          { key: "segments_json", type: "string", required: true },
+        ],
+        outputs: [
+          { key: "method", type: "string" },
+          { key: "flat_length_mm", type: "number" },
+          { key: "bend_count", type: "integer" },
+          { key: "flange_pass", type: "boolean" },
+          { key: "radius_pass", type: "boolean" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "cylinder" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "cylinder_type", type: "string", required: false },
+          { key: "bore_diameter_mm", type: "number", required: true },
+          { key: "rod_diameter_mm", type: "number", required: false },
+          { key: "pressure_mpa", type: "number", required: true },
+          { key: "flow_rate_lpm", type: "number", required: false },
+          { key: "velocity_mm_s", type: "number", required: false },
+          { key: "external_load_n", type: "number", required: false },
+          { key: "stroke_length_mm", type: "number", required: false },
+          { key: "yield_strength_mpa", type: "number", required: false },
+          { key: "end_fixity", type: "string", required: false },
+          { key: "efficiency", type: "number", required: false },
+          { key: "load_mass_kg", type: "number", required: false },
+          { key: "acceleration_m_s2", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "type", type: "string" },
+          { key: "extend_force_n", type: "number" },
+          { key: "retract_force_n", type: "number" },
+          { key: "extend_velocity_mm_s", type: "number" },
+          { key: "buckling_load_n", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -565,8 +617,6 @@ module DiscourseMechbox
       "shaft" => { category: "transmission", route: "/shaft" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "fatigue" => { category: "structural", route: "/fatigue" },
-      "sheet_metal" => { category: "structural", route: "/sheet-metal" },
-      "cylinder" => { category: "structural", route: "/cylinder" },
       "materials" => { category: "materials", route: "/materials" },
       "material_selection" => { category: "materials", route: "/material-selection" },
       "units" => { category: "general", route: "/units" },

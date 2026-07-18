@@ -28,6 +28,8 @@ module DiscourseMechbox
       bearing
       beam
       structural
+      sheet_metal
+      cylinder
     ].freeze
 
     UNIT_FACTORS = {
@@ -214,6 +216,18 @@ module DiscourseMechbox
     def self.calculate_structural(inputs)
       DiscourseMechbox::StructuralCalculator.calculate(inputs)
     rescue DiscourseMechbox::StructuralCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_sheet_metal(inputs)
+      DiscourseMechbox::SheetMetalCalculator.calculate(inputs)
+    rescue DiscourseMechbox::SheetMetalCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_cylinder(inputs)
+      DiscourseMechbox::CylinderCalculator.calculate(inputs)
+    rescue DiscourseMechbox::CylinderCalculator::Error => error
       raise Error, error.message
     end
 

@@ -109,6 +109,12 @@ en:
       structural:
         name: "Structural / fluid"
         description: "Pipe Darcy-Weisbach pressure drop, elastic plate buckling, and first-mode frequency pre-checks with explicit engineering units."
+      sheet_metal:
+        name: "Sheet metal unfold"
+        description: "Flat-pattern estimate using K-factor bend allowance or bend deduction; lengths are mm and bend angles are degrees."
+      cylinder:
+        name: "Hydraulic / pneumatic cylinder"
+        description: "Cylinder area, force, flow velocity, load margin, and rod buckling checks using MPa-mm-N units."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

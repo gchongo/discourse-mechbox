@@ -87,6 +87,8 @@ after_initialize do
   require_relative "lib/discourse_mechbox/bearing_calculator"
   require_relative "lib/discourse_mechbox/beam_calculator"
   require_relative "lib/discourse_mechbox/structural_calculator"
+  require_relative "lib/discourse_mechbox/sheet_metal_calculator"
+  require_relative "lib/discourse_mechbox/cylinder_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"
