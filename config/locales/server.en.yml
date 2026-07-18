@@ -145,6 +145,9 @@ en:
       size_chain:
         name: "Size chain"
         description: "One-dimensional linear tolerance stack with worst-case and RSS bounds."
+      gdt_stack:
+        name: "GD&T tolerance stack"
+        description: "Form and location tolerance stack with datum accumulation and MMC/LMC bonus."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

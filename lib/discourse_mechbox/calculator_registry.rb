@@ -40,6 +40,7 @@ module DiscourseMechbox
       material_selection
       thread_table
       size_chain
+      gdt_stack
     ].freeze
 
     UNIT_FACTORS = {
@@ -298,6 +299,12 @@ module DiscourseMechbox
     def self.calculate_size_chain(inputs)
       DiscourseMechbox::SizeChainCalculator.calculate(inputs)
     rescue DiscourseMechbox::SizeChainCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_gdt_stack(inputs)
+      DiscourseMechbox::GdtStackCalculator.calculate(inputs)
+    rescue DiscourseMechbox::GdtStackCalculator::Error => error
       raise Error, error.message
     end
 

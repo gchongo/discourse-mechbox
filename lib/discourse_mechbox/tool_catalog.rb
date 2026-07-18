@@ -42,6 +42,7 @@ module DiscourseMechbox
       material_selection
       thread_table
       size_chain
+      gdt_stack
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -858,6 +859,31 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "gdt_stack" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "type_id", type: "string", required: true },
+          { key: "method", type: "string", required: false },
+          { key: "closed_ring", type: "object", required: true },
+          { key: "rings", type: "array", required: true },
+          { key: "datums", type: "array", required: false },
+          { key: "tolerance_modifier", type: "string", required: false },
+          { key: "bonus_tolerance", type: "number", required: false },
+          { key: "auto_bonus", type: "boolean", required: false },
+        ],
+        outputs: [
+          { key: "type_id", type: "string" },
+          { key: "chain", type: "object" },
+          { key: "pass", type: "boolean" },
+          { key: "modifier", type: "object" },
+          { key: "contributions", type: "array" },
+          { key: "datum_stack", type: "object" },
+          { key: "effective_with_datum", type: "number" },
+          { key: "worst_case", type: "object" },
+          { key: "warnings", type: "array" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -866,7 +892,6 @@ module DiscourseMechbox
       "monte_carlo" => { category: "tolerance", route: "/monte-carlo" },
       "batch_analysis" => { category: "tolerance", route: "/batch" },
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
-      "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "units" => { category: "general", route: "/units" },
       "design_powertrain" => { category: "design", route: "/design/powertrain" },

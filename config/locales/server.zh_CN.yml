@@ -145,6 +145,9 @@ zh_CN:
       size_chain:
         name: "尺寸链"
         description: "一维线性尺寸链：同时计算极值法与 RSS 法的上下界。"
+      gdt_stack:
+        name: "GD&T 公差栈"
+        description: "形位/位置公差栈：支持基准累积与 MMC/LMC 补偿。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

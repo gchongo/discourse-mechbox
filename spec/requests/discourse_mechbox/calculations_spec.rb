@@ -2031,6 +2031,75 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["warnings"]).to include("rss_pass_worst_fail")
   end
 
+  it "calculates a position GD&T stack with datum accumulation and MMC bonus" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gdt_stack",
+           save_record: false,
+           inputs: {
+             type_id: "position",
+             method: "rss",
+             closed_ring: { min: 0, max: 0.15 },
+             rings: [
+               { name: "X 定位", tolerance: 0.05, direction: "right", factor: 1, type: "increasing" },
+               { name: "Y 定位", tolerance: 0.04, direction: "up", factor: 1, type: "increasing" },
+               {
+                 name: "孔径",
+                 tolerance: 0.02,
+                 direction: "right",
+                 factor: 0.5,
+                 type: "increasing",
+                 feature_kind: "hole",
+                 size_tolerance: 0.03,
+               },
+             ],
+             datums: [
+               { label: "A 底面", priority: "primary", tolerance: 0.02 },
+               { label: "B 侧面", priority: "secondary", tolerance: 0.03 },
+             ],
+             tolerance_modifier: "MMC",
+             auto_bonus: true,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["type_id"]).to eq("position")
+    expect(outputs["chain"]["total_tolerance"]).to be_within(0.000001).of(0.064807)
+    expect(outputs["chain"]["pass"]).to eq(true)
+    expect(outputs["modifier"]["bonus"]).to be_within(0.000001).of(0.03)
+    expect(outputs["datum_stack"]["total"]).to be_within(0.000001).of(0.029)
+    expect(outputs["effective_with_datum"]).to be_within(0.000001).of(0.071)
+    expect(outputs["pass"]).to eq(true)
+    expect(outputs["contributions"]).not_to be_empty
+  end
+
+  it "calculates a flatness GD&T stack with RSS form stack" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gdt_stack",
+           save_record: false,
+           inputs: {
+             type_id: "flatness",
+             method: "rss",
+             closed_ring: { min: 0, max: 0.08 },
+             rings: [
+               { name: "面1", tolerance: 0.03, factor: 1, type: "increasing" },
+               { name: "面2", tolerance: 0.025, factor: 1, type: "increasing" },
+               { name: "面3", tolerance: 0.02, factor: 1, type: "increasing" },
+             ],
+             datums: [],
+             tolerance_modifier: "RFS",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["chain"]["total_tolerance"]).to be_within(0.000001).of(0.043875)
+    expect(outputs["chain"]["pass"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {
