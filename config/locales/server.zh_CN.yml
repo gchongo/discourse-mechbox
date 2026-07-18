@@ -148,6 +148,12 @@ zh_CN:
       gdt_stack:
         name: "GD&T 公差栈"
         description: "形位/位置公差栈：支持基准累积与 MMC/LMC 补偿。"
+      monte_carlo:
+        name: "Monte Carlo"
+        description: "可复现种子的尺寸链蒙特卡洛模拟：通过率、直方图与敏感度。"
+      batch_analysis:
+        name: "批量验证"
+        description: "批量对照封闭环预算，用极值法与 RSS 验证多组公差方案。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

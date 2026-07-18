@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 34 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing`、`heat_treatment`、`materials`、`material_selection`、`thread_table`、`size_chain`、`gdt_stack` |
+| ✅ 已接入 | 36 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing`、`heat_treatment`、`materials`、`material_selection`、`thread_table`、`size_chain`、`gdt_stack`、`monte_carlo`、`batch_analysis` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -45,7 +45,9 @@
 **说明**：W4 主线工具已全部点亮。  
 **W5.1 第一阶段完成** ✅：`size_chain` 一维线性尺寸链（可编辑组成环；极值法 + RSS；图形编辑/GD&T 二期）  
 **W5.2 完成** ✅：`gdt_stack`（位置度 2D / 平面度 / 同轴度预设；基准累积 + MMC/LMC）  
-**下一步**：W6 `monte_carlo` 或扩展 `size_chain` 的 ES/EI、高级统计与图形编辑
+**W6.1 完成** ✅：`monte_carlo`（可复现种子；直方图 + 敏感度；对照极值/RSS）  
+**W5.3 完成** ✅：`batch_analysis`（CSV 多方案；预算/带状判定；方法分歧提示）  
+**下一步**：W5.4 `tolerance_allocation`，或扩展 `size_chain` ES/EI 与图形编辑
 
 ---
 
@@ -140,7 +142,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 |------|---------|------|------|------|
 | 5.1 | `size_chain` | 尺寸链编辑器 | ★★★★★ | ✅ 一维 RSS/极值固定链路；图形编辑二期 |
 | 5.2 | `gdt_stack` | GD&T 公差栈 | ★★★★ | ✅ 位置度/平面度/同轴度；基准 + MMC/LMC |
-| 5.3 | `batch_analysis` | 批量验证 | ★★★★ | 依赖 size_chain 数据结构 |
+| 5.3 | `batch_analysis` | 批量验证 | ★★★★ | ✅ CSV 多方案；预算/带状；方法分歧 |
 | 5.4 | `tolerance_allocation` | 公差分配 | ★★★★ | 遗传/Pareto 可后置 |
 
 ---
@@ -149,7 +151,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 
 | 序号 | tool_id | 名称 | 难度 |
 |------|---------|------|------|
-| 6.1 | `monte_carlo` | Monte Carlo | ★★★★ |
+| 6.1 | `monte_carlo` | Monte Carlo | ★★★★ | ✅ 种子可复现；直方图 + 龙卷风敏感度 |
 | 6.2 | `quality` | MSA / SPC / FMEA | ★★★★★ |
 | 6.3 | `analytics` | 回归 / DOE / RSM | ★★★★★ |
 

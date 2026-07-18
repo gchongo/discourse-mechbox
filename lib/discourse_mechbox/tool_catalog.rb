@@ -43,6 +43,8 @@ module DiscourseMechbox
       thread_table
       size_chain
       gdt_stack
+      monte_carlo
+      batch_analysis
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -884,13 +886,51 @@ module DiscourseMechbox
           { key: "warnings", type: "array" },
         ],
       },
+      "monte_carlo" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "closed_ring", type: "object", required: true },
+          { key: "component_rings", type: "array", required: true },
+          { key: "iterations", type: "integer", required: false },
+          { key: "distribution", type: "string", required: false },
+          { key: "custom_k", type: "number", required: false },
+          { key: "truncated_normal", type: "boolean", required: false },
+          { key: "seed", type: "integer", required: false },
+          { key: "include_sensitivity", type: "boolean", required: false },
+        ],
+        outputs: [
+          { key: "mean", type: "number" },
+          { key: "std", type: "number" },
+          { key: "pass_rate", type: "number" },
+          { key: "histogram", type: "array" },
+          { key: "worst", type: "object" },
+          { key: "rss", type: "object" },
+          { key: "sensitivity", type: "object" },
+          { key: "warnings", type: "array" },
+        ],
+      },
+      "batch_analysis" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "target_min", type: "number", required: true },
+          { key: "target_max", type: "number", required: true },
+          { key: "csv", type: "string", required: false },
+          { key: "rows", type: "array", required: false },
+          { key: "pass_mode", type: "string", required: false },
+        ],
+        outputs: [
+          { key: "summary", type: "object" },
+          { key: "results", type: "array" },
+          { key: "pass_mode", type: "string" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
     CLIENT_TOOLS = {
       "statistics" => { category: "tolerance", route: "/statistics" },
-      "monte_carlo" => { category: "tolerance", route: "/monte-carlo" },
-      "batch_analysis" => { category: "tolerance", route: "/batch" },
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "units" => { category: "general", route: "/units" },

@@ -102,6 +102,8 @@ after_initialize do
   require_relative "lib/discourse_mechbox/thread_table_calculator"
   require_relative "lib/discourse_mechbox/size_chain_calculator"
   require_relative "lib/discourse_mechbox/gdt_stack_calculator"
+  require_relative "lib/discourse_mechbox/monte_carlo_calculator"
+  require_relative "lib/discourse_mechbox/batch_analysis_calculator"
   require_relative "lib/discourse_mechbox/calculator_registry"
   require_relative "app/services/discourse_mechbox/metadata_builder"
   require_relative "app/services/discourse_mechbox/calculation_runner"

@@ -38,6 +38,7 @@ const WORKBENCH_PANEL_CLASSES = [
   "mechbox__workbench-panel--thread-table",
   "mechbox__workbench-panel--size-chain",
   "mechbox__workbench-panel--gdt-stack",
+  "mechbox__workbench-panel--monte-carlo",
 ];
 
 function t(key, options) {

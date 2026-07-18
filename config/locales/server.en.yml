@@ -148,6 +148,12 @@ en:
       gdt_stack:
         name: "GD&T tolerance stack"
         description: "Form and location tolerance stack with datum accumulation and MMC/LMC bonus."
+      monte_carlo:
+        name: "Monte Carlo"
+        description: "Seeded Monte Carlo size-chain simulation with pass rate, histogram, and sensitivity."
+      batch_analysis:
+        name: "Batch verification"
+        description: "Validate multiple tolerance schemes with worst-case and RSS against a closed-ring budget."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

@@ -37,6 +37,8 @@ import { mountMaterialSelectionWorkbench } from "../lib/mechbox-material-selecti
 import { mountThreadTableWorkbench } from "../lib/mechbox-thread-table-page";
 import { mountSizeChainWorkbench } from "../lib/mechbox-size-chain-page";
 import { mountGdtStackWorkbench } from "../lib/mechbox-gdt-stack-page";
+import { mountMonteCarloWorkbench } from "../lib/mechbox-monte-carlo-page";
+import { mountBatchAnalysisWorkbench } from "../lib/mechbox-batch-analysis-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -239,6 +241,10 @@ function mountWorkbenchForm(panel) {
     void mountSizeChainWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "gdt_stack") {
     void mountGdtStackWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "monte_carlo") {
+    void mountMonteCarloWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "batch_analysis") {
+    void mountBatchAnalysisWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -352,6 +358,8 @@ const CUSTOM_TOOL_IDS = new Set([
   "thread_table",
   "size_chain",
   "gdt_stack",
+  "monte_carlo",
+  "batch_analysis",
 ]);
 
 async function calculateGeneric(event) {
@@ -396,7 +404,9 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-material-selection__calculate-btn") ||
     button.classList.contains("mechbox-thread-table__calculate-btn") ||
     button.classList.contains("mechbox-size-chain__calculate-btn") ||
-    button.classList.contains("mechbox-gdt-stack__calculate-btn")
+    button.classList.contains("mechbox-gdt-stack__calculate-btn") ||
+    button.classList.contains("mechbox-monte-carlo__calculate-btn") ||
+    button.classList.contains("mechbox-batch-analysis__calculate-btn")
   ) {
     return;
   }

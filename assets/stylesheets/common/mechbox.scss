@@ -1590,6 +1590,344 @@
   }
 }
 
+.mechbox-monte-carlo {
+  &__formula {
+    margin: 0 0 0.75rem;
+    color: var(--primary-medium);
+  }
+
+  &__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+
+  &__card {
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    padding: 0.9rem;
+    background: var(--secondary);
+  }
+
+  &__closed,
+  &__controls {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    margin-bottom: 0.85rem;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__check-field {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    font-size: var(--font-down-1);
+
+    th,
+    td {
+      padding: 0.35rem;
+      border-bottom: 1px solid var(--primary-low);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--primary-medium);
+      font-weight: 600;
+    }
+
+    .mechbox__inputs {
+      width: 100%;
+      min-width: 4.5rem;
+    }
+  }
+
+  &__remove {
+    color: var(--danger);
+  }
+
+  &__calculate-btn {
+    margin-top: 0.75rem;
+  }
+
+  &__error {
+    margin-top: 0.75rem;
+    color: var(--danger);
+  }
+
+  &__pass-badge {
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 6px;
+    font-weight: 600;
+
+    &.is-pass {
+      color: var(--success);
+      background: var(--success-low);
+    }
+
+    &.is-fail {
+      color: var(--danger);
+      background: var(--danger-low);
+    }
+  }
+
+  &__result-list {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0 0 0.75rem;
+  }
+
+  &__result-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1fr) minmax(6rem, 1.2fr);
+    gap: 0.5rem;
+    font-size: var(--font-down-1);
+
+    dt {
+      margin: 0;
+      color: var(--primary-medium);
+    }
+
+    dd {
+      margin: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    &.is-danger dd {
+      color: var(--danger);
+    }
+  }
+
+  &__method-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    margin: 0.75rem 0;
+  }
+
+  &__method-card {
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    padding: 0.7rem;
+    background: var(--primary-very-low);
+
+    &.is-pass {
+      border-color: var(--success);
+    }
+
+    &.is-fail {
+      border-color: var(--danger);
+    }
+
+    h4,
+    p {
+      margin: 0 0 0.35rem;
+    }
+  }
+
+  &__histogram {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 7rem;
+    margin: 0.5rem 0 1rem;
+    padding: 0.35rem;
+    border: 1px solid var(--primary-low);
+    border-radius: 6px;
+    background: var(--primary-very-low);
+  }
+
+  &__hist-col {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+  }
+
+  &__hist-bar {
+    width: 100%;
+    min-height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--tertiary);
+  }
+
+  &__warning {
+    margin: 0.75rem 0;
+    border-radius: 7px;
+    padding: 0.65rem 0.8rem;
+    background: var(--highlight-medium);
+  }
+
+  &__contribution-row {
+    display: grid;
+    grid-template-columns: minmax(6rem, 1fr) minmax(5rem, 2fr) minmax(5rem, auto);
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.4rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__contribution-bar {
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--primary-low);
+  }
+
+  &__contribution-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--tertiary);
+  }
+}
+
+.mechbox-batch-analysis {
+  &__formula {
+    margin: 0 0 0.75rem;
+    color: var(--primary-medium);
+  }
+
+  &__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+
+  &__card {
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    padding: 0.9rem;
+    background: var(--secondary);
+  }
+
+  &__controls {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    margin-bottom: 0.85rem;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__hint {
+    margin: 0 0 0.5rem;
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+  }
+
+  &__csv {
+    width: 100%;
+    min-height: 12rem;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: var(--font-down-1);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  &__error {
+    margin-top: 0.75rem;
+    color: var(--danger);
+  }
+
+  &__summary {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    margin: 0.75rem 0 1rem;
+  }
+
+  &__summary-card {
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    padding: 0.65rem;
+    background: var(--primary-very-low);
+
+    div {
+      color: var(--primary-medium);
+      font-size: var(--font-down-1);
+    }
+
+    strong {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: var(--font-up-1);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 40rem;
+    border-collapse: collapse;
+    font-size: var(--font-down-1);
+
+    th,
+    td {
+      padding: 0.4rem;
+      border-bottom: 1px solid var(--primary-low);
+      text-align: left;
+    }
+
+    th {
+      color: var(--primary-medium);
+      font-weight: 600;
+    }
+
+    td.is-pass {
+      color: var(--success);
+    }
+
+    td.is-fail {
+      color: var(--danger);
+    }
+
+    tr.is-pass {
+      background: color-mix(in srgb, var(--success) 8%, transparent);
+    }
+
+    tr.is-critical {
+      background: color-mix(in srgb, var(--danger) 8%, transparent);
+    }
+
+    tr.is-error {
+      background: var(--primary-very-low);
+    }
+  }
+}
+
 @keyframes mechbox-bolt-fade-in {
   from {
     opacity: 0;

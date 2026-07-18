@@ -29,7 +29,7 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
     expect(json["settings"]["default_unit_system"]).to be_present
     expect(json["settings"]["effective_unit_system"]).to eq("metric")
     expect(json["settings"]["can_manage_templates"]).to eq(false)
-    expect(json["builtin_tools"].size).to eq(35)
+    expect(json["builtin_tools"].size).to eq(37)
     expect(json["categories"]).to be_present
     expect(json["design_chains"]).to eq([])
     expect(json["home"]["available_tools"].map { |t| t["tool_id"] }).to include(
@@ -65,9 +65,11 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
       "thread_table",
       "size_chain",
       "gdt_stack",
+      "monte_carlo",
+      "batch_analysis",
     )
     expect(json["home"]["mech_groups"].map { |g| g["id"] }).not_to include("design-chain")
-    expect(json["home"]["counts"]["available"]).to eq(34)
+    expect(json["home"]["counts"]["available"]).to eq(36)
     expect(json["home"]["counts"]["catalog"]).to be > 40
     expect(json["formula_templates"]).to eq([])
     expect(json["favorite_tool_ids"]).to eq([])

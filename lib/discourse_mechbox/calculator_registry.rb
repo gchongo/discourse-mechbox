@@ -41,6 +41,8 @@ module DiscourseMechbox
       thread_table
       size_chain
       gdt_stack
+      monte_carlo
+      batch_analysis
     ].freeze
 
     UNIT_FACTORS = {
@@ -305,6 +307,18 @@ module DiscourseMechbox
     def self.calculate_gdt_stack(inputs)
       DiscourseMechbox::GdtStackCalculator.calculate(inputs)
     rescue DiscourseMechbox::GdtStackCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_monte_carlo(inputs)
+      DiscourseMechbox::MonteCarloCalculator.calculate(inputs)
+    rescue DiscourseMechbox::MonteCarloCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_batch_analysis(inputs)
+      DiscourseMechbox::BatchAnalysisCalculator.calculate(inputs)
+    rescue DiscourseMechbox::BatchAnalysisCalculator::Error => error
       raise Error, error.message
     end
 

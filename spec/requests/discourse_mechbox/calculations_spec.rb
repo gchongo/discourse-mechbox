@@ -2100,6 +2100,120 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["pass"]).to eq(true)
   end
 
+  it "runs a seeded Monte Carlo gear-gap simulation" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "monte_carlo",
+           save_record: false,
+           inputs: {
+             closed_ring: { name: "间隙 L0", min: 0.1, max: 0.35 },
+             component_rings: [
+               { name: "挡环厚度", size: 40, tolerance: 0.06, type: "decreasing" },
+               { name: "齿轮宽度", size: 15, tolerance: 0.05, type: "decreasing" },
+               { name: "轴径", size: 55.25, tolerance: 0.04, type: "increasing" },
+             ],
+             iterations: 2000,
+             distribution: "normal",
+             truncated_normal: true,
+             seed: 42,
+             include_sensitivity: true,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["iterations"]).to eq(2000)
+    expect(outputs["seed"]).to eq(42)
+    expect(outputs["pass_rate"]).to eq(1.0)
+    expect(outputs["mean"]).to be_within(0.00001).of(0.250046)
+    expect(outputs["std"]).to be_within(0.00001).of(0.014335)
+    expect(outputs["histogram"]).to be_present
+    expect(outputs["worst"]["total_tolerance"]).to be_within(0.000001).of(0.15)
+    expect(outputs["rss"]["total_tolerance"]).to be_within(0.000001).of(0.087749)
+    expect(outputs["sensitivity"]["items"].length).to eq(3)
+    expect(outputs["sensitivity"]["items"].first["spread"]).to be >=
+           outputs["sensitivity"]["items"].last["spread"]
+  end
+
+  it "is deterministic for the same Monte Carlo seed" do
+    params = {
+      tool_id: "monte_carlo",
+      save_record: false,
+      inputs: {
+        closed_ring: { min: 0.1, max: 0.35 },
+        component_rings: [
+          { name: "A", size: 40, tolerance: 0.06, type: "decreasing" },
+          { name: "B", size: 15, tolerance: 0.05, type: "decreasing" },
+          { name: "C", size: 55.25, tolerance: 0.04, type: "increasing" },
+        ],
+        iterations: 800,
+        seed: 7,
+        include_sensitivity: false,
+      },
+    }
+
+    post "/mechbox/api/calculate", params: params
+    first = response.parsed_body["outputs"]
+    post "/mechbox/api/calculate", params: params
+    second = response.parsed_body["outputs"]
+
+    expect(first["mean"]).to eq(second["mean"])
+    expect(first["pass_rate"]).to eq(second["pass_rate"])
+    expect(first["p50"]).to eq(second["p50"])
+  end
+
+  it "batch-validates tolerance schemes against a closed-ring budget" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "batch_analysis",
+           save_record: false,
+           inputs: {
+             target_min: 0,
+             target_max: 0.25,
+             pass_mode: "budget",
+             csv: "方案A,0.06,0.05,0.04\n方案B,0.08,0.06,0.05\n方案C,0.05,0.04,0.03",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["summary"]).to include(
+      "total" => 3,
+      "rss_pass" => 3,
+      "worst_pass" => 3,
+      "fail" => 0,
+    )
+    first = outputs["results"].first
+    expect(first["name"]).to eq("方案A")
+    expect(first["worst_tolerance"]).to be_within(0.000001).of(0.15)
+    expect(first["rss_tolerance"]).to be_within(0.000001).of(0.087749)
+    expect(first["rss_pass"]).to eq(true)
+    expect(first["worst_pass"]).to eq(true)
+  end
+
+  it "marks MechBox band-mode rows and method-caution advice" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "batch_analysis",
+           save_record: false,
+           inputs: {
+             target_min: 0,
+             target_max: 0.25,
+             pass_mode: "band",
+             rows: [{ name: "方案A", tolerances: "0.03,0.02,0.02" }],
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    row = response.parsed_body["outputs"]["results"].first
+    expect(row["worst_tolerance"]).to be_within(0.000001).of(0.07)
+    expect(row["rss_tolerance"]).to be_within(0.001).of(0.041231)
+    expect(row["rss_pass"]).to eq(false)
+    expect(row["worst_pass"]).to eq(false)
+    expect(row["advice_key"]).to eq("stack_method_caution")
+    expect(row["method_ratio"]).to be > 1.5
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

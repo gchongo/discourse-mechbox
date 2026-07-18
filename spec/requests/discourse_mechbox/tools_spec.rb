@@ -21,7 +21,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
       spring clutch belt chain tol_convert sigma_analysis fit distribution_chart
       thermal_expansion interference_fit bearing shaft gear fatigue beam sheet_metal
       cylinder o_ring structural manufacturing heat_treatment materials material_selection
-      thread_table size_chain gdt_stack
+      thread_table size_chain gdt_stack monte_carlo batch_analysis
     ]
     enabled_ids.each do |tool_id|
       tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
@@ -33,6 +33,8 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
 
     expect(json["client_tools"].map { |tool| tool["tool_id"] }).not_to include("size_chain")
     expect(json["client_tools"].map { |tool| tool["tool_id"] }).not_to include("gdt_stack")
+    expect(json["client_tools"].map { |tool| tool["tool_id"] }).not_to include("monte_carlo")
+    expect(json["client_tools"].map { |tool| tool["tool_id"] }).not_to include("batch_analysis")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("thread")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("key")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("bolt_group")
