@@ -23,6 +23,7 @@ import { mountInterferenceFitWorkbench } from "../lib/mechbox-interference-page"
 import { mountBearingWorkbench } from "../lib/mechbox-bearing-page";
 import { mountShaftWorkbench } from "../lib/mechbox-shaft-page";
 import { mountGearRatioWorkbench } from "../lib/mechbox-gear-ratio-page";
+import { mountGearWorkbench } from "../lib/mechbox-gear-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -68,7 +69,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--interference",
     "mechbox__workbench-panel--bearing",
     "mechbox__workbench-panel--shaft",
-    "mechbox__workbench-panel--gear-ratio"
+    "mechbox__workbench-panel--gear-ratio",
+    "mechbox__workbench-panel--gear"
   );
   mount.replaceChildren();
 
@@ -178,6 +180,8 @@ function mountWorkbenchForm(panel) {
     void mountBearingWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "shaft") {
     void mountShaftWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "gear") {
+    void mountGearWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -277,6 +281,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "interference_fit",
   "bearing",
   "shaft",
+  "gear",
 ]);
 
 async function calculateGeneric(event) {
@@ -307,7 +312,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-thermal__calculate-btn") ||
     button.classList.contains("mechbox-interference__calculate-btn") ||
     button.classList.contains("mechbox-bearing__calculate-btn") ||
-    button.classList.contains("mechbox-shaft__calculate-btn")
+    button.classList.contains("mechbox-shaft__calculate-btn") ||
+    button.classList.contains("mechbox-gear__calculate-btn")
   ) {
     return;
   }

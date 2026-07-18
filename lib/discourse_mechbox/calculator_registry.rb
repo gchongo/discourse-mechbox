@@ -27,6 +27,7 @@ module DiscourseMechbox
       interference_fit
       bearing
       shaft
+      gear
       beam
       structural
       sheet_metal
@@ -211,6 +212,12 @@ module DiscourseMechbox
     def self.calculate_shaft(inputs)
       DiscourseMechbox::ShaftCalculator.calculate(inputs)
     rescue DiscourseMechbox::ShaftCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_gear(inputs)
+      DiscourseMechbox::GearCalculator.calculate(inputs)
+    rescue DiscourseMechbox::GearCalculator::Error => error
       raise Error, error.message
     end
 

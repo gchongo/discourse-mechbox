@@ -16,7 +16,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(response).to have_http_status(:ok)
     json = response.parsed_body
 
-    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key bolt_group weld spring clutch belt chain tol_convert sigma_analysis fit distribution_chart thermal_expansion interference_fit bearing shaft]
+    enabled_ids = %w[gear_ratio bolt_clamp_load unit_converter rss_calculation thread key bolt_group weld spring clutch belt chain tol_convert sigma_analysis fit distribution_chart thermal_expansion interference_fit bearing shaft gear]
     enabled_ids.each do |tool_id|
       tool = json["builtin_tools"].find { |t| t["tool_id"] == tool_id }
       expect(tool["available"]).to eq(true), "expected #{tool_id} to be available"
@@ -41,6 +41,7 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("belt")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("chain")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("shaft")
+    expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("gear")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("beam")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("structural")
     expect(json["client_tools"].map { |t| t["tool_id"] }).not_to include("sheet_metal")
@@ -81,6 +82,30 @@ RSpec.describe "DiscourseMechbox tools", type: :request do
       "shear_stress_mpa",
       "equivalent_stress_mpa",
       "twist_angle_deg",
+      "pass",
+    )
+  end
+
+  it "returns a gear tool schema" do
+    get "/mechbox/api/tools/gear"
+
+    expect(response).to have_http_status(:ok)
+    json = response.parsed_body
+
+    expect(json["tool_id"]).to eq("gear")
+    expect(json["available"]).to eq(true)
+    expect(json["implementation"]).to eq("server_builtin")
+    expect(json["inputs"].map { |input| input["key"] }).to include(
+      "module_mm",
+      "pinion_teeth",
+      "face_width_mm",
+      "torque_nm",
+      "iso1328_grade",
+    )
+    expect(json["outputs"].map { |output| output["key"] }).to include(
+      "bending_stress_mpa",
+      "contact_stress_mpa",
+      "safety_bending",
       "pass",
     )
   end

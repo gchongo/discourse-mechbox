@@ -1261,6 +1261,90 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["stress_concentration_bending"]).to eq(1.5)
   end
 
+  it "runs simple gear Lewis estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gear",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             module_mm: 2,
+             pinion_teeth: 24,
+             gear_teeth: 72,
+             face_width_mm: 20,
+             torque_nm: 50,
+             rpm: 1000,
+             material: "st-soft",
+             form_factor: 2.65,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["standard"]).to eq("Lewis")
+    expect(outputs["tangential_force_n"]).to be_within(0.1).of(2083.33)
+    expect(outputs["bending_stress_mpa"]).to be_within(0.1).of(19.65)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full gear ISO 6336 simplified check" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gear",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             module_mm: 2,
+             pinion_teeth: 24,
+             gear_teeth: 72,
+             face_width_mm: 20,
+             torque_nm: 50,
+             rpm: 1000,
+             pinion_material: "st-soft",
+             gear_material: "st-soft",
+             application_factor: 1.25,
+             iso1328_grade: 6,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["standard"]).to eq("ISO6336")
+    expect(outputs["contact_stress_mpa"]).to be > 0
+    expect(outputs["bending_stress_mpa"]).to be > 0
+    expect(outputs["safety_contact"]).to be > 0
+    expect(outputs["factors"]["KV"]).to be >= 1
+  end
+
+  it "runs professional gear ISO and AGMA compare" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "gear",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             module_mm: 2,
+             pinion_teeth: 24,
+             gear_teeth: 72,
+             face_width_mm: 20,
+             torque_nm: 50,
+             rpm: 1000,
+             pinion_material: "case-carburized",
+             gear_material: "case-carburized",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["agma"]).to be_present
+    expect(outputs["compare"]).to be_present
+    expect(outputs["compare"]).to have_key("both_pass")
+  end
+
   it "keeps parked beam calculator available via registry only" do
     outputs = DiscourseMechbox::CalculatorRegistry.calculate(
       tool_id: "beam",

@@ -106,6 +106,9 @@ en:
       shaft:
         name: "Shaft strength"
         description: "Solid/hollow shaft torsion and combined bending-torsion strength; simple, full (hollow / twist gate), and professional (Kt peak; fatigue not released) modes."
+      gear:
+        name: "Gear strength"
+        description: "Spur gear bending and contact strength; Lewis (simple), simplified ISO 6336 (full), and ISO/AGMA compare (professional)."
       beam:
         name: "Beam deflection"
         description: "Euler-Bernoulli beam stress and deflection estimate for supported/cantilever beams; fatigue release is not included in this server version."

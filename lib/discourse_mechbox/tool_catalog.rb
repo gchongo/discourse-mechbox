@@ -29,6 +29,7 @@ module DiscourseMechbox
       interference_fit
       bearing
       shaft
+      gear
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -505,6 +506,35 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "gear" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "module_mm", type: "number", required: true },
+          { key: "pinion_teeth", type: "integer", required: true },
+          { key: "gear_teeth", type: "integer", required: false },
+          { key: "face_width_mm", type: "number", required: true },
+          { key: "torque_nm", type: "number", required: true },
+          { key: "rpm", type: "number", required: false },
+          { key: "pressure_angle_deg", type: "number", required: false },
+          { key: "helix_angle_deg", type: "number", required: false },
+          { key: "pinion_material", type: "string", required: false },
+          { key: "gear_material", type: "string", required: false },
+          { key: "application_factor", type: "number", required: false },
+          { key: "iso1328_grade", type: "integer", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "standard", type: "string" },
+          { key: "tangential_force_n", type: "number" },
+          { key: "bending_stress_mpa", type: "number" },
+          { key: "contact_stress_mpa", type: "number" },
+          { key: "safety_bending", type: "number" },
+          { key: "safety_contact", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
       "beam" => {
         category: "structural",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
@@ -642,7 +672,6 @@ module DiscourseMechbox
       "batch_analysis" => { category: "tolerance", route: "/batch" },
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
-      "gear" => { category: "transmission", route: "/gear" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "fatigue" => { category: "structural", route: "/fatigue" },
       "materials" => { category: "materials", route: "/materials" },

@@ -223,10 +223,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "arrows-up-down",
                   available: true,
                 },
+                {
+                  id: "gear",
+                  tool_id: "gear",
+                  name: "Gear strength",
+                  description: "Lewis / ISO 6336",
+                  icon: "sliders",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 20, catalog: 57 },
+          counts: { available: 21, catalog: 57 },
         },
       });
     });
@@ -477,6 +485,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "analysis_mode", type: "string" },
           { key: "diameter_mm", type: "number" },
+          { key: "torque_nm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/gear", () => {
+      return helper.response(200, {
+        tool_id: "gear",
+        name: "Gear strength",
+        description: "Lewis / ISO 6336.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "module_mm", type: "number" },
+          { key: "pinion_teeth", type: "number" },
           { key: "torque_nm", type: "number" },
         ],
       });
@@ -862,6 +885,24 @@ acceptance("MechBox | safe page", function (needs) {
             pass: true,
             estimate_only: true,
             torsion_pass: true,
+          },
+        });
+      }
+
+      if (body.tool_id === "gear") {
+        return helper.response(200, {
+          tool_id: "gear",
+          outputs: {
+            calc_mode: "simple",
+            standard: "Lewis",
+            tangential_force_n: 2083.3,
+            bending_stress_mpa: 19.65,
+            contact_stress_mpa: 200.7,
+            pitch_line_velocity_mps: 2.513,
+            estimate_only: true,
+            pass: false,
+            bending_pass: true,
+            contact_pass: true,
           },
         });
       }
@@ -1398,5 +1439,27 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows inner diameter");
+  });
+
+  test("opens and calculates on the gear strength page", async function (assert) {
+    await visit("/mechbox?tool_id=gear");
+
+    await waitFor(".mechbox-gear");
+    assert.dom(".mechbox-gear__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-gear__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='module_mm']").exists("module input is rendered");
+    assert.dom(".mechbox-gear__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='torque_nm']", "50");
+    await click(".mechbox-gear__calculate-btn");
+    await waitFor(".mechbox-gear__status");
+
+    assert.dom(".mechbox-gear__status").hasClass("is-attention");
+    assert.dom(".mechbox-gear__results-body").includesText("19.7");
+
+    await click(".mechbox-gear__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows ISO material fields");
   });
 });
