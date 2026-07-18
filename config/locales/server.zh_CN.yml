@@ -103,6 +103,9 @@ zh_CN:
       bearing:
         name: "轴承寿命"
         description: "ISO 281 当量动载荷与 L10/Lnm 寿命，支持简化、完整（X/Y 查表/可靠性）与专业（温度系数/极限转速）模式。"
+      shaft:
+        name: "轴强度"
+        description: "实心/空心轴扭转与弯扭合成强度，支持简化、完整（空心/转角门限）与专业（应力集中峰值；疲劳未放行）模式。"
       beam:
         name: "梁挠度"
         description: "Euler-Bernoulli 梁弯曲应力与挠度前置估算；支持简支/悬臂与常用截面，本服务端版本不输出疲劳放行结论。"

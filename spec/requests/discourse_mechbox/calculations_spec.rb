@@ -1181,502 +1181,117 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["calc_mode"]).to eq("professional")
     expect(outputs["reliability_factor"]).to eq(0.64)
     expect(outputs["temperature_factor"]).to eq(0.75)
-    expected_modified_life = outputs["l10_million_rev"] * 0.64 * (0.75**3)
+    expected_modified_life = outputs["l10_million_rev"] * 0.64 * 1.0 * 0.75
     expect(outputs["modified_life_million_rev"]).to be_within(0.001).of(expected_modified_life)
     expect(outputs["radial_stiffness"]).to be > 0
     expect(outputs["speed_pass"]).to eq(true)
   end
 
-  it "runs simple beam stress and deflection with consistent N-mm-MPa units" do
+  it "runs simple shaft torsion" do
     post "/mechbox/api/calculate",
          params: {
-           tool_id: "beam",
+           tool_id: "shaft",
            save_record: false,
            inputs: {
              calc_mode: "simple",
+             analysis_mode: "torsion",
              material_id: "q235",
-             case_id: "simply_center",
-             section_type: "solid_round",
-             diameter_mm: 30,
-             span_length_mm: 500,
-             load_n: 2000,
+             diameter_mm: 40,
+             torque_nm: 200,
+             length_mm: 500,
            },
          }
 
     expect(response).to have_http_status(:ok)
     outputs = response.parsed_body["outputs"]
-
     expect(outputs["calc_mode"]).to eq("simple")
-    expect(outputs["elastic_modulus_mpa"]).to eq(206_000.0)
-    expect(outputs["allowable_stress_mpa"]).to eq(157.0)
-    expect(outputs["moment_nmm"]).to be_within(0.001).of(250_000.0)
-    expect(outputs["inertia_mm4"]).to be_within(0.001).of(39_760.782)
-    expect(outputs["section_modulus_mm3"]).to be_within(0.001).of(2_650.719)
+    expect(outputs["analysis_mode"]).to eq("torsion")
+    expect(outputs["shear_stress_mpa"]).to be_within(0.1).of(15.915)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs full shaft hollow torsion with twist gate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "shaft",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             analysis_mode: "torsion",
+             material_id: "q235",
+             diameter_mm: 40,
+             inner_diameter_mm: 20,
+             torque_nm: 200,
+             length_mm: 500,
+             max_twist_angle_deg: 0.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["hollow_shaft"]).to eq(true)
+    expect(outputs["shear_stress_mpa"]).to be > 15
+    expect(outputs["twist_angle_deg"]).to be > 0
+    expect(outputs).to have_key("angle_pass")
+  end
+
+  it "runs professional shaft combined with Kt" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "shaft",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             analysis_mode: "combined",
+             material_id: "45",
+             diameter_mm: 40,
+             torque_nm: 200,
+             bending_moment_nm: 150,
+             stress_concentration_bending: 1.5,
+             stress_concentration_torsion: 1.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["equivalent_stress_mpa"]).to be > 0
+    expect(outputs["fatigue_released"]).to eq(false)
+    expect(outputs["stress_concentration_bending"]).to eq(1.5)
+  end
+
+  it "keeps parked beam calculator available via registry only" do
+    outputs = DiscourseMechbox::CalculatorRegistry.calculate(
+      tool_id: "beam",
+      inputs: {
+        calc_mode: "simple",
+        material_id: "q235",
+        case_id: "simply_center",
+        section_type: "solid_round",
+        diameter_mm: 30,
+        span_length_mm: 500,
+        load_n: 2000,
+      },
+    )
+
     expect(outputs["stress_mpa"]).to be_within(0.001).of(94.314)
-    expect(outputs["deflection_mm"]).to be_within(0.00001).of(0.635882)
-    expect(outputs["stress_pass"]).to eq(true)
-    expect(outputs["deflection_pass"]).to eq(false)
     expect(outputs["pass"]).to eq(false)
   end
 
-  it "runs full beam calculations with utilization and required section properties" do
+  it "rejects parked beam through calculate API" do
     post "/mechbox/api/calculate",
          params: {
            tool_id: "beam",
            save_record: false,
            inputs: {
-             calc_mode: "full",
-             case_id: "cantilever_end",
-             section_type: "rectangle",
-             width_mm: 20,
-             height_mm: 30,
+             calc_mode: "simple",
+             material_id: "q235",
+             case_id: "simply_center",
+             section_type: "solid_round",
+             diameter_mm: 30,
              span_length_mm: 500,
              load_n: 2000,
-             elastic_modulus_mpa: 206_000,
-             allowable_stress_mpa: 160,
-             allowable_deflection_mm: 12,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["calc_mode"]).to eq("full")
-    expect(outputs["moment_nmm"]).to be_within(0.001).of(1_000_000.0)
-    expect(outputs["section_modulus_mm3"]).to be_within(0.001).of(3_000.0)
-    expect(outputs["stress_mpa"]).to be_within(0.001).of(333.333333)
-    expect(outputs["stress_utilization"]).to be_within(0.00001).of(2.083333)
-    expect(outputs["min_section_modulus_stress_mm3"]).to be_within(0.001).of(6_250.0)
-    expect(outputs["min_inertia_deflection_mm4"]).to be > 0
-    expect(outputs["pass"]).to eq(false)
-  end
-
-  it "runs professional beam with dynamic factor and stress concentration without fatigue release" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "beam",
-           save_record: false,
-           inputs: {
-             calc_mode: "professional",
-             case_id: "simply_center",
-             section_type: "solid_round",
-             diameter_mm: 30,
-             span_length_mm: 500,
-             load_n: 1000,
-             elastic_modulus_mpa: 206_000,
-             allowable_stress_mpa: 160,
-             allowable_deflection_mm: 0.5,
-             dynamic_factor: 1.5,
-             stress_concentration: 2.0,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["calc_mode"]).to eq("professional")
-    expect(outputs["design_load_n"]).to eq(1500.0)
-    expect(outputs["stress_mpa"]).to be_within(0.001).of(141.471061)
-    expect(outputs["dynamic_factor"]).to eq(1.5)
-    expect(outputs["stress_concentration"]).to eq(2.0)
-    expect(outputs["fatigue_available"]).to eq(false)
-    expect(outputs["engineering_review_required"]).to eq(true)
-  end
-
-  it "flags slender beam geometry for engineering review" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "beam",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             material_id: "q235",
-             case_id: "simply_center",
-             section_type: "solid_round",
-             diameter_mm: 20,
-             span_length_mm: 900,
-             load_n: 50,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["span_ratio"]).to be_within(0.000001).of(45.0)
-    expect(outputs["slenderness_warning"]).to eq(true)
-    expect(outputs["pass"]).to eq(true)
-  end
-
-  it "rejects invalid hollow beam geometry" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "beam",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             material_id: "q235",
-             case_id: "simply_center",
-             section_type: "hollow_round",
-             diameter_mm: 30,
-             inner_diameter_mm: 30,
-             span_length_mm: 500,
-             load_n: 1000,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-  end
-
-  it "uses line load units for uniform beam cases" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "beam",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             material_id: "q235",
-             case_id: "simply_uniform",
-             section_type: "solid_round",
-             diameter_mm: 30,
-             span_length_mm: 500,
-             line_load_n_per_mm: 4,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["line_load_n_per_mm"]).to eq(4.0)
-    expect(outputs["legacy_load_n_used"]).to eq(false)
-    expect(outputs["moment_nmm"]).to be_within(0.001).of(125_000.0)
-    expect(outputs["load_n"]).to be_nil
-  end
-
-  it "runs structural pipe flow with meter length and local losses" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "structural",
-           save_record: false,
-           inputs: {
-             analysis_type: "pipe_flow",
-             calc_mode: "full",
-             diameter_mm: 25,
-             length_m: 10,
-             flow_rate_lpm: 20,
-             roughness_mm: 0.045,
-             local_loss_k: 2,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["analysis_type"]).to eq("pipe_flow")
-    expect(outputs["length_m"]).to eq(10.0)
-    expect(outputs["pressure_drop_kpa"]).to be > 1.0
-    expect(outputs["local_loss_pa"]).to be > 0
-    expect(outputs["total_pressure_drop_kpa"]).to be > outputs["pressure_drop_kpa"]
-    expect(outputs["flow_regime"]).to eq("turbulent")
-  end
-
-  it "runs structural plate buckling with MPa-mm units" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "structural",
-           save_record: false,
-           inputs: {
-             analysis_type: "plate_buckling",
-             calc_mode: "simple",
-             edge_condition: "ssss",
-             thickness_mm: 2,
-             width_mm: 200,
-             length_mm: 400,
-             applied_stress_mpa: 50,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["analysis_type"]).to eq("plate_buckling")
-    expect(outputs["critical_stress_mpa"]).to be_within(0.1).of(83.56)
-    expect(outputs["safety_factor"]).to be_within(0.01).of(1.67)
-    expect(outputs["pass"]).to eq(false)
-  end
-
-  it "runs structural modal beam frequency without Pa/MPa unit inflation" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "structural",
-           save_record: false,
-           inputs: {
-             analysis_type: "modal",
-             calc_mode: "simple",
-             case_id: "beam_ss",
-             span_length_mm: 500,
-             diameter_mm: 30,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["analysis_type"]).to eq("modal")
-    expect(outputs["modal"]["fn_hz"]).to be_within(0.1).of(7.71)
-  end
-
-  it "rejects invalid structural pipe geometry" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "structural",
-           save_record: false,
-           inputs: {
-             analysis_type: "pipe_flow",
-             calc_mode: "simple",
-             diameter_mm: 0,
-             length_m: 10,
-             flow_rate_lpm: 20,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-  end
-
-  it "runs simple sheet metal K-factor unfold with mm-degree units" do
-    segments = [
-      { type: "straight", length: 50 },
-      { type: "bend", angle: 90 },
-      { type: "straight", length: 50 },
-    ]
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "sheet_metal",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             thickness_mm: 1.5,
-             bend_radius_mm: 1.5,
-             k_factor: 0.33,
-             segments_json: segments.to_json,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["method"]).to eq("k_factor")
-    expect(outputs["bend_count"]).to eq(1)
-    expect(outputs["flat_length_mm"]).to be_within(0.000001).of(103.133849)
-    expect(outputs["details"][1]["bend_allowance_mm"]).to be_within(0.000001).of(3.133849)
-    expect(outputs["estimate_only"]).to eq(true)
-    expect(outputs["pass"]).to eq(false)
-  end
-
-  it "runs full sheet metal flange and radius gates" do
-    segments = [
-      { type: "straight", length: 50 },
-      { type: "bend", angle: 90 },
-      { type: "straight", length: 50 },
-    ]
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "sheet_metal",
-           save_record: false,
-           inputs: {
-             calc_mode: "full",
-             thickness_mm: 1.5,
-             bend_radius_mm: 1.5,
-             segments_json: segments.to_json,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["min_flange_rule_mm"]).to eq(6.0)
-    expect(outputs["min_straight_length_mm"]).to eq(50.0)
-    expect(outputs["flange_pass"]).to eq(true)
-    expect(outputs["pass"]).to eq(true)
-  end
-
-  it "runs professional sheet metal springback as estimate-only compensation" do
-    segments = [
-      { type: "straight", length: 50 },
-      { type: "bend", angle: 90 },
-      { type: "straight", length: 50 },
-    ]
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "sheet_metal",
-           save_record: false,
-           inputs: {
-             calc_mode: "professional",
-             thickness_mm: 1.5,
-             bend_radius_mm: 1.5,
-             springback_deg: 0.5,
-             segments_json: segments.to_json,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["springback_estimate_only"]).to eq(true)
-    expect(outputs["compensated_flat_length_mm"]).to be > outputs["flat_length_mm"]
-    expect(outputs["radius_pass"]).to eq(true)
-  end
-
-  it "rejects invalid sheet metal segment geometry" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "sheet_metal",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             thickness_mm: 1.5,
-             segments_json: [{ type: "straight", length: -10 }].to_json,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "sheet_metal",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             thickness_mm: "NaN",
-             segments_json: [{ type: "straight", length: 10 }].to_json,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-  end
-
-  it "runs simple cylinder force and velocity with MPa-mm-N units" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 20,
-             pressure_mpa: 16,
-             flow_rate_lpm: 20,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["bore_area_mm2"]).to be_within(0.000001).of(1963.495408)
-    expect(outputs["annular_area_mm2"]).to be_within(0.000001).of(1649.336144)
-    expect(outputs["extend_force_n"]).to be_within(0.000001).of(31_415.926536)
-    expect(outputs["retract_force_n"]).to be_within(0.000001).of(26_389.378291)
-    expect(outputs["extend_velocity_mm_s"]).to be_within(0.000001).of(169.765273)
-    expect(outputs["estimate_only"]).to eq(true)
-    expect(outputs["pass"]).to eq(false)
-  end
-
-  it "runs full cylinder load margin and rod buckling check" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "full",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 20,
-             pressure_mpa: 16,
-             flow_rate_lpm: 20,
-             external_load_n: 20_000,
-             stroke_length_mm: 300,
-             end_fixity: "pinned_pinned",
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["load_pass"]).to eq(true)
-    expect(outputs["buckling_load_n"]).to be > 20_000
-    expect(outputs["buckling"]["effective_length_mm"]).to eq(300.0)
-    expect(outputs["buckling_pass"]).to eq(true)
-    expect(outputs["pass"]).to eq(true)
-  end
-
-  it "derates pneumatic cylinder force and rejects efficiency above one" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "full",
-             cylinder_type: "pneumatic",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 20,
-             pressure_mpa: 1.0,
-             external_load_n: 1500,
-             stroke_length_mm: 300,
-             efficiency: 0.5,
-           },
-         }
-
-    expect(response).to have_http_status(:ok)
-    outputs = response.parsed_body["outputs"]
-
-    expect(outputs["type"]).to eq("pneumatic")
-    expect(outputs["efficiency"]).to eq(0.5)
-    expect(outputs["extend_force_n"]).to be_within(0.000001).of(981.747704)
-    expect(outputs["load_pass"]).to eq(false)
-    expect(outputs["pass"]).to eq(false)
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "full",
-             cylinder_type: "pneumatic",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 20,
-             pressure_mpa: 1.0,
-             efficiency: 1.05,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-  end
-
-  it "rejects invalid cylinder rod diameter" do
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 50,
-             pressure_mpa: 16,
-           },
-         }
-
-    expect(response).to have_http_status(:unprocessable_entity)
-
-    post "/mechbox/api/calculate",
-         params: {
-           tool_id: "cylinder",
-           save_record: false,
-           inputs: {
-             calc_mode: "simple",
-             bore_diameter_mm: 50,
-             rod_diameter_mm: 20,
-             pressure_mpa: "NaN",
            },
          }
 

@@ -178,11 +178,8 @@ module DiscourseMechbox
             temperature_factor(temp)
       end
 
-      # Temperature derates effective dynamic capacity, so its impact follows
-      # the bearing life exponent: Lnm = L10 * a1 * aISO * a2^p.
-      temperature_life_factor =
-        calc_mode == "professional" ? a2**life_exponent(bearing_type) : 1.0
-      lnm = l10 * a1 * a_iso * temperature_life_factor
+      # a2 is applied as a life modifier (MechBox / simplified ISO 281 practice).
+      lnm = l10 * a1 * a_iso * a2
       hours = life_hours(lnm, rpm)
 
       min_static = optional_number("min_static_safety", aliases: %w[minStaticSafety]) || 1.5

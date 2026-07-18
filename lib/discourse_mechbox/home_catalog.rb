@@ -84,8 +84,8 @@ module DiscourseMechbox
       {
         id: "drive",
         tools: [
-          { id: "beam", tool_id: "beam", icon: "minus" },
-          { id: "sheet_metal", tool_id: "sheet_metal", icon: "crop" },
+          { id: "beam", icon: "minus" },
+          { id: "sheet_metal", icon: "crop" },
           { id: "o_ring", icon: "circle-check" },
           { id: "shaft", tool_id: "shaft", icon: "arrows-up-down" },
           { id: "key", tool_id: "key", icon: "key" },
@@ -95,7 +95,7 @@ module DiscourseMechbox
           { id: "clutch", tool_id: "clutch", icon: "share-nodes" },
           { id: "belt", tool_id: "belt", icon: "minus" },
           { id: "chain", tool_id: "chain", icon: "link" },
-          { id: "structural", tool_id: "structural", icon: "gauge" },
+          { id: "structural", icon: "gauge" },
         ],
       },
       {
@@ -104,7 +104,7 @@ module DiscourseMechbox
           { id: "material_selection", tool_id: "material_selection", icon: "book" },
           { id: "heat_treatment", icon: "sun" },
           { id: "manufacturing", icon: "screwdriver-wrench" },
-          { id: "cylinder", tool_id: "cylinder", icon: "gauge" },
+          { id: "cylinder", icon: "gauge" },
           { id: "materials", tool_id: "materials", icon: "book-open" },
         ],
       },

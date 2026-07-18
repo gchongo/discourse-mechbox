@@ -103,6 +103,9 @@ en:
       bearing:
         name: "Bearing life"
         description: "ISO 281 equivalent load and L10/Lnm life; simple, full (X/Y lookup / reliability), and professional (temperature / limiting speed) modes."
+      shaft:
+        name: "Shaft strength"
+        description: "Solid/hollow shaft torsion and combined bending-torsion strength; simple, full (hollow / twist gate), and professional (Kt peak; fatigue not released) modes."
       beam:
         name: "Beam deflection"
         description: "Euler-Bernoulli beam stress and deflection estimate for supported/cantilever beams; fatigue release is not included in this server version."

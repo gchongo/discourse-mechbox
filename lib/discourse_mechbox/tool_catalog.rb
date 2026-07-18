@@ -28,10 +28,7 @@ module DiscourseMechbox
       thermal_expansion
       interference_fit
       bearing
-      beam
-      structural
-      sheet_metal
-      cylinder
+      shaft
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -476,6 +473,38 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "shaft" => {
+        category: "transmission",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "analysis_mode", type: "string", required: true },
+          { key: "material_id", type: "string", required: false },
+          { key: "diameter_mm", type: "number", required: true },
+          { key: "inner_diameter_mm", type: "number", required: false },
+          { key: "torque_nm", type: "number", required: true },
+          { key: "length_mm", type: "number", required: false },
+          { key: "bending_moment_nm", type: "number", required: false },
+          { key: "allowable_shear_mpa", type: "number", required: false },
+          { key: "allowable_stress_mpa", type: "number", required: false },
+          { key: "yield_strength_mpa", type: "number", required: false },
+          { key: "shear_modulus_mpa", type: "number", required: false },
+          { key: "max_twist_angle_deg", type: "number", required: false },
+          { key: "strength_theory", type: "string", required: false },
+          { key: "stress_concentration_torsion", type: "number", required: false },
+          { key: "stress_concentration_bending", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "analysis_mode", type: "string" },
+          { key: "shear_stress_mpa", type: "number" },
+          { key: "bending_stress_mpa", type: "number" },
+          { key: "equivalent_stress_mpa", type: "number" },
+          { key: "twist_angle_deg", type: "number" },
+          { key: "min_diameter_mm", type: "number" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
       "beam" => {
         category: "structural",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
@@ -614,7 +643,6 @@ module DiscourseMechbox
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
       "gear" => { category: "transmission", route: "/gear" },
-      "shaft" => { category: "transmission", route: "/shaft" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
       "fatigue" => { category: "structural", route: "/fatigue" },
       "materials" => { category: "materials", route: "/materials" },

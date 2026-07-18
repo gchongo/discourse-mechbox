@@ -85,6 +85,7 @@ after_initialize do
   require_relative "lib/discourse_mechbox/thermal_expansion_calculator"
   require_relative "lib/discourse_mechbox/interference_fit_calculator"
   require_relative "lib/discourse_mechbox/bearing_calculator"
+  require_relative "lib/discourse_mechbox/shaft_calculator"
   require_relative "lib/discourse_mechbox/beam_calculator"
   require_relative "lib/discourse_mechbox/structural_calculator"
   require_relative "lib/discourse_mechbox/sheet_metal_calculator"

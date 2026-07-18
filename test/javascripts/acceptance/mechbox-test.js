@@ -215,10 +215,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "circle-question",
                   available: true,
                 },
+                {
+                  id: "shaft",
+                  tool_id: "shaft",
+                  name: "Shaft strength",
+                  description: "Torsion / combined",
+                  icon: "arrows-up-down",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 19, catalog: 57 },
+          counts: { available: 20, catalog: 57 },
         },
       });
     });
@@ -455,6 +463,21 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "dynamic_load_n", type: "number" },
           { key: "radial_load_n", type: "number" },
           { key: "rpm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/shaft", () => {
+      return helper.response(200, {
+        tool_id: "shaft",
+        name: "Shaft strength",
+        description: "Torsion and combined strength.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "analysis_mode", type: "string" },
+          { key: "diameter_mm", type: "number" },
+          { key: "torque_nm", type: "number" },
         ],
       });
     });
@@ -824,6 +847,21 @@ acceptance("MechBox | safe page", function (needs) {
             life_hours: 3811,
             estimate_only: true,
             pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "shaft") {
+        return helper.response(200, {
+          tool_id: "shaft",
+          outputs: {
+            calc_mode: "simple",
+            analysis_mode: "torsion",
+            shear_stress_mpa: 15.915,
+            twist_angle_deg: 0.144,
+            pass: true,
+            estimate_only: true,
+            torsion_pass: true,
           },
         });
       }
@@ -1317,5 +1355,27 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows static load");
+  });
+
+  test("opens and calculates on the shaft strength page", async function (assert) {
+    await visit("/mechbox?tool_id=shaft");
+
+    await waitFor(".mechbox-shaft");
+    assert.dom(".mechbox-shaft__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-shaft__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='diameter_mm']").exists("diameter input is rendered");
+    assert.dom(".mechbox-shaft__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='torque_nm']", "200");
+    await click(".mechbox-shaft__calculate-btn");
+    await waitFor(".mechbox-shaft__status");
+
+    assert.dom(".mechbox-shaft__status").hasClass("is-attention");
+    assert.dom(".mechbox-shaft__results-body").includesText("15.92");
+
+    await click(".mechbox-shaft__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows inner diameter");
   });
 });

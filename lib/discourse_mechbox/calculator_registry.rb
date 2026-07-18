@@ -26,6 +26,7 @@ module DiscourseMechbox
       thermal_expansion
       interference_fit
       bearing
+      shaft
       beam
       structural
       sheet_metal
@@ -204,6 +205,12 @@ module DiscourseMechbox
     def self.calculate_bearing(inputs)
       DiscourseMechbox::BearingCalculator.calculate(inputs)
     rescue DiscourseMechbox::BearingCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_shaft(inputs)
+      DiscourseMechbox::ShaftCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ShaftCalculator::Error => error
       raise Error, error.message
     end
 

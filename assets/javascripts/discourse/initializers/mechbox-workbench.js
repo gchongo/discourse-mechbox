@@ -21,8 +21,7 @@ import { mountDistributionChartWorkbench } from "../lib/mechbox-distribution-pag
 import { mountThermalExpansionWorkbench } from "../lib/mechbox-thermal-page";
 import { mountInterferenceFitWorkbench } from "../lib/mechbox-interference-page";
 import { mountBearingWorkbench } from "../lib/mechbox-bearing-page";
-import { isStandardTool, mountStandardWorkbench } from "../lib/mechbox-standard-page";
-
+import { mountShaftWorkbench } from "../lib/mechbox-shaft-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -67,7 +66,7 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--thermal",
     "mechbox__workbench-panel--interference",
     "mechbox__workbench-panel--bearing",
-    "mechbox__workbench-panel--standard"
+    "mechbox__workbench-panel--shaft"
   );
   mount.replaceChildren();
 
@@ -173,8 +172,8 @@ function mountWorkbenchForm(panel) {
     );
   } else if (toolId === "bearing") {
     void mountBearingWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
-  } else if (isStandardTool(toolId)) {
-    void mountStandardWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "shaft") {
+    void mountShaftWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -272,10 +271,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "thermal_expansion",
   "interference_fit",
   "bearing",
-  "beam",
-  "structural",
-  "sheet_metal",
-  "cylinder",
+  "shaft",
 ]);
 
 async function calculateGeneric(event) {
@@ -305,7 +301,7 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-thermal__calculate-btn") ||
     button.classList.contains("mechbox-interference__calculate-btn") ||
     button.classList.contains("mechbox-bearing__calculate-btn") ||
-    button.classList.contains("mechbox-standard__calculate-btn")
+    button.classList.contains("mechbox-shaft__calculate-btn")
   ) {
     return;
   }
