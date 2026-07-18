@@ -1333,6 +1333,106 @@
   }
 }
 
+.mechbox-size-chain {
+  &__ring-table-wrap {
+    overflow-x: auto;
+    margin: 0.75rem 0;
+  }
+
+  &__ring-table {
+    width: 100%;
+    min-width: 42rem;
+    border-collapse: collapse;
+    font-size: var(--font-down-1);
+
+    th,
+    td {
+      padding: 0.4rem;
+      border-bottom: 1px solid var(--primary-low);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--primary-medium);
+      font-weight: 600;
+    }
+
+    .mechbox__inputs {
+      width: 100%;
+      min-width: 5rem;
+    }
+  }
+
+  &__remove-ring {
+    color: var(--danger);
+  }
+
+  &__result-comparison,
+  &__method-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    margin: 0.85rem 0;
+  }
+
+  &__method-card {
+    border: 1px solid var(--primary-low);
+    border-radius: 8px;
+    padding: 0.8rem;
+    background: var(--primary-very-low);
+
+    &.is-pass {
+      border-color: var(--success);
+    }
+
+    &.is-fail {
+      border-color: var(--danger);
+    }
+  }
+
+  &__method-title {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-0);
+  }
+
+  &__contribution-row {
+    display: grid;
+    grid-template-columns: minmax(6rem, 1fr) minmax(5rem, 2fr) 3.5rem;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.4rem;
+    font-size: var(--font-down-1);
+  }
+
+  &__contribution-bar {
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--primary-low);
+  }
+
+  &__contribution-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--tertiary);
+  }
+
+  &__warning {
+    margin: 0.75rem 0;
+    border-radius: 7px;
+    padding: 0.65rem 0.8rem;
+    color: var(--primary);
+    background: var(--highlight-medium);
+  }
+
+  &__contribution-list {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+    font-size: var(--font-down-1);
+  }
+}
+
 @keyframes mechbox-bolt-fade-in {
   from {
     opacity: 0;

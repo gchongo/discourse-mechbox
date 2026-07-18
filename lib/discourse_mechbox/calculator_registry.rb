@@ -39,6 +39,7 @@ module DiscourseMechbox
       materials
       material_selection
       thread_table
+      size_chain
     ].freeze
 
     UNIT_FACTORS = {
@@ -291,6 +292,12 @@ module DiscourseMechbox
     def self.calculate_thread_table(inputs)
       DiscourseMechbox::ThreadTableCalculator.calculate(inputs)
     rescue DiscourseMechbox::ThreadTableCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_size_chain(inputs)
+      DiscourseMechbox::SizeChainCalculator.calculate(inputs)
+    rescue DiscourseMechbox::SizeChainCalculator::Error => error
       raise Error, error.message
     end
 

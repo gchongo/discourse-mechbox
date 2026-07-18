@@ -142,6 +142,9 @@ en:
       thread_table:
         name: "Thread standards table"
         description: "Browse ISO/ASME thread catalogs with basic diameters, pitch/TPI, and tap-drill references."
+      size_chain:
+        name: "Size chain"
+        description: "One-dimensional linear tolerance stack with worst-case and RSS bounds."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

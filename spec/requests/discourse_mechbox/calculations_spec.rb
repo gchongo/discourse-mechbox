@@ -1981,6 +1981,56 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["systems"].map { |s| s["id"] }).to include("metric", "unc")
   end
 
+  it "calculates worst-case and RSS bounds for a linear size chain" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "size_chain",
+           save_record: false,
+           inputs: {
+             closed_ring: { name: "间隙 L0", min: 0.1, max: 0.35, unit: "mm" },
+             component_rings: [
+               { name: "挡环厚度", size: 40, tolerance: 0.06, type: "decreasing" },
+               { name: "齿轮宽度", size: 15, tolerance: 0.05, type: "decreasing" },
+               { name: "轴径", size: 55.25, tolerance: 0.04, type: "increasing" },
+             ],
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["worst"]).to include(
+      "nominal" => 0.25,
+      "lower" => 0.175,
+      "upper" => 0.325,
+      "total_tolerance" => 0.15,
+      "pass" => true,
+    )
+    expect(outputs["rss"]["total_tolerance"]).to be_within(0.000001).of(0.087749)
+    expect(outputs["rss"]).to include("pass" => true)
+    expect(outputs["ring_contributions"].first["percent"]).to be_within(0.01).of(46.153846)
+  end
+
+  it "warns when RSS passes but worst-case fails" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "size_chain",
+           save_record: false,
+           inputs: {
+             closed_ring: { min: 0.19, max: 0.31 },
+             component_rings: [
+               { name: "增环 A", size: 0.125, tolerance: 0.08, type: "increasing" },
+               { name: "增环 B", size: 0.125, tolerance: 0.08, type: "increasing" },
+             ],
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["rss"]["pass"]).to eq(true)
+    expect(outputs["worst"]["pass"]).to eq(false)
+    expect(outputs["warnings"]).to include("rss_pass_worst_fail")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

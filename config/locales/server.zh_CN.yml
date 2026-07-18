@@ -142,6 +142,9 @@ zh_CN:
       thread_table:
         name: "螺纹标准表"
         description: "浏览 ISO/ASME 螺纹规格库：基本直径、螺距/TPI 与攻丝底孔参考。"
+      size_chain:
+        name: "尺寸链"
+        description: "一维线性尺寸链：同时计算极值法与 RSS 法的上下界。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

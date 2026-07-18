@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 32 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing`、`heat_treatment`、`materials`、`material_selection`、`thread_table` |
+| ✅ 已接入 | 33 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing`、`heat_treatment`、`materials`、`material_selection`、`thread_table`、`size_chain` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -43,7 +43,8 @@
 **W4.12 完成** ✅：`material_selection` 材料选型（硬约束 + 加权评分）  
 **W4.16 完成** ✅：`thread_table` 螺纹标准表（453 行只读规格库；设计向导/对比二期）  
 **说明**：W4 主线工具已全部点亮。  
-**下一步**：W5 `size_chain` 尺寸链编辑器（或先做只读 RSS/极值链路）
+**W5.1 第一阶段完成** ✅：`size_chain` 一维线性尺寸链（可编辑组成环；极值法 + RSS；图形编辑/GD&T 二期）  
+**下一步**：W5.2 `gdt_stack` 或扩展 `size_chain` 的 ES/EI、高级统计与图形编辑
 
 ---
 
@@ -136,7 +137,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 
 | 序号 | tool_id | 名称 | 难度 | 策略 |
 |------|---------|------|------|------|
-| 5.1 | `size_chain` | 尺寸链编辑器 | ★★★★★ | 先 RSS/极值固定链路；编辑器二期 |
+| 5.1 | `size_chain` | 尺寸链编辑器 | ★★★★★ | ✅ 一维 RSS/极值固定链路；图形编辑二期 |
 | 5.2 | `gdt_stack` | GD&T 公差栈 | ★★★★ | |
 | 5.3 | `batch_analysis` | 批量验证 | ★★★★ | 依赖 size_chain 数据结构 |
 | 5.4 | `tolerance_allocation` | 公差分配 | ★★★★ | 遗传/Pareto 可后置 |

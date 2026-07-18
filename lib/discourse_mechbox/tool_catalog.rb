@@ -41,6 +41,7 @@ module DiscourseMechbox
       materials
       material_selection
       thread_table
+      size_chain
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -841,11 +842,26 @@ module DiscourseMechbox
           { key: "page_count", type: "integer" },
         ],
       },
+      "size_chain" => {
+        category: "tolerance",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "closed_ring", type: "object", required: true },
+          { key: "component_rings", type: "array", required: true },
+        ],
+        outputs: [
+          { key: "closed_ring", type: "object" },
+          { key: "worst", type: "object" },
+          { key: "rss", type: "object" },
+          { key: "ring_contributions", type: "array" },
+          { key: "warnings", type: "array" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
     CLIENT_TOOLS = {
-      "size_chain" => { category: "tolerance", route: "/editor" },
       "statistics" => { category: "tolerance", route: "/statistics" },
       "monte_carlo" => { category: "tolerance", route: "/monte-carlo" },
       "batch_analysis" => { category: "tolerance", route: "/batch" },

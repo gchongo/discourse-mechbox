@@ -35,6 +35,7 @@ import { mountHeatTreatmentWorkbench } from "../lib/mechbox-heat-treatment-page"
 import { mountMaterialsWorkbench } from "../lib/mechbox-materials-page";
 import { mountMaterialSelectionWorkbench } from "../lib/mechbox-material-selection-page";
 import { mountThreadTableWorkbench } from "../lib/mechbox-thread-table-page";
+import { mountSizeChainWorkbench } from "../lib/mechbox-size-chain-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -92,7 +93,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--heat-treatment",
     "mechbox__workbench-panel--materials",
     "mechbox__workbench-panel--material-selection",
-    "mechbox__workbench-panel--thread-table"
+    "mechbox__workbench-panel--thread-table",
+    "mechbox__workbench-panel--size-chain"
   );
   mount.replaceChildren();
 
@@ -232,6 +234,8 @@ function mountWorkbenchForm(panel) {
     );
   } else if (toolId === "thread_table") {
     void mountThreadTableWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "size_chain") {
+    void mountSizeChainWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -343,6 +347,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "materials",
   "material_selection",
   "thread_table",
+  "size_chain",
 ]);
 
 async function calculateGeneric(event) {
@@ -385,7 +390,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-heat-treatment__calculate-btn") ||
     button.classList.contains("mechbox-materials__calculate-btn") ||
     button.classList.contains("mechbox-material-selection__calculate-btn") ||
-    button.classList.contains("mechbox-thread-table__calculate-btn")
+    button.classList.contains("mechbox-thread-table__calculate-btn") ||
+    button.classList.contains("mechbox-size-chain__calculate-btn")
   ) {
     return;
   }
