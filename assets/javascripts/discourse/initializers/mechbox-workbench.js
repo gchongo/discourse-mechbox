@@ -22,6 +22,7 @@ import { mountThermalExpansionWorkbench } from "../lib/mechbox-thermal-page";
 import { mountInterferenceFitWorkbench } from "../lib/mechbox-interference-page";
 import { mountBearingWorkbench } from "../lib/mechbox-bearing-page";
 import { mountShaftWorkbench } from "../lib/mechbox-shaft-page";
+import { mountGearRatioWorkbench } from "../lib/mechbox-gear-ratio-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -66,7 +67,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--thermal",
     "mechbox__workbench-panel--interference",
     "mechbox__workbench-panel--bearing",
-    "mechbox__workbench-panel--shaft"
+    "mechbox__workbench-panel--shaft",
+    "mechbox__workbench-panel--gear-ratio"
   );
   mount.replaceChildren();
 
@@ -128,7 +130,9 @@ function mountWorkbenchForm(panel) {
 
   const toolId = panel.dataset.toolId;
 
-  if (toolId === "bolt_clamp_load") {
+  if (toolId === "gear_ratio") {
+    void mountGearRatioWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "bolt_clamp_load") {
     void mountBoltWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "unit_converter") {
     void mountUnitsWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
@@ -252,6 +256,7 @@ function setResult(panel, result) {
 }
 
 const CUSTOM_TOOL_IDS = new Set([
+  "gear_ratio",
   "bolt_clamp_load",
   "unit_converter",
   "rss_calculation",
@@ -282,6 +287,7 @@ async function calculateGeneric(event) {
   }
 
   if (
+    button.classList.contains("mechbox-gear-ratio__calculate-btn") ||
     button.classList.contains("mechbox-bolt__calculate-btn") ||
     button.classList.contains("mechbox-units__calculate-btn") ||
     button.classList.contains("mechbox-rss__calculate-btn") ||

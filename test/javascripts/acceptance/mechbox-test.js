@@ -866,13 +866,21 @@ acceptance("MechBox | safe page", function (needs) {
         });
       }
 
-      return helper.response(200, {
-        tool_id: "gear_ratio",
-        outputs: {
-          ratio: 2,
-          output_speed_rpm: 500,
-        },
-      });
+      if (body.tool_id === "gear_ratio") {
+        const driver = Number(body.inputs?.driver_teeth) || 20;
+        const driven = Number(body.inputs?.driven_teeth) || 40;
+        const speed = Number(body.inputs?.input_speed_rpm) || 1000;
+        const ratio = driven / driver;
+        return helper.response(200, {
+          tool_id: "gear_ratio",
+          outputs: {
+            ratio,
+            output_speed_rpm: speed / ratio,
+          },
+        });
+      }
+
+      return helper.response(422, { errors: ["unknown tool"] });
     });
   });
 
@@ -904,14 +912,16 @@ acceptance("MechBox | safe page", function (needs) {
 
     assert.true(exists(".mechbox__page"), "page is rendered");
     assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    await waitFor("input[name='driver_teeth']");
+    await waitFor(".mechbox-gear-ratio");
 
     await fillIn("input[name='driver_teeth']", "20");
     await fillIn("input[name='driven_teeth']", "40");
     await fillIn("input[name='input_speed_rpm']", "1000");
-    await click(".mechbox__actions .btn");
+    await click(".mechbox-gear-ratio__calculate-btn");
+    await waitFor(".mechbox-gear-ratio__results-body.is-visible");
 
-    assert.dom(".mechbox__result").includesText("output_speed_rpm");
+    assert.dom(".mechbox-gear-ratio__results-body").includesText("2");
+    assert.dom(".mechbox-gear-ratio__results-body").includesText("500");
   });
 
   test("opens and calculates on the bolt preload tool page", async function (assert) {
@@ -951,13 +961,24 @@ acceptance("MechBox | safe page", function (needs) {
     assert.dom("input[name='grip_length']").exists("professional mode shows grip length");
   });
 
-  test("renders the gear ratio tool page on direct visit", async function (assert) {
+  test("opens and calculates on the gear ratio page", async function (assert) {
     await visit("/mechbox?tool_id=gear_ratio");
 
-    assert.true(exists(".mechbox__workbench-panel"), "workbench is rendered");
-    await waitFor("input[name='driver_teeth']");
+    await waitFor(".mechbox-gear-ratio");
+    assert.dom(".mechbox-gear-ratio__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-gear-ratio__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='driver_teeth']").exists("driver teeth input is rendered");
     assert.dom("input[name='driven_teeth']").exists("driven teeth input is rendered");
     assert.dom("input[name='input_speed_rpm']").exists("input speed input is rendered");
+
+    await fillIn("input[name='driver_teeth']", "20");
+    await fillIn("input[name='driven_teeth']", "40");
+    await fillIn("input[name='input_speed_rpm']", "1500");
+    await click(".mechbox-gear-ratio__calculate-btn");
+    await waitFor(".mechbox-gear-ratio__results-body.is-visible");
+
+    assert.dom(".mechbox-gear-ratio__results-body").includesText("2");
+    assert.dom(".mechbox-gear-ratio__results-body").includesText("750");
   });
 
   test("returns to the catalog from a tool page", async function (assert) {

@@ -502,7 +502,8 @@
 .mechbox-thermal,
 .mechbox-interference,
 .mechbox-bearing,
-.mechbox-shaft {
+.mechbox-shaft,
+.mechbox-gear-ratio {
   &__modes {
     display: flex;
     flex-wrap: wrap;
