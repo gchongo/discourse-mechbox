@@ -1573,6 +1573,87 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["springback_estimate_only"]).to eq(true)
   end
 
+  it "runs simple cylinder force and velocity estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "cylinder",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             cylinder_type: "hydraulic",
+             bore_diameter_mm: 50,
+             rod_diameter_mm: 20,
+             pressure_mpa: 16,
+             flow_rate_lpm: 20,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["bore_area_mm2"]).to be_within(0.01).of(1963.495)
+    expect(outputs["extend_force_n"]).to be_within(1.0).of(31_415.9)
+    expect(outputs["retract_force_n"]).to be_within(1.0).of(26_389.4)
+    expect(outputs["extend_velocity_mm_s"]).to be_within(0.1).of(169.77)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full cylinder load and buckling checks" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "cylinder",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             cylinder_type: "hydraulic",
+             bore_diameter_mm: 50,
+             rod_diameter_mm: 20,
+             pressure_mpa: 16,
+             flow_rate_lpm: 20,
+             external_load_n: 8000,
+             stroke_length_mm: 300,
+             end_fixity: "pinned_pinned",
+             yield_strength_mpa: 235,
+             compress_on_retract: true,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["load_pass"]).to eq(true)
+    expect(outputs["buckling_load_n"]).to be > 0
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional cylinder with dynamic load" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "cylinder",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             cylinder_type: "hydraulic",
+             bore_diameter_mm: 50,
+             rod_diameter_mm: 20,
+             pressure_mpa: 16,
+             flow_rate_lpm: 20,
+             external_load_n: 8000,
+             stroke_length_mm: 300,
+             load_mass_kg: 500,
+             acceleration_m_s2: 0.5,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["dynamic_load_n"]).to be_within(1.0).of(500 * 9.81 + 500 * 0.5)
+    expect(outputs["cycle_time_extend_s"]).to be_present
+    expect(outputs["cushion_force_n"]).to be_present
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

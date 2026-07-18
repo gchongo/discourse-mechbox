@@ -27,6 +27,7 @@ import { mountGearWorkbench } from "../lib/mechbox-gear-page";
 import { mountFatigueWorkbench } from "../lib/mechbox-fatigue-page";
 import { mountBeamWorkbench } from "../lib/mechbox-beam-page";
 import { mountSheetMetalWorkbench } from "../lib/mechbox-sheet-metal-page";
+import { mountCylinderWorkbench } from "../lib/mechbox-cylinder-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -76,7 +77,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--gear",
     "mechbox__workbench-panel--fatigue",
     "mechbox__workbench-panel--beam",
-    "mechbox__workbench-panel--sheet-metal"
+    "mechbox__workbench-panel--sheet-metal",
+    "mechbox__workbench-panel--cylinder"
   );
   mount.replaceChildren();
 
@@ -194,6 +196,8 @@ function mountWorkbenchForm(panel) {
     void mountBeamWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "sheet_metal") {
     void mountSheetMetalWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "cylinder") {
+    void mountCylinderWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -297,6 +301,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "fatigue",
   "beam",
   "sheet_metal",
+  "cylinder",
 ]);
 
 async function calculateGeneric(event) {
@@ -331,7 +336,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-gear__calculate-btn") ||
     button.classList.contains("mechbox-fatigue__calculate-btn") ||
     button.classList.contains("mechbox-beam__calculate-btn") ||
-    button.classList.contains("mechbox-sheet-metal__calculate-btn")
+    button.classList.contains("mechbox-sheet-metal__calculate-btn") ||
+    button.classList.contains("mechbox-cylinder__calculate-btn")
   ) {
     return;
   }

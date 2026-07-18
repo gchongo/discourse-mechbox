@@ -55,13 +55,13 @@ RSpec.describe "DiscourseMechbox metadata", type: :request do
       "fatigue",
       "beam",
       "sheet_metal",
+      "cylinder",
     )
     expect(json["home"]["available_tools"].map { |t| t["tool_id"] }).not_to include(
       "structural",
-      "cylinder",
     )
     expect(json["home"]["mech_groups"].map { |g| g["id"] }).not_to include("design-chain")
-    expect(json["home"]["counts"]["available"]).to eq(24)
+    expect(json["home"]["counts"]["available"]).to eq(25)
     expect(json["home"]["counts"]["catalog"]).to be > 40
     expect(json["formula_templates"]).to eq([])
     expect(json["favorite_tool_ids"]).to eq([])

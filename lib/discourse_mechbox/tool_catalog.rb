@@ -33,6 +33,7 @@ module DiscourseMechbox
       fatigue
       beam
       sheet_metal
+      cylinder
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.

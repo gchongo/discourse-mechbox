@@ -255,10 +255,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "crop",
                   available: true,
                 },
+                {
+                  id: "cylinder",
+                  tool_id: "cylinder",
+                  name: "Hydraulic cylinder",
+                  description: "Force / buckling",
+                  icon: "gauge",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 24, catalog: 57 },
+          counts: { available: 25, catalog: 57 },
         },
       });
     });
@@ -570,6 +578,20 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "method", type: "string" },
           { key: "thickness_mm", type: "number" },
           { key: "segments_json", type: "string" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/cylinder", () => {
+      return helper.response(200, {
+        tool_id: "cylinder",
+        name: "Hydraulic cylinder",
+        description: "Force / buckling.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "bore_diameter_mm", type: "number" },
+          { key: "pressure_mpa", type: "number" },
         ],
       });
     });
@@ -1024,6 +1046,23 @@ acceptance("MechBox | safe page", function (needs) {
               { index: 1, type: "bend", contribution_mm: 3.134 },
               { index: 2, type: "straight", contribution_mm: 50 },
             ],
+          },
+        });
+      }
+
+      if (body.tool_id === "cylinder") {
+        return helper.response(200, {
+          tool_id: "cylinder",
+          outputs: {
+            calc_mode: "simple",
+            type: "hydraulic",
+            bore_area_mm2: 1963.495,
+            extend_force_n: 31415.9,
+            retract_force_n: 26389.4,
+            extend_velocity_mm_s: 169.77,
+            retract_velocity_mm_s: 202.1,
+            estimate_only: true,
+            pass: false,
           },
         });
       }
@@ -1652,5 +1691,28 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='professional']")
       .doesNotHaveClass("is-mode-hidden", "professional mode shows springback");
+  });
+
+  test("opens and calculates on the cylinder page", async function (assert) {
+    await visit("/mechbox?tool_id=cylinder");
+
+    await waitFor(".mechbox-cylinder");
+    assert.dom(".mechbox-cylinder__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-cylinder__formula-bar").exists("formula bar is rendered");
+    assert.dom("input[name='bore_diameter_mm']").exists("bore input is rendered");
+    assert.dom("input[name='pressure_mpa']").exists("pressure input is rendered");
+    assert.dom(".mechbox-cylinder__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='pressure_mpa']", "16");
+    await click(".mechbox-cylinder__calculate-btn");
+    await waitFor(".mechbox-cylinder__status");
+
+    assert.dom(".mechbox-cylinder__status").hasClass("is-attention");
+    assert.dom(".mechbox-cylinder__results-body").includesText("31416");
+
+    await click(".mechbox-cylinder__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows external load");
   });
 });

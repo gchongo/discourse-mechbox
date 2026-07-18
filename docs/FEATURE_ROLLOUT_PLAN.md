@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 24 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal` |
+| ✅ 已接入 | 25 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -34,8 +34,9 @@
 **W4.6 完成** ✅：`fatigue` 疲劳寿命（简化 Basquin / 完整 Miner / 专业 Goodman·Se′）  
 **W4.7 完成** ✅：`beam` 梁挠度（简化估算 / 完整利用率 / 专业 Kd·Kt；疲劳未放行）  
 **W4.8 完成** ✅：`sheet_metal` 钣金展开（K 因子 / BD；完整法兰 / 专业回弹）  
-**说明**：`structural` / `cylinder` 计算核保留但未点亮。  
-**下一步**：W4.9 `o_ring`（需补 catalog id）或按表继续 `cylinder`
+**W4.10 完成** ✅：`cylinder` 液压/气缸（简化推力速度 / 完整外载屈曲 / 专业动载循环）  
+**说明**：`structural` 计算核保留但未点亮；`o_ring` 尚无 Ruby 核与 catalog。  
+**下一步**：W4.9 `o_ring`（移植 MechBox 计算核 + catalog + 专用页）
 
 ---
 
@@ -114,7 +115,7 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 4.7 | `beam` | 梁挠度 | ★★★ | ✅ 简/全/专；疲劳未放行 |
 | 4.8 | `sheet_metal` | 钣金展开 | ★★ | ✅ K 因子 / BD + 法兰 / 回弹 |
 | 4.9 | `o_ring` | O 型圈 | ★★ | 需补 catalog id |
-| 4.10 | `cylinder` | 液压/气缸 | ★★ | 计算核已有，未点亮 |
+| 4.10 | `cylinder` | 液压/气缸 | ★★ | ✅ 简/全/专；液压+气动 |
 | 4.11 | `materials` | 材料库 | ★★ | 只读查表可先 |
 | 4.12 | `material_selection` | 材料选型 | ★★★ | |
 | 4.13 | `heat_treatment` | 热处理硬度 | ★★★ | |

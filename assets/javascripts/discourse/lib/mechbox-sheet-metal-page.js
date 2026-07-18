@@ -498,7 +498,8 @@ export async function mountSheetMetalWorkbench(panel) {
     "mechbox__workbench-panel--gear",
     "mechbox__workbench-panel--fatigue",
     "mechbox__workbench-panel--beam",
-    "mechbox__workbench-panel--sheet-metal"
+    "mechbox__workbench-panel--sheet-metal",
+    "mechbox__workbench-panel--cylinder"
   );
   panel.classList.add("mechbox__workbench-panel--sheet-metal");
 

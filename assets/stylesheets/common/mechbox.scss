@@ -507,7 +507,8 @@
 .mechbox-gear,
 .mechbox-fatigue,
 .mechbox-beam,
-.mechbox-sheet-metal {
+.mechbox-sheet-metal,
+.mechbox-cylinder {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -646,7 +647,8 @@
     &.is-analysis-hidden,
     &.is-case-hidden,
     &.is-section-hidden,
-    &.is-method-hidden {
+    &.is-method-hidden,
+    &.is-type-hidden {
       display: none !important;
     }
 
@@ -994,6 +996,19 @@
 
   &__seg-add {
     margin-bottom: 0.75rem;
+  }
+
+  &__check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  &__checkbox {
+    margin: 0;
   }
 }
 
