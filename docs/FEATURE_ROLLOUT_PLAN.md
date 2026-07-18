@@ -8,7 +8,7 @@
 
 | 状态 | 数量 | 说明 |
 |------|------|------|
-| ✅ 已接入 | 28 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing` |
+| ✅ 已接入 | 32 | `gear_ratio`、`bolt_clamp_load`、`unit_converter`、`rss_calculation`、`thread`、`key`、`bolt_group`、`weld`、`spring`、`clutch`、`belt`、`chain`、`tol_convert`、`sigma_analysis`、`fit`、`distribution_chart`、`thermal_expansion`、`interference_fit`、`bearing`、`shaft`、`gear`、`fatigue`、`beam`、`sheet_metal`、`cylinder`、`o_ring`、`structural`、`manufacturing`、`heat_treatment`、`materials`、`material_selection`、`thread_table` |
 | ⏳ 首页目录 | 57 | 分析 18 + 统计 7 + 机械 32（与 MechBox 对齐；不含设计链） |
 | ❌ 明确不做 | 3 | 设计项目 / 轴系设计链 / 螺栓连接设计链 |
 
@@ -38,8 +38,12 @@
 **W4.9 完成** ✅：`o_ring` O 型圈（压缩填充 / 挤出温度 / 许用压力速度；公式对齐 MechBox）  
 **W4.15 完成** ✅：`structural` 结构/流体（管路 Darcy / 薄板屈曲 / 模态；公式对齐 MechBox）  
 **W4.14 完成** ✅：`manufacturing` 制造工艺（机加工余量查表 / 铸造拔模角；对齐 MechBox）  
-**说明**：仍待 `materials` / `material_selection` / `heat_treatment` / `thread_table`。  
-**下一步**：W4.13 `heat_treatment` 或 W4.11 `materials` 只读库
+**W4.13 完成** ✅：`heat_treatment` 热处理（IIW CE / Di / Jominy / 回火；对齐 MechBox）  
+**W4.11 完成** ✅：`materials` 材料库（56 条 + 温度许用折减）  
+**W4.12 完成** ✅：`material_selection` 材料选型（硬约束 + 加权评分）  
+**W4.16 完成** ✅：`thread_table` 螺纹标准表（453 行只读规格库；设计向导/对比二期）  
+**说明**：W4 主线工具已全部点亮。  
+**下一步**：W5 `size_chain` 尺寸链编辑器（或先做只读 RSS/极值链路）
 
 ---
 
@@ -119,12 +123,12 @@ Schema / 部分逻辑已在 `ToolCatalog::BUILTIN_TOOLS`。
 | 4.8 | `sheet_metal` | 钣金展开 | ★★ | ✅ K 因子 / BD + 法兰 / 回弹 |
 | 4.9 | `o_ring` | O 型圈 | ★★ | ✅ Parker/ISO3601 简化；对齐 MechBox |
 | 4.10 | `cylinder` | 液压/气缸 | ★★ | ✅ 简/全/专；液压+气动 |
-| 4.11 | `materials` | 材料库 | ★★ | 只读查表可先 |
-| 4.12 | `material_selection` | 材料选型 | ★★★ | |
-| 4.13 | `heat_treatment` | 热处理硬度 | ★★★ | |
+| 4.11 | `materials` | 材料库 | ★★ | ✅ 56 条 + 温度折减 |
+| 4.12 | `material_selection` | 材料选型 | ★★★ | ✅ 硬约束 + 加权评分 |
+| 4.13 | `heat_treatment` | 热处理硬度 | ★★★ | ✅ IIW CE / Di / Jominy / 回火 |
 | 4.14 | `manufacturing` | 制造工艺 | ★★ | ✅ 机加工余量 + 铸造拔模 |
 | 4.15 | `structural` | 结构/流体 | ★★★ | ✅ 管路 / 薄板屈曲 / 模态 |
-| 4.16 | `thread_table` | 螺纹标准表 | ★★★ | 规格库；需补 catalog |
+| 4.16 | `thread_table` | 螺纹标准表 | ★★★ | ✅ 453 行只读库；设计向导二期 |
 
 ---
 

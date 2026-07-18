@@ -511,7 +511,11 @@
 .mechbox-cylinder,
 .mechbox-o-ring,
 .mechbox-structural,
-.mechbox-manufacturing {
+.mechbox-manufacturing,
+.mechbox-heat-treatment,
+.mechbox-materials,
+.mechbox-material-selection,
+.mechbox-thread-table {
   &__modes {
     display: flex;
     flex-wrap: wrap;

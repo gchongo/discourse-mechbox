@@ -35,6 +35,10 @@ module DiscourseMechbox
       cylinder
       o_ring
       manufacturing
+      heat_treatment
+      materials
+      material_selection
+      thread_table
     ].freeze
 
     UNIT_FACTORS = {
@@ -263,6 +267,30 @@ module DiscourseMechbox
     def self.calculate_manufacturing(inputs)
       DiscourseMechbox::ManufacturingCalculator.calculate(inputs)
     rescue DiscourseMechbox::ManufacturingCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_heat_treatment(inputs)
+      DiscourseMechbox::HeatTreatmentCalculator.calculate(inputs)
+    rescue DiscourseMechbox::HeatTreatmentCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_materials(inputs)
+      DiscourseMechbox::MaterialsCalculator.calculate(inputs)
+    rescue DiscourseMechbox::MaterialsCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_material_selection(inputs)
+      DiscourseMechbox::MaterialSelectionCalculator.calculate(inputs)
+    rescue DiscourseMechbox::MaterialSelectionCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_thread_table(inputs)
+      DiscourseMechbox::ThreadTableCalculator.calculate(inputs)
+    rescue DiscourseMechbox::ThreadTableCalculator::Error => error
       raise Error, error.message
     end
 

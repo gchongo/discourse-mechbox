@@ -130,6 +130,18 @@ en:
       manufacturing:
         name: "Manufacturing"
         description: "Machining stock allowance (banded diameter table) and casting draft-angle estimate; lengths in mm, draft in degrees."
+      heat_treatment:
+        name: "Heat treatment"
+        description: "IIW carbon equivalent, ideal critical diameter Di, Jominy HRC estimate, and Hollomon–Jaffe temper hardness."
+      materials:
+        name: "Material library"
+        description: "Browse common engineering materials with temperature-adjusted allowable stress."
+      material_selection:
+        name: "Material selection"
+        description: "Multi-objective weighted ranking by strength, weight, cost, weldability, and machinability."
+      thread_table:
+        name: "Thread standards table"
+        description: "Browse ISO/ASME thread catalogs with basic diameters, pitch/TPI, and tap-drill references."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

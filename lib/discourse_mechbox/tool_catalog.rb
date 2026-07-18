@@ -37,6 +37,10 @@ module DiscourseMechbox
       o_ring
       structural
       manufacturing
+      heat_treatment
+      materials
+      material_selection
+      thread_table
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -746,6 +750,95 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "heat_treatment" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "steel_preset", type: "string", required: false },
+          { key: "C", type: "number", required: false },
+          { key: "Mn", type: "number", required: false },
+          { key: "Cr", type: "number", required: false },
+          { key: "Mo", type: "number", required: false },
+          { key: "V", type: "number", required: false },
+          { key: "Ni", type: "number", required: false },
+          { key: "Cu", type: "number", required: false },
+          { key: "grain_size", type: "number", required: false },
+          { key: "part_diameter_mm", type: "number", required: false },
+          { key: "temper_temp_c", type: "number", required: false },
+          { key: "temper_time_h", type: "number", required: false },
+          { key: "min_final_hrc", type: "number", required: false },
+          { key: "max_final_hrc", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "carbon_equivalent", type: "number" },
+          { key: "weldability_key", type: "string" },
+          { key: "hardenability", type: "object" },
+          { key: "temper", type: "object" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "materials" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: false },
+          { key: "query", type: "string", required: false },
+          { key: "category", type: "string", required: false },
+          { key: "temp_c", type: "number", required: false },
+          { key: "material_id", type: "string", required: false },
+        ],
+        outputs: [
+          { key: "materials", type: "array" },
+          { key: "categories", type: "array" },
+          { key: "count", type: "number" },
+          { key: "total_count", type: "number" },
+        ],
+      },
+      "material_selection" => {
+        category: "materials",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "min_sigma_allow_mpa", type: "number", required: false },
+          { key: "max_density", type: "number", required: false },
+          { key: "temp_c", type: "number", required: false },
+          { key: "min_weldability", type: "number", required: false },
+          { key: "max_cost_index", type: "number", required: false },
+          { key: "weight_strength", type: "number", required: false },
+          { key: "weight_light", type: "number", required: false },
+          { key: "weight_cost", type: "number", required: false },
+          { key: "weight_weldability", type: "number", required: false },
+          { key: "weight_machinability", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "top_pick", type: "object" },
+          { key: "recommendations", type: "array" },
+          { key: "filtered_count", type: "number" },
+          { key: "total_count", type: "number" },
+        ],
+      },
+      "thread_table" => {
+        category: "fastening",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: false },
+          { key: "system", type: "string", required: false },
+          { key: "query", type: "string", required: false },
+          { key: "sub_series", type: "string", required: false },
+          { key: "diameter_min", type: "number", required: false },
+          { key: "diameter_max", type: "number", required: false },
+          { key: "row_id", type: "string", required: false },
+        ],
+        outputs: [
+          { key: "rows", type: "array" },
+          { key: "systems", type: "array" },
+          { key: "count", type: "number" },
+          { key: "matched_count", type: "number" },
+          { key: "total_count", type: "number" },
+          { key: "truncated", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -757,8 +850,6 @@ module DiscourseMechbox
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "materials" => { category: "materials", route: "/materials" },
-      "material_selection" => { category: "materials", route: "/material-selection" },
       "units" => { category: "general", route: "/units" },
       "design_powertrain" => { category: "design", route: "/design/powertrain" },
       "design_bolt_joint" => { category: "design", route: "/design/bolt-joint" },

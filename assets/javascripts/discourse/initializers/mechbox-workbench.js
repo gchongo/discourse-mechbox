@@ -31,6 +31,10 @@ import { mountCylinderWorkbench } from "../lib/mechbox-cylinder-page";
 import { mountORingWorkbench } from "../lib/mechbox-o-ring-page";
 import { mountStructuralWorkbench } from "../lib/mechbox-structural-page";
 import { mountManufacturingWorkbench } from "../lib/mechbox-manufacturing-page";
+import { mountHeatTreatmentWorkbench } from "../lib/mechbox-heat-treatment-page";
+import { mountMaterialsWorkbench } from "../lib/mechbox-materials-page";
+import { mountMaterialSelectionWorkbench } from "../lib/mechbox-material-selection-page";
+import { mountThreadTableWorkbench } from "../lib/mechbox-thread-table-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -84,7 +88,11 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--cylinder",
     "mechbox__workbench-panel--o-ring",
     "mechbox__workbench-panel--structural",
-    "mechbox__workbench-panel--manufacturing"
+    "mechbox__workbench-panel--manufacturing",
+    "mechbox__workbench-panel--heat-treatment",
+    "mechbox__workbench-panel--materials",
+    "mechbox__workbench-panel--material-selection",
+    "mechbox__workbench-panel--thread-table"
   );
   mount.replaceChildren();
 
@@ -210,6 +218,16 @@ function mountWorkbenchForm(panel) {
     void mountStructuralWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "manufacturing") {
     void mountManufacturingWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "heat_treatment") {
+    void mountHeatTreatmentWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "materials") {
+    void mountMaterialsWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "material_selection") {
+    void mountMaterialSelectionWorkbench(panel).then(() =>
+      markWorkbenchMounted(panel, toolId)
+    );
+  } else if (toolId === "thread_table") {
+    void mountThreadTableWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -317,6 +335,10 @@ const CUSTOM_TOOL_IDS = new Set([
   "o_ring",
   "structural",
   "manufacturing",
+  "heat_treatment",
+  "materials",
+  "material_selection",
+  "thread_table",
 ]);
 
 async function calculateGeneric(event) {
@@ -355,7 +377,11 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-cylinder__calculate-btn") ||
     button.classList.contains("mechbox-o-ring__calculate-btn") ||
     button.classList.contains("mechbox-structural__calculate-btn") ||
-    button.classList.contains("mechbox-manufacturing__calculate-btn")
+    button.classList.contains("mechbox-manufacturing__calculate-btn") ||
+    button.classList.contains("mechbox-heat-treatment__calculate-btn") ||
+    button.classList.contains("mechbox-materials__calculate-btn") ||
+    button.classList.contains("mechbox-material-selection__calculate-btn") ||
+    button.classList.contains("mechbox-thread-table__calculate-btn")
   ) {
     return;
   }

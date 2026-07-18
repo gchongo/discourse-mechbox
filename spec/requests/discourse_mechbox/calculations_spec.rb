@@ -1877,6 +1877,107 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["pass"]).to eq(true)
   end
 
+  it "runs full heat_treatment for 4140" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "heat_treatment",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             steel_preset: "4140",
+             part_diameter_mm: 50,
+             grain_size: 7,
+             temper_temp_c: 550,
+             temper_time_h: 2,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["carbon_equivalent"]).to be_within(0.001).of(0.772)
+    expect(outputs["weldability_key"]).to eq("bad")
+    expect(outputs["hardenability"]["ideal_critical_diameter_mm"]).to be_within(0.1).of(18.8)
+    expect(outputs["hardenability"]["surface_hrc"]).to be_within(0.1).of(47.9)
+    expect(outputs["hardenability"]["estimated_core_hrc"]).to be_within(0.1).of(29.3)
+    expect(outputs["hardenability"]["ratio"]).to be_within(0.01).of(2.66)
+    expect(outputs["temper"]["tempered_hrc"]).to be_within(0.1).of(28.3)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "browses materials library with temperature derating" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "materials",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             query: "q235",
+             temp_c: 100,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["total_count"]).to eq(56)
+    expect(outputs["count"]).to be >= 1
+    row = outputs["materials"].find { |m| m["id"] == "q235" }
+    expect(row).to be_present
+    expect(row["sigma_allow_at_temp_mpa"]).to eq(119)
+    expect(row["tau_allow_at_temp_mpa"]).to eq(71)
+    expect(row["E"]).to eq(row["e_mpa"])
+  end
+
+  it "ranks material_selection with default weights" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "material_selection",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             min_sigma_allow_mpa: 150,
+             max_density: 8,
+             temp_c: 20,
+             min_weldability: 2,
+             max_cost_index: 3,
+             weight_strength: 0.35,
+             weight_light: 0.2,
+             weight_cost: 0.2,
+             weight_weldability: 0.15,
+             weight_machinability: 0.1,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["filtered_count"]).to eq(29)
+    expect(outputs["total_count"]).to eq(56)
+    expect(outputs["top_pick"]["id"]).to eq("cr12mo1v1")
+    expect(outputs["top_pick"]["total_score"]).to be_within(0.01).of(67.961)
+    expect(outputs["recommendations"].length).to eq(5)
+  end
+
+  it "looks up thread_table metric M10 rows" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "thread_table",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             system: "metric",
+             query: "M10",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["total_count"]).to eq(453)
+    expect(outputs["matched_count"]).to be >= 1
+    expect(outputs["rows"].first["designation"]).to include("M10")
+    expect(outputs["rows"].first["system"]).to eq("metric")
+    expect(outputs["rows"].first["pitch"]).to be_a(Numeric)
+    expect(outputs["systems"].map { |s| s["id"] }).to include("metric", "unc")
+  end
+
   it "returns 422 for invalid gear_ratio inputs" do
     post "/mechbox/api/calculate",
          params: {

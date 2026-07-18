@@ -76,7 +76,7 @@ module DiscourseMechbox
           { id: "gear", tool_id: "gear", icon: "sliders" },
           { id: "gear_ratio", tool_id: "gear_ratio", icon: "gear" },
           { id: "thread", tool_id: "thread", icon: "link" },
-          { id: "thread_table", icon: "list" },
+          { id: "thread_table", tool_id: "thread_table", icon: "list" },
           { id: "bolt_clamp_load", tool_id: "bolt_clamp_load", icon: "bolt" },
           { id: "bearing", tool_id: "bearing", icon: "circle-question" },
         ],
@@ -102,7 +102,7 @@ module DiscourseMechbox
         id: "material",
         tools: [
           { id: "material_selection", tool_id: "material_selection", icon: "book" },
-          { id: "heat_treatment", icon: "sun" },
+          { id: "heat_treatment", tool_id: "heat_treatment", icon: "sun" },
           { id: "manufacturing", tool_id: "manufacturing", icon: "screwdriver-wrench" },
           { id: "cylinder", tool_id: "cylinder", icon: "gauge" },
           { id: "materials", tool_id: "materials", icon: "book-open" },

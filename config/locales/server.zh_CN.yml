@@ -130,6 +130,18 @@ zh_CN:
       manufacturing:
         name: "制造工艺"
         description: "机加工余量（直径段查表）与铸造拔模角估算；长度单位 mm，拔模角单位 °。"
+      heat_treatment:
+        name: "热处理硬度"
+        description: "IIW 碳当量、理想临界直径 Di、Jominy 硬度估算与 Hollomon–Jaffe 回火硬度。"
+      materials:
+        name: "材料库"
+        description: "常用工程材料浏览，并按温度折减许用应力。"
+      material_selection:
+        name: "材料选型"
+        description: "按强度、重量、成本、可焊性与可加工性的多目标加权排序。"
+      thread_table:
+        name: "螺纹标准表"
+        description: "浏览 ISO/ASME 螺纹规格库：基本直径、螺距/TPI 与攻丝底孔参考。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

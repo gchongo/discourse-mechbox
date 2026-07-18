@@ -287,10 +287,42 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "screwdriver-wrench",
                   available: true,
                 },
+                {
+                  id: "heat_treatment",
+                  tool_id: "heat_treatment",
+                  name: "Heat treatment",
+                  description: "CE / Jominy / temper",
+                  icon: "sun",
+                  available: true,
+                },
+                {
+                  id: "materials",
+                  tool_id: "materials",
+                  name: "Material library",
+                  description: "Common materials",
+                  icon: "book-open",
+                  available: true,
+                },
+                {
+                  id: "material_selection",
+                  tool_id: "material_selection",
+                  name: "Material selection",
+                  description: "Weighted ranking",
+                  icon: "book",
+                  available: true,
+                },
+                {
+                  id: "thread_table",
+                  tool_id: "thread_table",
+                  name: "Thread standards",
+                  description: "ISO / ASME catalog",
+                  icon: "list",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 28, catalog: 57 },
+          counts: { available: 32, catalog: 57 },
         },
       });
     });
@@ -658,6 +690,62 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "calc_mode", type: "string" },
           { key: "analysis_type", type: "string" },
           { key: "nominal_diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/heat_treatment", () => {
+      return helper.response(200, {
+        tool_id: "heat_treatment",
+        name: "Heat treatment",
+        description: "CE / Jominy / temper.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "steel_preset", type: "string" },
+          { key: "part_diameter_mm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/materials", () => {
+      return helper.response(200, {
+        tool_id: "materials",
+        name: "Material library",
+        description: "Browse materials.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "query", type: "string" },
+          { key: "temp_c", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/material_selection", () => {
+      return helper.response(200, {
+        tool_id: "material_selection",
+        name: "Material selection",
+        description: "Weighted ranking.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "min_sigma_allow_mpa", type: "number" },
+          { key: "max_density", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/thread_table", () => {
+      return helper.response(200, {
+        tool_id: "thread_table",
+        name: "Thread standards",
+        description: "ISO / ASME catalog.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "system", type: "string" },
+          { key: "query", type: "string" },
         ],
       });
     });
@@ -1184,6 +1272,114 @@ acceptance("MechBox | safe page", function (needs) {
             details: [
               { operation: "rough", radial_allowance_mm: 2.0 },
               { operation: "finish", radial_allowance_mm: 0.2 },
+            ],
+          },
+        });
+      }
+
+      if (body.tool_id === "heat_treatment") {
+        return helper.response(200, {
+          tool_id: "heat_treatment",
+          outputs: {
+            calc_mode: body.inputs?.calc_mode || "simple",
+            carbon_equivalent: 0.772,
+            weldability_key: "bad",
+            hardenability: {
+              surface_hrc: 47.9,
+              estimated_core_hrc: 29.3,
+              ideal_critical_diameter_mm: 18.8,
+              ratio: 2.66,
+              verdict_key: "surface_only",
+            },
+            temper: { tempered_hrc: 28.3 },
+            preheat_required: true,
+            preheat_temp_c: 200,
+            pass: false,
+          },
+        });
+      }
+
+      if (body.tool_id === "materials") {
+        return helper.response(200, {
+          tool_id: "materials",
+          outputs: {
+            calc_mode: "simple",
+            temp_c: 20,
+            count: 1,
+            total_count: 56,
+            categories: ["碳素钢", "合金钢"],
+            materials: [
+              {
+                id: "q235",
+                name: "Q235",
+                category: "碳素钢",
+                sigma_allow_at_temp_mpa: 157,
+                tau_allow_at_temp_mpa: 94,
+                E: 206000,
+                density: 7.85,
+              },
+            ],
+          },
+        });
+      }
+
+      if (body.tool_id === "material_selection") {
+        return helper.response(200, {
+          tool_id: "material_selection",
+          outputs: {
+            calc_mode: body.inputs?.calc_mode || "simple",
+            filtered_count: 29,
+            total_count: 56,
+            top_pick: {
+              id: "cr12mo1v1",
+              name: "Cr12Mo1V1",
+              total_score: 67.961,
+            },
+            recommendations: [
+              {
+                rank: 1,
+                name: "Cr12Mo1V1",
+                total_score: 67.961,
+                sigma_allow_mpa: 900,
+                density: 7.7,
+                cost_index: 2,
+              },
+            ],
+            show_score_breakdown: false,
+            best_strength: { name: "Cr12Mo1V1" },
+            best_weight: { name: "6061-T6" },
+            best_cost: { name: "HT200" },
+          },
+        });
+      }
+
+      if (body.tool_id === "thread_table") {
+        return helper.response(200, {
+          tool_id: "thread_table",
+          outputs: {
+            calc_mode: "simple",
+            count: 1,
+            matched_count: 1,
+            total_count: 453,
+            truncated: false,
+            systems: [
+              { id: "metric", standardRef: "ISO 724", unit: "mm" },
+              { id: "unc", standardRef: "ASME B1.1", unit: "in" },
+            ],
+            rows: [
+              {
+                id: "metric-coarse-10-1.5",
+                system: "metric",
+                subSeries: "coarse",
+                designation: "M10",
+                pitch: 1.5,
+                major: 10,
+                pitchDia: 9.026,
+                minor: 8.376,
+                tapDrill: 8.5,
+                toleranceExternal: "6g",
+                toleranceInternal: "6H",
+              },
             ],
           },
         });
@@ -1904,5 +2100,51 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows operations");
+  });
+
+  test("opens and calculates on the heat treatment page", async function (assert) {
+    await visit("/mechbox?tool_id=heat_treatment");
+
+    await waitFor(".mechbox-heat-treatment");
+    assert.dom(".mechbox-heat-treatment__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-heat-treatment__formula-bar").exists("formula bar is rendered");
+
+    await click(".mechbox-heat-treatment__mode-tab[data-calc-mode='full']");
+    await click(".mechbox-heat-treatment__calculate-btn");
+    await waitFor(".mechbox-heat-treatment__status");
+
+    assert.dom(".mechbox-heat-treatment__results-body").includesText("0.772");
+    assert.dom(".mechbox-heat-treatment__results-body").includesText("18.8");
+  });
+
+  test("opens materials page and auto-searches", async function (assert) {
+    await visit("/mechbox?tool_id=materials");
+
+    await waitFor(".mechbox-materials");
+    await waitFor(".mechbox-materials__result-card");
+    assert.dom(".mechbox-materials__results-body").includesText("Q235");
+    assert.dom(".mechbox-materials__results-body").includesText("157");
+  });
+
+  test("opens and calculates on the material selection page", async function (assert) {
+    await visit("/mechbox?tool_id=material_selection");
+
+    await waitFor(".mechbox-material-selection");
+    assert.dom(".mechbox-material-selection__grid").exists("two-column grid is rendered");
+
+    await click(".mechbox-material-selection__calculate-btn");
+    await waitFor(".mechbox-material-selection__top-pick");
+
+    assert.dom(".mechbox-material-selection__results-body").includesText("Cr12Mo1V1");
+    assert.dom(".mechbox-material-selection__results-body").includesText("68");
+  });
+
+  test("opens thread table page and auto-searches", async function (assert) {
+    await visit("/mechbox?tool_id=thread_table");
+
+    await waitFor(".mechbox-thread-table");
+    await waitFor(".mechbox-thread-table__table");
+    assert.dom(".mechbox-thread-table__results-body").includesText("M10");
+    assert.dom(".mechbox-thread-table__results-body").includesText("1.5");
   });
 });
