@@ -178,7 +178,11 @@ module DiscourseMechbox
             temperature_factor(temp)
       end
 
-      lnm = l10 * a1 * a_iso * a2
+      # Temperature derates effective dynamic capacity, so its impact follows
+      # the bearing life exponent: Lnm = L10 * a1 * aISO * a2^p.
+      temperature_life_factor =
+        calc_mode == "professional" ? a2**life_exponent(bearing_type) : 1.0
+      lnm = l10 * a1 * a_iso * temperature_life_factor
       hours = life_hours(lnm, rpm)
 
       min_static = optional_number("min_static_safety", aliases: %w[minStaticSafety]) || 1.5
@@ -305,8 +309,11 @@ module DiscourseMechbox
     def l10_million(dynamic_load, equivalent_load, bearing_type)
       return Float::INFINITY if equivalent_load <= 0
 
-      exp = bearing_type == "roller" ? (10.0 / 3.0) : 3.0
-      (dynamic_load / equivalent_load)**exp
+      (dynamic_load / equivalent_load)**life_exponent(bearing_type)
+    end
+
+    def life_exponent(bearing_type)
+      bearing_type == "roller" ? (10.0 / 3.0) : 3.0
     end
 
     def life_hours(l10_million, rpm)

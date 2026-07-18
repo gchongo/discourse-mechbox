@@ -103,6 +103,12 @@ zh_CN:
       bearing:
         name: "轴承寿命"
         description: "ISO 281 当量动载荷与 L10/Lnm 寿命，支持简化、完整（X/Y 查表/可靠性）与专业（温度系数/极限转速）模式。"
+      beam:
+        name: "梁挠度"
+        description: "Euler-Bernoulli 梁弯曲应力与挠度前置估算；支持简支/悬臂与常用截面，本服务端版本不输出疲劳放行结论。"
+      structural:
+        name: "结构/流体"
+        description: "管路 Darcy-Weisbach 压降、薄板弹性屈曲与一阶模态频率前置校核，所有输入显式区分工程单位。"
       gdt_position:
         name: "GD&T 位置度"
         description: "由 X/Y 实测偏差计算位置度直径，可选公差校核。"

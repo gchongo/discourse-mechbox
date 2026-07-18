@@ -103,6 +103,12 @@ en:
       bearing:
         name: "Bearing life"
         description: "ISO 281 equivalent load and L10/Lnm life; simple, full (X/Y lookup / reliability), and professional (temperature / limiting speed) modes."
+      beam:
+        name: "Beam deflection"
+        description: "Euler-Bernoulli beam stress and deflection estimate for supported/cantilever beams; fatigue release is not included in this server version."
+      structural:
+        name: "Structural / fluid"
+        description: "Pipe Darcy-Weisbach pressure drop, elastic plate buckling, and first-mode frequency pre-checks with explicit engineering units."
       gdt_position:
         name: "GD&T position"
         description: "Position diameter from measured X/Y deviations, with optional tolerance check."

@@ -28,6 +28,8 @@ module DiscourseMechbox
       thermal_expansion
       interference_fit
       bearing
+      beam
+      structural
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -472,6 +474,83 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "beam" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "material_id", type: "string", required: false },
+          { key: "case_id", type: "string", required: true },
+          { key: "section_type", type: "string", required: true },
+          { key: "diameter_mm", type: "number", required: false },
+          { key: "inner_diameter_mm", type: "number", required: false },
+          { key: "width_mm", type: "number", required: false },
+          { key: "height_mm", type: "number", required: false },
+          { key: "span_length_mm", type: "number", required: true },
+          { key: "load_n", type: "number", required: false },
+          { key: "line_load_n_per_mm", type: "number", required: false },
+          { key: "elastic_modulus_mpa", type: "number", required: false },
+          { key: "allowable_stress_mpa", type: "number", required: false },
+          { key: "allowable_deflection_mm", type: "number", required: false },
+          { key: "dynamic_factor", type: "number", required: false },
+          { key: "stress_concentration", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "moment_nmm", type: "number" },
+          { key: "stress_mpa", type: "number" },
+          { key: "deflection_mm", type: "number" },
+          { key: "inertia_mm4", type: "number" },
+          { key: "section_modulus_mm3", type: "number" },
+          { key: "line_load_n_per_mm", type: "number" },
+          { key: "design_line_load_n_per_mm", type: "number" },
+          { key: "slenderness_warning", type: "boolean" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
+      "structural" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "analysis_type", type: "string", required: true },
+          { key: "calc_mode", type: "string", required: true },
+          { key: "diameter_mm", type: "number", required: false },
+          { key: "length_m", type: "number", required: false },
+          { key: "flow_rate_lpm", type: "number", required: false },
+          { key: "density_kg_m3", type: "number", required: false },
+          { key: "dynamic_viscosity_pa_s", type: "number", required: false },
+          { key: "roughness_mm", type: "number", required: false },
+          { key: "local_loss_k", type: "number", required: false },
+          { key: "max_velocity_mps", type: "number", required: false },
+          { key: "max_pressure_drop_kpa", type: "number", required: false },
+          { key: "edge_condition", type: "string", required: false },
+          { key: "thickness_mm", type: "number", required: false },
+          { key: "width_mm", type: "number", required: false },
+          { key: "length_mm", type: "number", required: false },
+          { key: "applied_stress_mpa", type: "number", required: false },
+          { key: "applied_stress_transverse_mpa", type: "number", required: false },
+          { key: "imperfection_factor", type: "number", required: false },
+          { key: "applied_shear_mpa", type: "number", required: false },
+          { key: "case_id", type: "string", required: false },
+          { key: "stiffness_n_m", type: "number", required: false },
+          { key: "mass_kg", type: "number", required: false },
+          { key: "span_length_mm", type: "number", required: false },
+          { key: "elastic_modulus_mpa", type: "number", required: false },
+          { key: "excitation_freq_hz", type: "number", required: false },
+          { key: "rpm", type: "number", required: false },
+          { key: "damping_ratio", type: "number", required: false },
+        ],
+        outputs: [
+          { key: "analysis_type", type: "string" },
+          { key: "velocity_mps", type: "number" },
+          { key: "reynolds", type: "number" },
+          { key: "total_pressure_drop_kpa", type: "number" },
+          { key: "critical_stress_mpa", type: "number" },
+          { key: "safety_factor", type: "number" },
+          { key: "modal", type: "object" },
+          { key: "resonance", type: "object" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
     }.freeze
 
     # Client-side tools (MechBox Vue). Listed for discovery; calculation runs in browser.
@@ -485,9 +564,7 @@ module DiscourseMechbox
       "gear" => { category: "transmission", route: "/gear" },
       "shaft" => { category: "transmission", route: "/shaft" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "beam" => { category: "structural", route: "/beam" },
       "fatigue" => { category: "structural", route: "/fatigue" },
-      "structural" => { category: "structural", route: "/structural" },
       "sheet_metal" => { category: "structural", route: "/sheet-metal" },
       "cylinder" => { category: "structural", route: "/cylinder" },
       "materials" => { category: "materials", route: "/materials" },

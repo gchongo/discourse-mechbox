@@ -26,6 +26,8 @@ module DiscourseMechbox
       thermal_expansion
       interference_fit
       bearing
+      beam
+      structural
     ].freeze
 
     UNIT_FACTORS = {
@@ -200,6 +202,18 @@ module DiscourseMechbox
     def self.calculate_bearing(inputs)
       DiscourseMechbox::BearingCalculator.calculate(inputs)
     rescue DiscourseMechbox::BearingCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_beam(inputs)
+      DiscourseMechbox::BeamCalculator.calculate(inputs)
+    rescue DiscourseMechbox::BeamCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_structural(inputs)
+      DiscourseMechbox::StructuralCalculator.calculate(inputs)
+    rescue DiscourseMechbox::StructuralCalculator::Error => error
       raise Error, error.message
     end
 
