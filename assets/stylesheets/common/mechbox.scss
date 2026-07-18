@@ -504,7 +504,8 @@
 .mechbox-bearing,
 .mechbox-shaft,
 .mechbox-gear-ratio,
-.mechbox-gear {
+.mechbox-gear,
+.mechbox-fatigue {
   &__modes {
     display: flex;
     flex-wrap: wrap;
@@ -915,6 +916,27 @@
 
   &__results.is-visible {
     animation: mechbox-bolt-fade-in 180ms ease-out;
+  }
+
+  &__textarea {
+    width: 100%;
+    min-height: 6rem;
+    resize: vertical;
+    font-family: var(--d-font-mono, ui-monospace, monospace);
+    font-size: var(--font-down-1);
+  }
+
+  &__miner {
+    margin-top: 0.85rem;
+
+    h4 {
+      margin: 0 0 0.4rem;
+      font-size: var(--font-0);
+    }
+  }
+
+  &__hint.is-mode-hidden {
+    display: none !important;
   }
 }
 

@@ -24,6 +24,7 @@ import { mountBearingWorkbench } from "../lib/mechbox-bearing-page";
 import { mountShaftWorkbench } from "../lib/mechbox-shaft-page";
 import { mountGearRatioWorkbench } from "../lib/mechbox-gear-ratio-page";
 import { mountGearWorkbench } from "../lib/mechbox-gear-page";
+import { mountFatigueWorkbench } from "../lib/mechbox-fatigue-page";
 let handlersRegistered = false;
 
 function parseInputsSchema(panel) {
@@ -70,7 +71,8 @@ function mountGenericWorkbench(panel) {
     "mechbox__workbench-panel--bearing",
     "mechbox__workbench-panel--shaft",
     "mechbox__workbench-panel--gear-ratio",
-    "mechbox__workbench-panel--gear"
+    "mechbox__workbench-panel--gear",
+    "mechbox__workbench-panel--fatigue"
   );
   mount.replaceChildren();
 
@@ -182,6 +184,8 @@ function mountWorkbenchForm(panel) {
     void mountShaftWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else if (toolId === "gear") {
     void mountGearWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
+  } else if (toolId === "fatigue") {
+    void mountFatigueWorkbench(panel).then(() => markWorkbenchMounted(panel, toolId));
   } else {
     mountGenericWorkbench(panel);
     markWorkbenchMounted(panel, toolId);
@@ -282,6 +286,7 @@ const CUSTOM_TOOL_IDS = new Set([
   "bearing",
   "shaft",
   "gear",
+  "fatigue",
 ]);
 
 async function calculateGeneric(event) {
@@ -313,7 +318,8 @@ async function calculateGeneric(event) {
     button.classList.contains("mechbox-interference__calculate-btn") ||
     button.classList.contains("mechbox-bearing__calculate-btn") ||
     button.classList.contains("mechbox-shaft__calculate-btn") ||
-    button.classList.contains("mechbox-gear__calculate-btn")
+    button.classList.contains("mechbox-gear__calculate-btn") ||
+    button.classList.contains("mechbox-fatigue__calculate-btn")
   ) {
     return;
   }

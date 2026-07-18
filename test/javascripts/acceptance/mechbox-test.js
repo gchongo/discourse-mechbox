@@ -231,10 +231,18 @@ acceptance("MechBox | safe page", function (needs) {
                   icon: "sliders",
                   available: true,
                 },
+                {
+                  id: "fatigue",
+                  tool_id: "fatigue",
+                  name: "Fatigue life",
+                  description: "S-N / Miner",
+                  icon: "chart-line",
+                  available: true,
+                },
               ],
             },
           ],
-          counts: { available: 21, catalog: 57 },
+          counts: { available: 22, catalog: 57 },
         },
       });
     });
@@ -501,6 +509,20 @@ acceptance("MechBox | safe page", function (needs) {
           { key: "module_mm", type: "number" },
           { key: "pinion_teeth", type: "number" },
           { key: "torque_nm", type: "number" },
+        ],
+      });
+    });
+
+    server.get("/mechbox/api/tools/fatigue", () => {
+      return helper.response(200, {
+        tool_id: "fatigue",
+        name: "Fatigue life",
+        description: "S-N / Miner.",
+        available: true,
+        inputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "material", type: "string" },
+          { key: "stress_amplitude_mpa", type: "number" },
         ],
       });
     });
@@ -903,6 +925,21 @@ acceptance("MechBox | safe page", function (needs) {
             pass: false,
             bending_pass: true,
             contact_pass: true,
+          },
+        });
+      }
+
+      if (body.tool_id === "fatigue") {
+        return helper.response(200, {
+          tool_id: "fatigue",
+          outputs: {
+            calc_mode: "simple",
+            stress_amplitude_mpa: 300,
+            life_cycles: 410385,
+            life_infinite: false,
+            endurance_limit_mpa: 280,
+            estimate_only: true,
+            pass: false,
           },
         });
       }
@@ -1461,5 +1498,29 @@ acceptance("MechBox | safe page", function (needs) {
     assert
       .dom("[data-calc-show='full professional']")
       .doesNotHaveClass("is-mode-hidden", "full mode shows ISO material fields");
+  });
+
+  test("opens and calculates on the fatigue life page", async function (assert) {
+    await visit("/mechbox?tool_id=fatigue");
+
+    await waitFor(".mechbox-fatigue");
+    assert.dom(".mechbox-fatigue__grid").exists("two-column grid is rendered");
+    assert.dom(".mechbox-fatigue__formula-bar").exists("formula bar is rendered");
+    assert
+      .dom("input[name='stress_amplitude_mpa']")
+      .exists("stress amplitude input is rendered");
+    assert.dom(".mechbox-fatigue__mode-tab").exists("mode tabs are rendered");
+
+    await fillIn("input[name='stress_amplitude_mpa']", "300");
+    await click(".mechbox-fatigue__calculate-btn");
+    await waitFor(".mechbox-fatigue__status");
+
+    assert.dom(".mechbox-fatigue__status").hasClass("is-attention");
+    assert.dom(".mechbox-fatigue__results-body").includesText("410385");
+
+    await click(".mechbox-fatigue__mode-tab[data-calc-mode='full']");
+    assert
+      .dom("[data-calc-show='full professional']")
+      .doesNotHaveClass("is-mode-hidden", "full mode shows load spectrum");
   });
 });

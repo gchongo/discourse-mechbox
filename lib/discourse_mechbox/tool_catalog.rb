@@ -30,6 +30,7 @@ module DiscourseMechbox
       bearing
       shaft
       gear
+      fatigue
     ].freeze
 
     # Client-side tools enabled one at a time. Add tool_id here after porting from MechBox/.
@@ -535,6 +536,29 @@ module DiscourseMechbox
           { key: "pass", type: "boolean" },
         ],
       },
+      "fatigue" => {
+        category: "structural",
+        implementation: IMPLEMENTATION_SERVER_BUILTIN,
+        inputs: [
+          { key: "calc_mode", type: "string", required: true },
+          { key: "material", type: "string", required: true },
+          { key: "stress_amplitude_mpa", type: "number", required: true },
+          { key: "target_life", type: "number", required: false },
+          { key: "mean_stress_mpa", type: "number", required: false },
+          { key: "mean_stress_method", type: "string", required: false },
+          { key: "surface_factor", type: "number", required: false },
+          { key: "size_factor", type: "number", required: false },
+          { key: "loads_json", type: "string", required: false },
+        ],
+        outputs: [
+          { key: "calc_mode", type: "string" },
+          { key: "life_cycles", type: "number" },
+          { key: "effective_amplitude_mpa", type: "number" },
+          { key: "single_level_pass", type: "boolean" },
+          { key: "miner", type: "object" },
+          { key: "pass", type: "boolean" },
+        ],
+      },
       "beam" => {
         category: "structural",
         implementation: IMPLEMENTATION_SERVER_BUILTIN,
@@ -673,7 +697,6 @@ module DiscourseMechbox
       "tolerance_allocation" => { category: "tolerance", route: "/allocation" },
       "gdt_stack" => { category: "tolerance", route: "/gdt-stack" },
       "bolt_preload" => { category: "fastening", route: "/bolt-preload" },
-      "fatigue" => { category: "structural", route: "/fatigue" },
       "materials" => { category: "materials", route: "/materials" },
       "material_selection" => { category: "materials", route: "/material-selection" },
       "units" => { category: "general", route: "/units" },

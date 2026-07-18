@@ -1345,6 +1345,76 @@ RSpec.describe "DiscourseMechbox calculations", type: :request do
     expect(outputs["compare"]).to have_key("both_pass")
   end
 
+  it "runs simple fatigue Basquin life estimate" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fatigue",
+           save_record: false,
+           inputs: {
+             calc_mode: "simple",
+             material: "steel_45",
+             stress_amplitude_mpa: 350,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("simple")
+    expect(outputs["life_cycles"]).to be_within(1000).of(66_924)
+    expect(outputs["estimate_only"]).to eq(true)
+    expect(outputs["pass"]).to eq(false)
+  end
+
+  it "runs full fatigue with Miner spectrum" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fatigue",
+           save_record: false,
+           inputs: {
+             calc_mode: "full",
+             material: "steel_45",
+             stress_amplitude_mpa: 300,
+             target_life: 1_000_000,
+             loads_json: "300,10000\n250,50000\n200,100000",
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("full")
+    expect(outputs["miner"]).to be_present
+    expect(outputs["miner"]["total_damage"]).to be_within(0.001).of(0.024)
+    expect(outputs["miner"]["pass"]).to eq(true)
+    expect(outputs["pass"]).to eq(true)
+  end
+
+  it "runs professional fatigue with Goodman and Se prime" do
+    post "/mechbox/api/calculate",
+         params: {
+           tool_id: "fatigue",
+           save_record: false,
+           inputs: {
+             calc_mode: "professional",
+             material: "steel_45",
+             stress_amplitude_mpa: 200,
+             mean_stress_mpa: 100,
+             mean_stress_method: "goodman",
+             surface_factor: 0.9,
+             size_factor: 0.85,
+             target_life: 1_000_000,
+             loads_json: [{ stress: 250, cycles: 5000 }].to_json,
+           },
+         }
+
+    expect(response).to have_http_status(:ok)
+    outputs = response.parsed_body["outputs"]
+    expect(outputs["calc_mode"]).to eq("professional")
+    expect(outputs["effective_amplitude_mpa"]).to be > 200
+    expect(outputs["adjusted_endurance_mpa"]).to be_within(0.1).of(214.2)
+    expect(outputs["miner"]).to be_present
+    expect(outputs["miner"]["details"].first["effective_stress_mpa"]).to be > 250
+  end
+
   it "keeps parked beam calculator available via registry only" do
     outputs = DiscourseMechbox::CalculatorRegistry.calculate(
       tool_id: "beam",

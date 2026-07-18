@@ -109,6 +109,9 @@ zh_CN:
       gear:
         name: "齿轮强度"
         description: "直齿轮弯曲与接触强度；简化 Lewis、完整 ISO 6336 简化系数、专业 ISO/AGMA 对照。"
+      fatigue:
+        name: "疲劳寿命"
+        description: "Basquin S-N 寿命与 Miner 累积损伤；简化单级估算、完整目标寿命+谱、专业 Goodman/Se′。"
       beam:
         name: "梁挠度"
         description: "Euler-Bernoulli 梁弯曲应力与挠度前置估算；支持简支/悬臂与常用截面，本服务端版本不输出疲劳放行结论。"

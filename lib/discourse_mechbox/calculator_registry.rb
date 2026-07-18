@@ -28,6 +28,7 @@ module DiscourseMechbox
       bearing
       shaft
       gear
+      fatigue
       beam
       structural
       sheet_metal
@@ -218,6 +219,12 @@ module DiscourseMechbox
     def self.calculate_gear(inputs)
       DiscourseMechbox::GearCalculator.calculate(inputs)
     rescue DiscourseMechbox::GearCalculator::Error => error
+      raise Error, error.message
+    end
+
+    def self.calculate_fatigue(inputs)
+      DiscourseMechbox::FatigueCalculator.calculate(inputs)
+    rescue DiscourseMechbox::FatigueCalculator::Error => error
       raise Error, error.message
     end
 
